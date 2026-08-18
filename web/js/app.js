@@ -311,6 +311,35 @@ async function clearErrors() {
   await readAll(); // show what the pack reports now
 }
 
+/* Copy what is on screen as text. A reading pasted into a support message is
+ * searchable and quotable; a screenshot of the same reading is neither. */
+async function copyReadings() {
+  const lines = [];
+
+  const push = (label, value) => {
+    const text = (value || '').trim();
+    if (label && text && text !== '—') lines.push(label + '\t' + text);
+  };
+
+  push(t('field.packVoltage'), el('readout-voltage').textContent);
+
+  document.querySelectorAll('#panels .meter').forEach((meter) => {
+    push(meter.querySelector('.meter-name')?.textContent?.trim(),
+         meter.querySelector('.meter-value')?.textContent);
+  });
+
+  document.querySelectorAll('#panels .fields .row').forEach((row) => {
+    push(row.querySelector('dt')?.textContent?.trim(),
+         row.querySelector('dd')?.textContent);
+  });
+
+  push(t('field.message'), el('v-message').textContent);
+
+  if (!lines.length) return;
+  await navigator.clipboard.writeText(lines.join('\n') + '\n');
+  status('status.copied', 'ok');
+}
+
 /* ---------- wiring ---------- */
 
 function guardUnsupported() {
@@ -367,6 +396,7 @@ async function init() {
   el('btn-cells').addEventListener('click', () => guard(readCells));
   el('btn-identity').addEventListener('click', () => guard(readIdentity));
   el('btn-clear').addEventListener('click', () => guard(clearErrors));
+  el('btn-copy').addEventListener('click', () => guard(copyReadings));
   el('btn-leds-on').addEventListener('click', () => guard(() => battery.ledsOn()));
   el('btn-leds-off').addEventListener('click', () => guard(() => battery.ledsOff()));
 

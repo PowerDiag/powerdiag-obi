@@ -302,8 +302,20 @@ body {
   fill: currentColor;   /* follows the button colour, hover included */
 }
 
-.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
 .actions .status { margin-left: 6px; }
+
+/* Actions that change the battery should not sit shoulder to shoulder with
+   ones that only look at it. Grouping under a label makes the reach
+   deliberate. */
+.action-group { display: flex; flex-direction: column; gap: 5px; }
+.action-group-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.action-group-label {
+  font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--pd-text-dim); padding-left: 1px;
+}
+.action-group.danger .action-group-label { color: var(--pd-danger); }
 
 /* ==========================================================================
    Form controls

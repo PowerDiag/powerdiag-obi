@@ -42,10 +42,23 @@
   <main id="panels" class="app-content">
 
     <section class="actions">
-      <button id="btn-read" class="btn primary needs-connection" data-i18n="btn.read">Read battery info</button>
-      <button id="btn-clear" class="btn danger needs-connection" data-i18n="btn.clearErrors">Clear errors</button>
-      <button id="btn-leds-on" class="btn ghost needs-connection" data-i18n="btn.ledsOn">LEDs on</button>
-      <button id="btn-leds-off" class="btn ghost needs-connection" data-i18n="btn.ledsOff">LEDs off</button>
+      <button id="btn-read" class="btn primary needs-connection" data-i18n="btn.read">Read everything</button>
+      <button id="btn-copy" class="btn needs-connection" data-i18n="btn.copy">Copy readings</button>
+
+      <div class="action-group">
+        <span class="action-group-label" data-i18n="group.test">Function test</span>
+        <div class="action-group-row">
+          <button id="btn-leds-on" class="btn ghost needs-connection" data-i18n="btn.ledsOn">LEDs on</button>
+          <button id="btn-leds-off" class="btn ghost needs-connection" data-i18n="btn.ledsOff">LEDs off</button>
+        </div>
+      </div>
+
+      <div class="action-group danger">
+        <span class="action-group-label" data-i18n="group.write">Writes to the battery</span>
+        <div class="action-group-row">
+          <button id="btn-clear" class="btn danger needs-connection" data-i18n="btn.clearErrors">Clear errors</button>
+        </div>
+      </div>
     </section>
 
     <p id="note-limited" class="hint warn hidden" data-i18n="note.limited"></p>
