@@ -1,0 +1,47 @@
+name: Check the web app
+
+on:
+  push:
+    paths: ['web/**']
+  pull_request:
+    paths: ['web/**']
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # A syntax error ships silently otherwise: the file is served, the
+      # browser refuses to run it, and the page simply does nothing.
+      - name: Parse every script
+        run: |
+          for f in $(find web -name '*.js'); do
+            cp "$f" "/tmp/$(basename "$f").mjs"
+            node --check "/tmp/$(basename "$f").mjs" || { echo "::error file=$f::syntax error"; exit 1; }
+          done
+          echo "all scripts parse"
+
+      # Every id the code reaches for has to exist in the markup.
+      - name: Check element ids
+        run: |
+          missing=0
+          for id in $(grep -oE "el\('[a-z0-9-]+'\)" web/js/app.js | sed "s/el('//;s/')//" | sort -u); do
+            grep -q "id=\"$id\"" web/index.html || { echo "::error::missing id: $id"; missing=1; }
+          done
+          [ "$missing" = 0 ] && echo "all ids present"
+          exit $missing
+
+      # Every class in the markup has to be defined somewhere, or it is a typo.
+      - name: Check stylesheet coverage
+        run: |
+          for c in $(grep -oE 'class="[^"]+"' web/index.html | sed 's/class="//;s/"//' | tr ' ' '\n' | sort -u); do
+            case "$c" in needs-connection) continue ;; esac
+            grep -qE "\.${c}[ ,.:{]" web/vendor/powerdiag.css web/styles.css \
+              || echo "::warning::class not styled: .$c"
+          done
+          echo "class check done"
