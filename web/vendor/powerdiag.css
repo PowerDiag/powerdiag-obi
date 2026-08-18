@@ -51,10 +51,28 @@
   --pd-primary-bg-hover: #46e0b4;
   --pd-primary-text: #04140f;
 
-  /* Type */
+  /* Type. The stack is per language, set on <html lang>, because system-ui
+     resolves to whatever the OS prefers: on a Japanese machine that is a
+     Japanese face, and it covers Han characters, so the browser never falls
+     through to a Chinese one. Chinese text then renders with Japanese glyph
+     shapes, which is wrong rather than merely unusual. The language face has
+     to come before system-ui for the same reason. */
   --pd-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  --pd-sans: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP",
-             "Microsoft YaHei", Roboto, sans-serif;
+  --pd-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+html[lang="ja"] {
+  --pd-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic",
+             "Noto Sans JP", Meiryo, system-ui, sans-serif;
+}
+
+html[lang="zh"] {
+  --pd-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+             "Source Han Sans SC", system-ui, sans-serif;
+}
+
+html[lang="en"] {
+  --pd-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* Light mode keeps the same layout and weight, only the surfaces invert.
