@@ -130,6 +130,44 @@ unavailable on plain HTTP.
 **Running it locally:** `python -m http.server` inside `web/`, then open `http://localhost:8000`.
 `localhost` counts as a secure context, so the serial port works without a certificate.
 
+**Serving it.** The app is served from our own server behind Cloudflare, and both layers have to
+be told not to hold on to it. It is a few hundred KB, so caching buys nothing and only produces
+customers running a build from weeks ago.
+
+nginx:
+
+```nginx
+location /obi/ {
+    alias /var/www/powerdiag/obi/;
+    index index.html;
+
+    # no-cache still allows 304s, so revalidating costs almost nothing.
+    add_header Cache-Control "no-cache" always;
+}
+
+# Not in the stock mime.types. Without it the manifest is served as
+# application/octet-stream and the app cannot be installed, while the page
+# itself looks perfectly fine.
+types {
+    application/manifest+json  webmanifest;
+}
+```
+
+Do not nest a `location` inside that block: an `add_header` in a child block drops every
+`add_header` inherited from the parent.
+
+On Cloudflare, add a Cache Rule matching URI Path starts with `/obi` set to **Bypass cache**, then
+purge `https://powerdiag.jp/obi/*` once — the rule only affects later requests and does not evict
+what is already at the edge.
+
+Check both layers with:
+
+```
+curl -sI https://powerdiag.jp/obi/ | grep -iE "cache-control|cf-cache-status"
+```
+
+Expect `cache-control: no-cache` and `cf-cache-status: BYPASS`.
+
 **Browser support:** desktop Chrome and Edge. Firefox and Safari do not implement Web Serial, and
 neither does any mobile browser. Windows 10/11 ship with Edge, so customers need no extra download —
 but the USB-serial driver (CH340 on most Nano boards) must be present, or the board simply will not
