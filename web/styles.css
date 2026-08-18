@@ -43,3 +43,19 @@
 .logsec { flex: none; }
 .log { max-height: 22vh; }
 .hint.warn { margin: 0 0 14px; }
+
+/* The pack voltage now heads the card it summarises, so it loses the panel
+   chrome it had as a standalone row. */
+.card-readout {
+  background: none; border: none;
+  padding: 0 0 14px; margin-bottom: 4px;
+  border-bottom: 1px solid var(--pd-line-soft);
+}
+
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 12px;
+}
+.card-head h2 { margin: 0; }
+
+.logsec .actions { margin-bottom: 10px; }

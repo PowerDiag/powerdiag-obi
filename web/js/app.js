@@ -22,7 +22,6 @@ const IDENTITY_FIELDS = [
 
 const VOLTAGE_FIELDS = [
   ['field.terminalVoltage', 'terminalVoltage'],
-  ['field.packVoltage', 'packVoltage'],
   ['field.cellDiff', 'cellDiff'],
   ['field.tempCell', 'tempCell'],
   ['field.tempMosfet', 'tempMosfet'],
@@ -72,8 +71,7 @@ function set(slot, value) {
 function clearValues() {
   document.querySelectorAll('#panels dd, .meter-value').forEach((node) => { node.textContent = '—'; });
   document.querySelectorAll('.meter-fill').forEach((node) => { node.style.width = '0'; });
-  el('hero-voltage').textContent = '—';
-  el('hero-model').textContent = '—';
+  el('readout-voltage').textContent = '—';
   el('state-badge').className = 'badge hidden';
   el('note-limited').classList.add('hidden');
 }
@@ -103,15 +101,40 @@ function fail(error) {
   log('err', text);
 }
 
+const logLines = [];
+
 function log(kind, text) {
-  const line = document.createElement('div');
-  line.className = `log-line ${kind}`;
   const stamp = new Date().toTimeString().slice(0, 8);
   const marker = kind === 'tx' ? '>>' : kind === 'rx' ? '<<' : '!!';
-  line.textContent = `${stamp} ${marker} ${text}`;
+  const entry = `${stamp} ${marker} ${text}`;
+  logLines.push(entry);
+
+  const line = document.createElement('div');
+  line.className = `log-line ${kind}`;
+  line.textContent = entry;
   const box = el('log');
   box.appendChild(line);
   box.scrollTop = box.scrollHeight;
+}
+
+function clearLog() {
+  logLines.length = 0;
+  el('log').replaceChildren();
+}
+
+/* Hand the traffic to support as a file rather than asking for a screenshot. */
+function exportLog() {
+  if (!logLines.length) return;
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const blob = new Blob([logLines.join('
+') + '
+'], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `powerdiag-obi-${stamp}.log`;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 transport.addEventListener('log', (event) => log(event.detail.direction, event.detail.hex));
@@ -205,8 +228,7 @@ async function showTerminalVoltage() {
 }
 
 function showCells(data) {
-  el('hero-voltage').textContent = `${data.packVoltage.toFixed(2)} V`;
-  set('packVoltage', `${data.packVoltage.toFixed(3)} V`);
+  el('readout-voltage').textContent = `${data.packVoltage.toFixed(2)} V`;
   data.cells.forEach((v, i) => {
     set(`cell${i + 1}`, `${v.toFixed(3)} V`);
     drawCellBar(i + 1, v);
@@ -239,7 +261,6 @@ async function readAll() {
 
   const { model, limited } = await battery.readModel();
   set('model', model);
-  el('hero-model').textContent = model;
   el('note-limited').classList.toggle('hidden', !limited);
 
   showCells(await battery.readCells());
@@ -298,6 +319,8 @@ async function init() {
     el('log').classList.toggle('hidden');
     applyLanguage();
   });
+  el('btn-log-clear').addEventListener('click', clearLog);
+  el('btn-log-export').addEventListener('click', exportLog);
 
   if (guardUnsupported()) {
     el('btn-connect').disabled = true;

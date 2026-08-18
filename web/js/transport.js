@@ -14,6 +14,12 @@ const BAUD_RATE = 9600;
 const RESPONSE_TIMEOUT_MS = 2000;
 const DEFAULT_ATTEMPTS = 2;
 
+/* Opening the port toggles DTR, and on a Nano that line is coupled to RESET,
+ * so the board reboots the moment we connect. The bootloader then owns the
+ * UART for a moment before the sketch starts, and anything written in that
+ * window is swallowed with no reply at all. */
+const BOOT_SETTLE_MS = 2000;
+
 /* CH340 (QinHeng) and the other USB-serial bridges found on Nano boards, so the
  * browser's port picker only offers the interface board and not every COM port
  * on the machine. */
@@ -74,6 +80,17 @@ export class Transport extends EventTarget {
     this.writer = port.writable.getWriter();
     this.reader = port.readable.getReader();
     this.readLoopDone = this.readLoop();
+
+    /* Drive the control lines explicitly rather than inheriting whatever the
+     * platform left them at, then wait out the reset described above. */
+    try {
+      await port.setSignals({ dataTerminalReady: true, requestToSend: false });
+    } catch {
+      /* Not every platform exposes the control lines; the wait still helps. */
+    }
+    await new Promise((resolve) => setTimeout(resolve, BOOT_SETTLE_MS));
+    this.buffer = new Uint8Array(0); // discard any bootloader chatter
+
     this.dispatchEvent(new Event('open'));
   }
 

@@ -41,17 +41,6 @@
 
   <main id="panels" class="app-content">
 
-    <section class="readout">
-      <div>
-        <span class="readout-label" data-i18n="field.packVoltage">Pack voltage</span>
-        <output id="hero-voltage" class="readout-value">&mdash;</output>
-      </div>
-      <div class="readout-side">
-        <output id="hero-model" class="readout-aux">&mdash;</output>
-        <span id="state-badge" class="badge hidden"></span>
-      </div>
-    </section>
-
     <section class="actions">
       <button id="btn-read" class="btn primary needs-connection" data-i18n="btn.read">Read battery info</button>
       <button id="btn-cells" class="btn needs-connection" data-i18n="btn.cells">Read cell voltages</button>
@@ -66,13 +55,22 @@
 
       <article class="card">
         <h2 data-i18n="sec.voltages">Voltages</h2>
+        <div class="readout card-readout">
+          <div>
+            <span class="readout-label" data-i18n="field.packVoltage">Pack voltage</span>
+            <output id="readout-voltage" class="readout-value">&mdash;</output>
+          </div>
+        </div>
         <div id="cell-bars" class="meters"></div>
         <dl id="cell-fields" class="fields compact"></dl>
         <dl id="voltage-fields" class="fields"></dl>
       </article>
 
       <article class="card">
-        <h2 data-i18n="sec.identity">Identity</h2>
+        <div class="card-head">
+          <h2 data-i18n="sec.identity">Identity</h2>
+          <span id="state-badge" class="badge hidden"></span>
+        </div>
         <dl id="identity-fields" class="fields"></dl>
         <div class="block-field">
           <dt data-i18n="field.message">Battery message</dt>
@@ -84,8 +82,12 @@
     </div>
 
     <section class="logsec">
-      <button id="btn-log" class="btn ghost small" data-i18n="log.show">Show log</button>
-      <div id="log" class="log hidden" aria-live="polite"></div>
+      <div class="actions">
+        <button id="btn-log" class="btn ghost small" data-i18n="log.hide">Hide log</button>
+        <button id="btn-log-clear" class="btn ghost small" data-i18n="log.clear">Clear</button>
+        <button id="btn-log-export" class="btn ghost small" data-i18n="log.export">Export</button>
+      </div>
+      <div id="log" class="log" aria-live="polite"></div>
     </section>
 
   </main>
