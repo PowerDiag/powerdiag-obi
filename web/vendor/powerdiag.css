@@ -232,17 +232,24 @@ body {
 .btn.small { padding: 7px 14px; font-size: .8rem; }
 .btn.big { padding: 15px 52px; font-size: 1.05rem; }
 
-/* Square icon button, e.g. the close control in the app bar. */
+/* Square icon button, e.g. the close control in the app bar. Takes an inline
+   SVG rather than a text glyph: a character is centred by font metrics, which
+   never quite lands, and the shape changes with the font. */
 .iconbtn {
   display: flex; align-items: center; justify-content: center;
   width: var(--pd-control-h); height: var(--pd-control-h); flex: none;
+  padding: 0;
   border: 1px solid var(--pd-line); border-radius: var(--pd-radius-sm);
   background: transparent; color: var(--pd-text-dim);
   text-decoration: none; cursor: pointer;
-  font-size: 1.25rem; line-height: 1;
   transition: color .15s, border-color .15s;
 }
 .iconbtn:hover { color: var(--pd-danger); border-color: #6b3138; }
+
+.iconbtn svg {
+  display: block; width: 16px; height: 16px;
+  fill: currentColor;   /* follows the button colour, hover included */
+}
 
 .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .actions .status { margin-left: 6px; }
