@@ -259,12 +259,9 @@ function showCells(data) {
   set('tempMosfet', data.tempMosfet === null ? null : `${data.tempMosfet.toFixed(2)} °C`);
 }
 
-/* The one button most customers ever press: everything the pack will tell us. */
-async function readAll() {
-  clearValues();
+/* What the identity card shows: who this pack is and what state it is in. */
+async function readIdentity() {
   status('status.reading');
-
-  await showTerminalVoltage();
 
   const info = await battery.readStatic();
   set('chargeCount', info.chargeCount);
@@ -280,19 +277,29 @@ async function readAll() {
   badge.className = `badge ${info.locked ? 'danger' : 'ok'}`;
   set('state', badge.textContent);
 
+  /* Reading the model also settles which dialect the pack speaks, which the
+   * cell read depends on. */
   const { model, limited } = await battery.readModel();
   set('model', model);
   el('note-limited').classList.toggle('hidden', !limited);
 
-  showCells(await battery.readCells());
   status('status.done', 'ok');
 }
 
+/* What the voltages card shows. */
 async function readCells() {
   status('status.reading');
   await showTerminalVoltage();
   showCells(await battery.readCells());
   status('status.done', 'ok');
+}
+
+/* The one button most customers ever press: both cards, in the order that
+ * lets the model settle the dialect before the cells are read. */
+async function readAll() {
+  clearValues();
+  await readIdentity();
+  await readCells();
 }
 
 async function clearErrors() {
@@ -357,6 +364,7 @@ async function init() {
   el('btn-disconnect').addEventListener('click', () => transport.close());
   el('btn-read').addEventListener('click', () => guard(readAll));
   el('btn-cells').addEventListener('click', () => guard(readCells));
+  el('btn-identity').addEventListener('click', () => guard(readIdentity));
   el('btn-clear').addEventListener('click', () => guard(clearErrors));
   el('btn-leds-on').addEventListener('click', () => guard(() => battery.ledsOn()));
   el('btn-leds-off').addEventListener('click', () => guard(() => battery.ledsOff()));

@@ -208,6 +208,14 @@ body {
 .dot.warn { background: var(--pd-warn); box-shadow: 0 0 0 4px rgb(240 180 41 / .13); }
 .dot.error { background: var(--pd-danger); box-shadow: 0 0 0 4px rgb(242 85 90 / .13); }
 
+/* Card heading row: the title, and the controls that act on that card. */
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 10px;
+}
+.card-head h2 { margin: 0; }
+.card-head-right { display: flex; align-items: center; gap: 10px; }
+
 .badge {
   font-size: .78rem; font-weight: 700; letter-spacing: .1em;
   text-transform: uppercase;

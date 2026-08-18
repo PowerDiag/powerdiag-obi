@@ -43,7 +43,6 @@
 
     <section class="actions">
       <button id="btn-read" class="btn primary needs-connection" data-i18n="btn.read">Read battery info</button>
-      <button id="btn-cells" class="btn needs-connection" data-i18n="btn.cells">Read cell voltages</button>
       <button id="btn-clear" class="btn danger needs-connection" data-i18n="btn.clearErrors">Clear errors</button>
       <button id="btn-leds-on" class="btn ghost needs-connection" data-i18n="btn.ledsOn">LEDs on</button>
       <button id="btn-leds-off" class="btn ghost needs-connection" data-i18n="btn.ledsOff">LEDs off</button>
@@ -54,7 +53,10 @@
     <div class="grid">
 
       <article class="card">
-        <h2 data-i18n="sec.voltages">Voltages</h2>
+        <div class="card-head">
+          <h2 data-i18n="sec.voltages">Voltages</h2>
+          <button id="btn-cells" class="btn ghost small needs-connection" data-i18n="btn.refresh">Read</button>
+        </div>
         <div class="readout card-readout">
           <div>
             <span class="readout-label" data-i18n="field.packVoltage">Pack voltage</span>
@@ -69,7 +71,10 @@
       <article class="card">
         <div class="card-head">
           <h2 data-i18n="sec.identity">Identity</h2>
-          <span id="state-badge" class="badge hidden"></span>
+          <span class="card-head-right">
+            <span id="state-badge" class="badge hidden"></span>
+            <button id="btn-identity" class="btn ghost small needs-connection" data-i18n="btn.refresh">Read</button>
+          </span>
         </div>
         <dl id="identity-fields" class="fields"></dl>
         <div class="block-field">
