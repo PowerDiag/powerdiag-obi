@@ -51,8 +51,8 @@ export class LxtBattery {
   }
 
   /** Firmware version of the interface board itself, e.g. "0.3.0". */
-  async interfaceVersion() {
-    const payload = await this.transport.request(CMD.INTERFACE_VERSION, { attempts: 5 });
+  async interfaceVersion({ attempts = 5 } = {}) {
+    const payload = await this.transport.request(CMD.INTERFACE_VERSION, { attempts });
     return Array.from(payload).join('.');
   }
 

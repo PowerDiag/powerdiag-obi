@@ -164,8 +164,19 @@ function describePort(port) {
   return USB_CHIPS[vid] ? `${USB_CHIPS[vid]} · ${id}` : id;
 }
 
-async function connect(port) {
-  status('status.connecting');
+/* Reconnecting on load must never wedge the page: the port the previous
+ * instance held may not be free yet, and port.open() can sit there. */
+const AUTO_CONNECT_TIMEOUT_MS = 5000;
+
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new ObiError('err.timeout')), ms)),
+  ]);
+}
+
+async function connect(port, { silent = false } = {}) {
+  if (!silent) status('status.connecting');
   await transport.open(port);
 
   /* Past this point the port is open, so every failure has to close it again.
@@ -178,7 +189,7 @@ async function connect(port) {
      * before letting the user drive it. The version command answers on every
      * OBI firmware; silence means this is some other serial device, and saying
      * so beats letting every later command time out mysteriously. */
-    const version = await battery.interfaceVersion();
+    const version = await battery.interfaceVersion({ attempts: silent ? 2 : 5 });
 
     setConnected(true);
     el('port-name').textContent = `${describePort(port)} · FW ${version}`;
@@ -362,12 +373,17 @@ async function init() {
   setConnected(false);
   status('status.idle');
 
-  /* Ports authorised on an earlier visit reconnect without a picker. */
+  /* Ports authorised on an earlier visit reconnect without a picker. Done
+   * quietly and under a deadline: this runs on every load, including a
+   * refresh where the port is still being released, and a background attempt
+   * has no business announcing itself or holding the page. */
   const [known] = await Transport.knownPorts();
   if (known) {
     try {
-      await connect(known);
+      await withTimeout(connect(known, { silent: true }), AUTO_CONNECT_TIMEOUT_MS);
     } catch {
+      await transport.close();
+      setConnected(false);
       status('status.idle');
     }
   }
