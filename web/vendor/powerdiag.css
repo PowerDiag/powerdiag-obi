@@ -400,6 +400,16 @@ select:focus-visible, input:focus-visible {
 }
 
 .readout-side { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+/* A second reading of the same quantity from a different source, set against
+   the first so the two can be compared at a glance. Neutral rather than
+   accented: it is a different measurement, not a lesser one. */
+.readout-alt { text-align: right; }
+.readout-value.alt {
+  color: var(--pd-text);
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  text-shadow: none;
+}
 .readout-aux { font-family: var(--pd-mono); font-size: 1.25rem; color: var(--pd-text); }
 
 /* ==========================================================================

@@ -22,7 +22,6 @@ const IDENTITY_FIELDS = [
 ];
 
 const VOLTAGE_FIELDS = [
-  ['field.terminalVoltage', 'terminalVoltage'],
   ['field.cellDiff', 'cellDiff'],
   ['field.tempCell', 'tempCell'],
   ['field.tempMosfet', 'tempMosfet'],
@@ -94,6 +93,7 @@ function clearValues() {
   });
   document.querySelectorAll('.tile').forEach((node) => { node.className = 'tile'; });
   el('readout-voltage').textContent = '—';
+  el('readout-terminal').textContent = '—';
   el('state-badge').className = 'badge hidden';
   el('note-limited').classList.add('hidden');
 }
@@ -260,7 +260,8 @@ async function showTerminalVoltage() {
 
 function renderTerminal() {
   const volts = reading.terminal;
-  set('terminalVoltage', volts === null || volts === undefined ? null : `${volts.toFixed(2)} V`);
+  el('readout-terminal').textContent =
+    volts === null || volts === undefined ? '—' : `${volts.toFixed(2)} V`;
 }
 
 function showCells(data) {
@@ -353,6 +354,7 @@ async function copyReadings() {
   };
 
   push(t('field.packVoltage'), el('readout-voltage').textContent);
+  push(t('field.terminalVoltage'), el('readout-terminal').textContent);
 
   document.querySelectorAll('#panels .tile').forEach((tile) => {
     push(tile.querySelector('.tile-label')?.textContent?.trim(),
