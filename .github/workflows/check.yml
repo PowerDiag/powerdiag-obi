@@ -2,9 +2,9 @@ name: Check the web app
 
 on:
   push:
-    paths: ['web/**', '.github/workflows/check.yml']
+    paths: ['web/**', 'tools/**', '.github/workflows/check.yml']
   pull_request:
-    paths: ['web/**', '.github/workflows/check.yml']
+    paths: ['web/**', 'tools/**', '.github/workflows/check.yml']
   workflow_dispatch:
 
 jobs:
@@ -36,6 +36,11 @@ jobs:
           done
           [ "$missing" = 0 ] && echo "all ids present"
           exit $missing
+
+      # Seven languages: a key added to one and forgotten in the others falls
+      # back to English silently, mid-sentence.
+      - name: Check translations are complete
+        run: python3 tools/check-i18n.py
 
       # Every class in the markup has to be defined somewhere, or it is a typo.
       - name: Check stylesheet coverage

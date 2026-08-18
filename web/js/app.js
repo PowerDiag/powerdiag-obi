@@ -30,6 +30,18 @@ const VOLTAGE_FIELDS = [
 
 let busy = false;
 
+/* Each in its own language: someone looking for their language cannot read
+ * the name of it written in another. */
+const LANG_NAMES = {
+  ja: '日本語',
+  en: 'English',
+  zh: '简体中文',
+  'zh-TW': '繁體中文',
+  ko: '한국어',
+  vi: 'Tiếng Việt',
+  th: 'ไทย',
+};
+
 /* ---------- rendering ---------- */
 
 function fieldRow(labelKey, slot) {
@@ -164,19 +176,8 @@ function describePort(port) {
   return USB_CHIPS[vid] ? `${USB_CHIPS[vid]} · ${id}` : id;
 }
 
-/* Reconnecting on load must never wedge the page: the port the previous
- * instance held may not be free yet, and port.open() can sit there. */
-const AUTO_CONNECT_TIMEOUT_MS = 5000;
-
-function withTimeout(promise, ms) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new ObiError('err.timeout')), ms)),
-  ]);
-}
-
-async function connect(port, { silent = false } = {}) {
-  if (!silent) status('status.connecting');
+async function connect(port) {
+  status('status.connecting');
   await transport.open(port);
 
   /* Past this point the port is open, so every failure has to close it again.
@@ -189,7 +190,7 @@ async function connect(port, { silent = false } = {}) {
      * before letting the user drive it. The version command answers on every
      * OBI firmware; silence means this is some other serial device, and saying
      * so beats letting every later command time out mysteriously. */
-    const version = await battery.interfaceVersion({ attempts: silent ? 2 : 5 });
+    const version = await battery.interfaceVersion({ attempts: 5 });
 
     setConnected(true);
     el('port-name').textContent = `${describePort(port)} · FW ${version}`;
@@ -338,7 +339,7 @@ async function init() {
 
   const langSelect = el('lang');
   langSelect.innerHTML = i18n.languages
-    .map((code) => `<option value="${code}">${{ ja: '日本語', en: 'English', zh: '中文' }[code]}</option>`)
+    .map((code) => `<option value="${code}">${LANG_NAMES[code] ?? code}</option>`)
     .join('');
   langSelect.value = i18n.lang;
   langSelect.addEventListener('change', () => {
@@ -381,20 +382,10 @@ async function init() {
   setConnected(false);
   status('status.idle');
 
-  /* Ports authorised on an earlier visit reconnect without a picker. Done
-   * quietly and under a deadline: this runs on every load, including a
-   * refresh where the port is still being released, and a background attempt
-   * has no business announcing itself or holding the page. */
-  const [known] = await Transport.knownPorts();
-  if (known) {
-    try {
-      await withTimeout(connect(known, { silent: true }), AUTO_CONNECT_TIMEOUT_MS);
-    } catch {
-      await transport.close();
-      setConnected(false);
-      status('status.idle');
-    }
-  }
+  /* No reconnect on load. Silently reclaiming a port made disconnect
+   * meaningless — a refresh put you straight back — and left it unclear which
+   * device the tool had picked. Connecting is a deliberate act, with the
+   * picker every time. */
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => { /* offline support is optional */ });

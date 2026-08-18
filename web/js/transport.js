@@ -59,16 +59,6 @@ export class Transport extends EventTarget {
     this.dispatchEvent(new CustomEvent('log', { detail: { direction, hex } }));
   }
 
-  /** Ports this origin has already been granted access to, for silent reconnect. */
-  static async knownPorts() {
-    if (!('serial' in navigator)) return [];
-    try {
-      return await navigator.serial.getPorts();
-    } catch {
-      return [];
-    }
-  }
-
   static async requestPort() {
     return navigator.serial.requestPort({ filters: PORT_FILTERS });
   }
