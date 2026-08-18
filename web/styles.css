@@ -12,12 +12,19 @@
   text-align: center; gap: 4px;
   width: 100%; margin-inline: auto;
   padding: 40px var(--pd-gutter);
+  position: relative;
 }
 
+/* Out of the flow on purpose. In the column it pushed the mark, the name and
+   the button down and the whole group re-centred around it; the band belongs
+   in the empty upper half, with everything else left where it was. */
 .tagline {
-  width: 100%; max-width: 780px;
-  margin: 0 0 40px;
-  padding: 18px 24px;
+  position: absolute;
+  top: clamp(20px, 11vh, 140px);
+  left: var(--pd-gutter); right: var(--pd-gutter);
+  width: auto; max-width: 780px;
+  margin: 0 auto;
+  padding: 16px 24px;
   font-size: clamp(1rem, 2.4vw, 1.3rem);
   font-weight: 600; letter-spacing: .01em;
 }
