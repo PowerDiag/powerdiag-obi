@@ -54,6 +54,12 @@
   --pd-primary-bg-hover: #46e0b4;
   --pd-primary-text: #04140f;
 
+  /* A destructive action is filled, not outlined: it should not be possible
+     to reach for it thinking it only reads something. */
+  --pd-danger-bg: #c8383d;
+  --pd-danger-bg-hover: #dc4a4f;
+  --pd-danger-text: #ffffff;
+
   /* Chip: a value worth reading from across the bench. */
   --pd-chip-bg: rgb(53 208 165 / .12);
   --pd-chip-border: var(--pd-accent-dim);
@@ -117,6 +123,8 @@ html[lang="vi"] {
     --pd-primary-bg: #0c4f40;
     --pd-primary-bg-hover: #0a6151;
     --pd-primary-text: #f2f8f6;
+    --pd-danger-bg: #c0272d;
+    --pd-danger-bg-hover: #a81f25;
     --pd-chip-bg: #0c4f40;
     --pd-chip-border: #0c4f40;
     --pd-chip-text: #f2f8f6;
@@ -282,8 +290,13 @@ body {
   background: var(--pd-primary-bg-hover); border-color: var(--pd-primary-bg-hover);
 }
 
-.btn.danger { border-color: #4a2429; color: #ff9ba0; background: transparent; }
-.btn.danger:hover:not(:disabled) { background: rgb(242 85 90 / .1); border-color: #6b3138; }
+.btn.danger {
+  background: var(--pd-danger-bg); border-color: var(--pd-danger-bg);
+  color: var(--pd-danger-text);
+}
+.btn.danger:hover:not(:disabled) {
+  background: var(--pd-danger-bg-hover); border-color: var(--pd-danger-bg-hover);
+}
 
 .btn.ghost { background: transparent; color: var(--pd-text-dim); }
 .btn.ghost:hover:not(:disabled) { color: var(--pd-text); background: transparent; }
