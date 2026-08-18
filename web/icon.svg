@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <rect width="64" height="64" rx="3" fill="#0b0f14"/>
-  <rect x="12" y="18" width="34" height="28" rx="1" fill="none" stroke="#35d0a5" stroke-width="3.5"/>
-  <path d="M46 27h4a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4z" fill="#35d0a5"/>
-  <path d="M18 33h6l3.5-7 5 14 3.5-7h5" fill="none" stroke="#35d0a5" stroke-width="3.2"
+  <!-- Body centred on the canvas: 15..49 plus a 1.75 stroke each side puts its
+       visual centre on 32. The terminal is allowed to overhang to the right. -->
+  <rect x="15" y="18" width="34" height="28" rx="1" fill="none" stroke="#35d0a5" stroke-width="3.5"/>
+  <path d="M49 27h4a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4z" fill="#35d0a5"/>
+  <path d="M21 33h6l3.5-7 5 14 3.5-7h5" fill="none" stroke="#35d0a5" stroke-width="3.2"
         stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
