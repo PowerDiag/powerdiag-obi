@@ -1,6 +1,6 @@
 /* Offline shell for the OBI tool. Bump CACHE when any asset below changes,
  * otherwise returning users keep the old build until they hard-reload. */
-const CACHE = "powerdiag-obi-v19";
+const CACHE = "powerdiag-obi-v20";
 
 const ASSETS = [
   "./",

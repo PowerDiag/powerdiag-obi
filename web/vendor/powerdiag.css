@@ -424,6 +424,42 @@ select:focus-visible, input:focus-visible {
 .block-field dd { margin: 0; }
 
 /* ==========================================================================
+   Tiles — a row of small readings that belong together, e.g. cells
+
+   A row of tiles against the column of fields below gives the card a grain in
+   both directions. Cells sit within millivolts of each other on a healthy
+   pack, so a bar length says nothing; the number does, and colour carries the
+   exception.
+   ========================================================================== */
+
+.tiles { display: flex; gap: 7px; flex-wrap: wrap; }
+
+.tile {
+  flex: 1 1 0; min-width: 66px;
+  padding: 7px 6px;
+  text-align: center;
+  background: var(--pd-bg-sunken);
+  border: 1px solid var(--pd-line);
+  border-radius: var(--pd-radius-sm);
+}
+
+.tile-label {
+  display: block;
+  font-size: .64rem; letter-spacing: .08em;
+  color: var(--pd-text-dim);
+}
+
+.tile-value {
+  display: block; margin-top: 2px;
+  font-family: var(--pd-mono); font-size: .92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Normal stays neutral so an exception is the only coloured thing in the row. */
+.tile.warn { border-color: #7d5c12; color: var(--pd-warn); background: rgb(240 180 41 / .06); }
+.tile.crit { border-color: #6b2b2f; color: var(--pd-danger); background: rgb(242 85 90 / .07); }
+
+/* ==========================================================================
    Meters — a labelled value against a range, e.g. per-cell voltage
    ========================================================================== */
 

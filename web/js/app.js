@@ -52,28 +52,25 @@ function buildLayout() {
   el('identity-fields').innerHTML = IDENTITY_FIELDS.map(([k, s]) => fieldRow(k, s)).join('');
   el('voltage-fields').innerHTML = VOLTAGE_FIELDS.map(([k, s]) => fieldRow(k, s)).join('');
   el('cell-fields').innerHTML = '';
-  el('cell-bars').innerHTML = [1, 2, 3, 4, 5]
+  el('cell-tiles').innerHTML = [1, 2, 3, 4, 5]
     .map(
-      (n) => `<div class="meter">
-        <span class="meter-name"><span data-i18n="field.cell">${t('field.cell')}</span> ${n}</span>
-        <span class="meter-track"><span class="meter-fill" id="bar-${n}"></span></span>
-        <span class="meter-value" id="v-cell${n}">—</span>
+      (n) => `<div class="tile" id="tile-${n}">
+        <span class="tile-label"><span data-i18n="field.cell">${t('field.cell')}</span> ${n}</span>
+        <span class="tile-value" id="v-cell${n}">—</span>
       </div>`,
     )
     .join('');
 }
 
-/* Li-ion working range, so a healthy pack sits in the upper third of the bar
- * and a sagging cell is obvious at a glance. */
-const CELL_MIN = 2.5;
-const CELL_MAX = 4.2;
+/* Thresholds a technician acts on: below 3.3 V the cell is lagging, below
+ * 3.0 V it is the reason the pack is on the bench. */
+const CELL_LOW = 3.3;
+const CELL_CRITICAL = 3.0;
 
-function drawCellBar(index, volts) {
-  const fill = el(`bar-${index}`);
-  if (!fill) return;
-  const ratio = (volts - CELL_MIN) / (CELL_MAX - CELL_MIN);
-  fill.style.width = `${Math.max(0, Math.min(1, ratio)) * 100}%`;
-  fill.className = `meter-fill${volts < 3.0 ? ' crit' : volts < 3.3 ? ' warn' : ''}`;
+function markCell(index, volts) {
+  const tile = el(`tile-${index}`);
+  if (!tile) return;
+  tile.className = `tile${volts < CELL_CRITICAL ? ' crit' : volts < CELL_LOW ? ' warn' : ''}`;
 }
 
 function set(slot, value) {
@@ -82,8 +79,8 @@ function set(slot, value) {
 }
 
 function clearValues() {
-  document.querySelectorAll('#panels dd, .meter-value').forEach((node) => { node.textContent = '—'; });
-  document.querySelectorAll('.meter-fill').forEach((node) => { node.style.width = '0'; });
+  document.querySelectorAll('#panels dd, .tile-value').forEach((node) => { node.textContent = '—'; });
+  document.querySelectorAll('.tile').forEach((node) => { node.className = 'tile'; });
   el('readout-voltage').textContent = '—';
   el('state-badge').className = 'badge hidden';
   el('note-limited').classList.add('hidden');
@@ -253,7 +250,7 @@ function showCells(data) {
   el('readout-voltage').textContent = `${data.packVoltage.toFixed(2)} V`;
   data.cells.forEach((v, i) => {
     set(`cell${i + 1}`, `${v.toFixed(3)} V`);
-    drawCellBar(i + 1, v);
+    markCell(i + 1, v);
   });
   set('cellDiff', `${data.cellDiff.toFixed(3)} V`);
   set('tempCell', `${data.tempCell.toFixed(2)} °C`);
@@ -323,9 +320,9 @@ async function copyReadings() {
 
   push(t('field.packVoltage'), el('readout-voltage').textContent);
 
-  document.querySelectorAll('#panels .meter').forEach((meter) => {
-    push(meter.querySelector('.meter-name')?.textContent?.trim(),
-         meter.querySelector('.meter-value')?.textContent);
+  document.querySelectorAll('#panels .tile').forEach((tile) => {
+    push(tile.querySelector('.tile-label')?.textContent?.trim(),
+         tile.querySelector('.tile-value')?.textContent);
   });
 
   document.querySelectorAll('#panels .fields .row').forEach((row) => {
