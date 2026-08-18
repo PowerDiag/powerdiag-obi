@@ -43,6 +43,13 @@
 
   /* Rhythm */
   --pd-gutter: clamp(12px, 4vw, 40px);
+  --pd-control-h: 32px;
+
+  /* The main action. Dark fill, light label: it has to be the heaviest thing
+     on the screen, and on a light page a mid-tone green is not. */
+  --pd-primary-bg: #35d0a5;
+  --pd-primary-bg-hover: #46e0b4;
+  --pd-primary-text: #04140f;
 
   /* Type */
   --pd-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
@@ -65,6 +72,9 @@
     --pd-accent-dim: #6fd0b6;
     --pd-accent-hover: #0c8567;
     --pd-info: #2a6ab0;
+    --pd-primary-bg: #0c4f40;
+    --pd-primary-bg-hover: #0a6151;
+    --pd-primary-text: #f2f8f6;
   }
 }
 
@@ -202,10 +212,11 @@ body {
 .btn:disabled { opacity: .38; cursor: not-allowed; }
 
 .btn.primary {
-  background: var(--pd-accent); border-color: var(--pd-accent); color: #04140f;
+  background: var(--pd-primary-bg); border-color: var(--pd-primary-bg);
+  color: var(--pd-primary-text);
 }
 .btn.primary:hover:not(:disabled) {
-  background: var(--pd-accent-hover); border-color: var(--pd-accent-hover);
+  background: var(--pd-primary-bg-hover); border-color: var(--pd-primary-bg-hover);
 }
 
 .btn.danger { border-color: #4a2429; color: #ff9ba0; background: transparent; }
@@ -220,7 +231,7 @@ body {
 /* Square icon button, e.g. the close control in the app bar. */
 .iconbtn {
   display: flex; align-items: center; justify-content: center;
-  width: 30px; height: 30px; flex: none;
+  width: var(--pd-control-h); height: var(--pd-control-h); flex: none;
   border: 1px solid var(--pd-line); border-radius: var(--pd-radius-sm);
   background: transparent; color: var(--pd-text-dim);
   text-decoration: none; cursor: pointer;
@@ -237,10 +248,24 @@ body {
    ========================================================================== */
 
 select, input[type="text"], input[type="number"] {
+  height: var(--pd-control-h);
   background: var(--pd-bg-raised); color: var(--pd-text);
   border: 1px solid var(--pd-line); border-radius: var(--pd-radius-sm);
-  padding: 7px 10px; font: inherit; font-size: .85rem;
+  padding: 0 10px; font: inherit; font-size: .85rem;
 }
+
+.select { position: relative; display: inline-flex; }
+.select select { appearance: none; padding-right: 27px; cursor: pointer; }
+
+.select::after {
+  content: ""; position: absolute; pointer-events: none;
+  right: 11px; top: 50%; margin-top: -4px;
+  width: 6px; height: 6px;
+  border-right: 1.6px solid var(--pd-text-dim);
+  border-bottom: 1.6px solid var(--pd-text-dim);
+  transform: rotate(45deg);
+}
+
 select { cursor: pointer; }
 select:focus-visible, input:focus-visible {
   outline: 2px solid var(--pd-accent); outline-offset: 1px;
