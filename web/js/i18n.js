@@ -6,6 +6,7 @@ const STRINGS = {
   ja: {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': 'バッテリー診断ツール',
+    'landing.tagline': 'ブラウザだけでバッテリーを診断。',
     'btn.connect': '接続', 'btn.disconnect': '切断',
     'btn.read': 'すべて読み取る', 'btn.cells': 'セル電圧を読み取る', 'btn.refresh': '読み取り',
     'btn.clearErrors': 'エラーを解除', 'btn.ledsOn': 'LED 点灯', 'btn.ledsOff': 'LED 消灯',
@@ -40,6 +41,7 @@ const STRINGS = {
   en: {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': 'Battery pack diagnostics',
+    'landing.tagline': 'Diagnose your battery over the web!',
     'btn.connect': 'Connect', 'btn.disconnect': 'Disconnect',
     'btn.read': 'Read everything', 'btn.cells': 'Read cell voltages', 'btn.refresh': 'Read',
     'btn.clearErrors': 'Clear errors', 'btn.ledsOn': 'LEDs on', 'btn.ledsOff': 'LEDs off',
@@ -74,6 +76,7 @@ const STRINGS = {
   zh: {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': '电池诊断工具',
+    'landing.tagline': '打开网页就能诊断电池。',
     'btn.connect': '连接', 'btn.disconnect': '断开',
     'btn.read': '读取全部', 'btn.cells': '读取电芯电压', 'btn.refresh': '读取',
     'btn.clearErrors': '清除错误', 'btn.ledsOn': '点亮 LED', 'btn.ledsOff': '熄灭 LED',
@@ -108,6 +111,7 @@ const STRINGS = {
   'zh-TW': {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': '電池診斷工具',
+    'landing.tagline': '開啟網頁就能診斷電池。',
     'btn.connect': '連線', 'btn.disconnect': '中斷連線',
     'btn.read': '讀取全部', 'btn.cells': '讀取電芯電壓', 'btn.refresh': '讀取',
     'btn.clearErrors': '清除錯誤', 'btn.ledsOn': '點亮 LED', 'btn.ledsOff': '熄滅 LED',
@@ -141,6 +145,7 @@ const STRINGS = {
   ko: {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': '배터리 진단 도구',
+    'landing.tagline': '브라우저만으로 배터리를 진단합니다.',
     'btn.connect': '연결', 'btn.disconnect': '연결 해제',
     'btn.read': '전체 읽기', 'btn.cells': '셀 전압 읽기', 'btn.refresh': '읽기',
     'btn.clearErrors': '오류 해제', 'btn.ledsOn': 'LED 켜기', 'btn.ledsOff': 'LED 끄기',
@@ -174,6 +179,7 @@ const STRINGS = {
   vi: {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': 'Công cụ chẩn đoán pin',
+    'landing.tagline': 'Chẩn đoán pin ngay trên trình duyệt!',
     'btn.connect': 'Kết nối', 'btn.disconnect': 'Ngắt kết nối',
     'btn.read': 'Đọc tất cả', 'btn.cells': 'Đọc điện áp cell', 'btn.refresh': 'Đọc',
     'btn.clearErrors': 'Xóa lỗi', 'btn.ledsOn': 'Bật LED', 'btn.ledsOff': 'Tắt LED',
@@ -207,6 +213,7 @@ const STRINGS = {
   th: {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': 'เครื่องมือวิเคราะห์แบตเตอรี่',
+    'landing.tagline': 'วิเคราะห์แบตเตอรี่ผ่านเบราว์เซอร์ได้ทันที',
     'btn.connect': 'เชื่อมต่อ', 'btn.disconnect': 'ตัดการเชื่อมต่อ',
     'btn.read': 'อ่านทั้งหมด', 'btn.cells': 'อ่านแรงดันเซลล์', 'btn.refresh': 'อ่าน',
     'btn.clearErrors': 'ล้างข้อผิดพลาด', 'btn.ledsOn': 'เปิด LED', 'btn.ledsOff': 'ปิด LED',

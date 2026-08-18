@@ -60,6 +60,11 @@
   --pd-danger-bg-hover: #dc4a4f;
   --pd-danger-text: #ffffff;
 
+  /* Inverted surface: text colour becomes the background and vice versa, so
+     it flips with the theme without a second set of values. */
+  --pd-invert-bg: var(--pd-text);
+  --pd-invert-text: var(--pd-bg);
+
   /* Chip: a value worth reading from across the bench. */
   --pd-chip-bg: rgb(53 208 165 / .12);
   --pd-chip-border: var(--pd-accent-dim);
@@ -532,6 +537,16 @@ select:focus-visible, input:focus-visible {
   width: 5.2em; text-align: right; flex: none;
   font-family: var(--pd-mono); font-size: .84rem;
   font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Inverted surface — one block that is meant to be the loudest thing present
+   ========================================================================== */
+
+.invert {
+  background: var(--pd-invert-bg);
+  color: var(--pd-invert-text);
+  border-radius: var(--pd-radius);
 }
 
 /* ==========================================================================
