@@ -24,7 +24,7 @@
 
 body {
   margin: 0;
-  padding: 0 clamp(12px, 4vw, 40px) 60px;
+  padding: 0;
   background:
     radial-gradient(1100px 520px at 20% -20%, #16324a26, transparent 72%),
     var(--bg);
@@ -34,22 +34,57 @@ body {
   min-height: 100vh;
 }
 
-/* ---------- top bar ---------- */
+/* ---------- app chrome ----------
+   The bar and the status strip frame both screens, so the tool reads as an
+   application rather than a page that happens to have a button on it. */
 
-.topbar {
+.appbar {
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px; flex-wrap: wrap;
-  padding: 20px 0 18px;
+  padding: 10px clamp(12px, 4vw, 40px);
   border-bottom: 1px solid var(--line);
-  margin-bottom: 22px;
+  background: var(--bg-raised);
 }
 
-.brand { display: flex; align-items: center; gap: 13px; }
-.brand h1 { margin: 0; font-size: 1.2rem; letter-spacing: .3px; }
-.brand p { margin: 0; font-size: .82rem; color: var(--text-dim); }
+.appbar-left { display: flex; align-items: baseline; gap: 9px; }
 
-.topbar-right { display: flex; align-items: center; gap: 12px; }
-.port { font-family: var(--mono); font-size: .8rem; color: var(--text-dim); }
+.appbar-brand {
+  font-size: 1rem; font-weight: 650; letter-spacing: .2px;
+  color: var(--text); text-decoration: none;
+}
+.appbar-brand:hover { color: var(--accent); }
+
+.appbar-product {
+  font-family: var(--mono); font-size: .76rem;
+  letter-spacing: .14em; color: var(--text-dim);
+}
+
+.appbar-right { display: flex; align-items: center; gap: 10px; }
+
+.port { font-family: var(--mono); font-size: .78rem; color: var(--text-dim); }
+
+.iconbtn {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; flex: none;
+  border: 1px solid var(--line); border-radius: 2px;
+  color: var(--text-dim); text-decoration: none;
+  font-size: 1.25rem; line-height: 1;
+  transition: color .15s, border-color .15s;
+}
+.iconbtn:hover { color: var(--danger); border-color: #6b3138; }
+
+/* ---------- status bar ---------- */
+
+.statusbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 8px clamp(12px, 4vw, 40px);
+  border-top: 1px solid var(--line);
+  background: var(--bg-raised);
+  font-size: .78rem;
+}
+.statusbar .status { font-size: .78rem; }
+.copyright { color: var(--text-dim); }
 
 select {
   background: var(--bg-raised); color: var(--text);
@@ -62,11 +97,12 @@ select {
 /* Until a board is connected the page is only the product name and one
    button: nothing to read, nothing to get wrong. */
 .landing {
-  min-height: 82vh;
+  min-height: 74vh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   text-align: center; gap: 4px;
   width: 100%; margin-inline: auto;
+  padding: 40px clamp(12px, 4vw, 40px);
 }
 
 .landing img { margin-bottom: 22px; }
@@ -86,10 +122,6 @@ select {
 
 .landing .hint { max-width: 34em; margin-top: 12px; }
 .landing .banner { max-width: 34em; margin-top: 20px; }
-
-.lang-float {
-  position: fixed; top: 14px; right: clamp(12px, 4vw, 40px); z-index: 5;
-}
 
 .conn-state { display: flex; align-items: center; gap: 9px; }
 
@@ -131,6 +163,8 @@ select {
 .btn.ghost:hover:not(:disabled) { color: var(--text); }
 .btn.small { padding: 7px 14px; font-size: .8rem; }
 .btn.big { padding: 15px 52px; font-size: 1.05rem; border-radius: 2px; }
+
+#panels { padding: 18px clamp(12px, 4vw, 40px) 28px; }
 
 /* ---------- hero readout ---------- */
 
@@ -275,13 +309,6 @@ select {
 .log-line.rx { color: var(--accent); }
 .log-line.err { color: var(--danger); }
 
-.foot {
-  display: flex; gap: 18px; align-items: center;
-  margin-top: 34px; padding-top: 18px;
-  border-top: 1px solid var(--line);
-  font-size: .8rem; color: var(--text-dim);
-}
-.foot a { color: var(--text-dim); }
 
 /* Light mode: same layout, readable under workshop lighting. */
 @media (prefers-color-scheme: light) {
@@ -305,15 +332,18 @@ select {
    falls back to ordinary scrolling. */
 
 @media (min-width: 860px) and (min-height: 620px) {
-  body { height: 100vh; overflow: hidden; padding-bottom: 0; }
+  body { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-  #dashboard { height: 100vh; display: flex; flex-direction: column; }
+  .appbar, .statusbar { flex: none; }
 
-  .topbar { padding: 14px 0 12px; margin-bottom: 14px; }
+  .landing { flex: 1; min-height: 0; padding-block: 0; }
+
+  #dashboard { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 
   #panels {
     flex: 1; min-height: 0;
     display: flex; flex-direction: column; gap: 14px;
+    padding: 16px clamp(12px, 4vw, 40px);
   }
 
   .hero { padding: 16px 22px; margin-bottom: 0; }

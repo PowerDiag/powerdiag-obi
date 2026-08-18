@@ -121,6 +121,10 @@ transport.addEventListener('log', (event) => log(event.detail.direction, event.d
 function setConnected(connected) {
   el('landing').classList.toggle('hidden', connected);
   el('dashboard').classList.toggle('hidden', !connected);
+  /* Port and disconnect live in the always-visible app bar, so they have to be
+   * hidden explicitly rather than disappearing with the dashboard. */
+  el('conn-info').classList.toggle('hidden', !connected);
+  el('btn-disconnect').classList.toggle('hidden', !connected);
   document.querySelectorAll('.needs-connection').forEach((node) => { node.disabled = !connected; });
 }
 

@@ -12,7 +12,18 @@
 </head>
 <body>
 
-<select id="lang" class="lang-float" aria-label="Language"></select>
+<header class="appbar">
+  <div class="appbar-left">
+    <a class="appbar-brand" href="https://powerdiag.jp">PowerDiag</a>
+    <span class="appbar-product">OBI</span>
+  </div>
+  <div class="appbar-right">
+    <span id="conn-info" class="conn-state hidden"><i class="dot on"></i><span id="port-name" class="port">&mdash;</span></span>
+    <button id="btn-disconnect" class="btn small hidden" data-i18n="btn.disconnect">Disconnect</button>
+    <select id="lang" aria-label="Language"></select>
+    <a id="btn-close" class="iconbtn" href="https://powerdiag.jp" aria-label="Close">&times;</a>
+  </div>
+</header>
 
 <!-- Shown until a board is connected: name, one button, nothing else. -->
 <section id="landing" class="landing">
@@ -27,26 +38,15 @@
 
 <div id="dashboard" class="hidden">
 
-  <header class="topbar">
-    <div class="brand">
-      <img src="./icon.svg" alt="" width="34" height="34">
-      <h1 data-i18n="app.title">PowerDiag OBI</h1>
-    </div>
-    <div class="topbar-right">
-      <span class="conn-state"><i class="dot on"></i><span id="port-name" class="port">—</span></span>
-      <button id="btn-disconnect" class="btn small" data-i18n="btn.disconnect">Disconnect</button>
-    </div>
-  </header>
-
   <main id="panels">
 
     <section class="hero">
       <div class="hero-main">
         <span class="hero-label" data-i18n="field.packVoltage">Pack voltage</span>
-        <output id="hero-voltage" class="hero-value">—</output>
+        <output id="hero-voltage" class="hero-value">&mdash;</output>
       </div>
       <div class="hero-side">
-        <output id="hero-model" class="hero-model">—</output>
+        <output id="hero-model" class="hero-model">&mdash;</output>
         <span id="state-badge" class="badge hidden"></span>
       </div>
     </section>
@@ -57,7 +57,6 @@
       <button id="btn-clear" class="btn danger needs-connection" data-i18n="btn.clearErrors">Clear errors</button>
       <button id="btn-leds-on" class="btn ghost needs-connection" data-i18n="btn.ledsOn">LEDs on</button>
       <button id="btn-leds-off" class="btn ghost needs-connection" data-i18n="btn.ledsOff">LEDs off</button>
-      <span class="status" data-i18n="status.connected">Connected</span>
     </section>
 
     <p id="note-limited" class="hint warn hidden" data-i18n="note.limited"></p>
@@ -76,7 +75,7 @@
         <dl id="identity-fields" class="fields"></dl>
         <div class="msg-wrap">
           <dt data-i18n="field.message">Battery message</dt>
-          <dd id="v-message" class="mono wrap">—</dd>
+          <dd id="v-message" class="mono wrap">&mdash;</dd>
         </div>
         <p class="footnote" data-i18n="note.charge"></p>
       </article>
@@ -91,6 +90,11 @@
   </main>
 
 </div>
+
+<footer class="statusbar">
+  <span class="status" data-i18n="status.idle">Not connected</span>
+  <span class="copyright">&copy; 2026 powerdiag.jp</span>
+</footer>
 
 <script type="module" src="./js/app.js"></script>
 </body>
