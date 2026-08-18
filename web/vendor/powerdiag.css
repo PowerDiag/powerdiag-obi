@@ -41,8 +41,11 @@
   --pd-radius: 3px;
   --pd-radius-sm: 2px;
 
-  /* Rhythm */
+  /* Rhythm. The content stops widening past the measure and centres instead:
+     a reading is a fixed amount of information, and stretching it across a
+     wide monitor only pushes labels away from their values. */
   --pd-gutter: clamp(12px, 4vw, 40px);
+  --pd-measure: 1040px;
   --pd-control-h: 32px;
 
   /* The main action. Dark fill, light label: it has to be the heaviest thing
@@ -137,7 +140,10 @@ body {
    it falls back to ordinary document scrolling.
    ========================================================================== */
 
-.app-content { padding: 14px var(--pd-gutter) 20px; }
+.app-content {
+  width: 100%; max-width: var(--pd-measure); margin-inline: auto;
+  padding: 14px var(--pd-gutter) 20px;
+}
 
 @media (min-width: 860px) and (min-height: 620px) {
   body.app-shell {
@@ -152,6 +158,7 @@ body {
     flex: 1; min-height: 0;
     display: flex; flex-direction: column; gap: 10px;
     padding: 12px var(--pd-gutter);
+    max-width: var(--pd-measure); margin-inline: auto;
   }
 }
 
@@ -162,7 +169,8 @@ body {
 .appbar {
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px; flex-wrap: wrap;
-  padding: 8px var(--pd-gutter);
+  padding-block: 8px;
+  padding-inline: max(var(--pd-gutter), calc((100% - var(--pd-measure)) / 2));
   border-bottom: 1px solid var(--pd-line);
   background: var(--pd-bg-raised);
 }
@@ -191,7 +199,8 @@ body {
 .statusbar {
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px;
-  padding: 6px var(--pd-gutter);
+  padding-block: 6px;
+  padding-inline: max(var(--pd-gutter), calc((100% - var(--pd-measure)) / 2));
   border-top: 1px solid var(--pd-line);
   background: var(--pd-bg-raised);
   font-size: .78rem;
