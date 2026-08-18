@@ -8,9 +8,9 @@ On top of the original 1-Wire interface it adds an RGB status indicator, two fro
 live battery voltage measurement, so the board can be used stand-alone as well as from the PC software.
 
 > **Relation to the upstream project**
-> Upstream has since dropped the Python PC application and become an Arduino-only repository — it points
-> to its `v0.2.3` tag for the last version that shipped it. **This fork keeps the PC application** under
-> `OpenBatteryInformation/`, extended with the interface for this board.
+> The PC side is a browser app under `web/`, so there is nothing to install: open the page, pick the
+> board, read the pack. It replaces the Python/Tkinter application, whose protocol handling it is a
+> direct port of — the last Python version lives on in upstream's `v0.2.3` tag.
 > For the original firmware documentation and project history see
 > **https://github.com/mnh-jansson/open-battery-information**
 
@@ -107,6 +107,36 @@ calibration menu and nothing stored in EEPROM.
 
 ---
 
+## Web app
+
+The PC-side tool is a static web app in [`web/`](web/). It talks to the board over **Web Serial**, so
+customers do not install anything — they open the page, pick the board once and read the pack.
+
+    web/
+      index.html            markup
+      styles.css            styling
+      icon.svg              app + tab icon
+      manifest.webmanifest  PWA metadata, so it installs as a windowed app
+      sw.js                 service worker, network first with an offline fallback
+      js/transport.js       Web Serial framing (see the frame layout in ArduinoOBI/src/main.cpp)
+      js/lxt.js             Makita LXT commands and parsing
+      js/i18n.js            Japanese / English / Chinese strings
+      js/app.js             UI
+
+**Deploying:** copy the contents of `web/` to `powerdiag.jp/obi`. Every path in the app is relative,
+so it runs from any sub-path without a build step. It must be served over **HTTPS** — Web Serial is
+unavailable on plain HTTP.
+
+**Running it locally:** `python -m http.server` inside `web/`, then open `http://localhost:8000`.
+`localhost` counts as a secure context, so the serial port works without a certificate.
+
+**Browser support:** desktop Chrome and Edge. Firefox and Safari do not implement Web Serial, and
+neither does any mobile browser. Windows 10/11 ship with Edge, so customers need no extra download —
+but the USB-serial driver (CH340 on most Nano boards) must be present, or the board simply will not
+appear in the port picker.
+
+---
+
 ## Battery connector (U2, Makita LXT)
 
 | Pin | Net           | Description                            |
@@ -174,8 +204,9 @@ through-hole and hand-solderable. See [obi-interface-board/README.md](obi-interf
 ## Credits & license
 
 This project builds on [Open Battery Information](https://github.com/mnh-jansson/open-battery-information)
-by [mnh-jansson](https://github.com/mnh-jansson). The firmware and the PC application here are derived
-from that work; see the upstream repository for the original README, documentation and project history.
+by [mnh-jansson](https://github.com/mnh-jansson). The firmware is derived from that work, and the
+protocol handling in `web/js/lxt.js` is a port of its `makita_lxt.py`; see the upstream repository for
+the original README, documentation and project history.
 
 The bundled 1-Wire library in `ArduinoOBI/lib/OneWire` is by Jim Studt, Paul Stoffregen and other
 contributors, under the license stated in its own source headers.

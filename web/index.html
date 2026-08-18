@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PowerDiag OBI</title>
+<meta name="description" content="Makita LXT battery diagnostics in the browser, over USB.">
+<meta name="theme-color" content="#0b0f14">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="./icon.svg" alt="" width="34" height="34">
+    <div>
+      <h1 data-i18n="app.title">PowerDiag OBI</h1>
+      <p data-i18n="app.subtitle">Makita LXT battery diagnostics</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="fw-version" class="fw"></span>
+    <select id="lang" aria-label="Language"></select>
+  </div>
+</header>
+
+<div id="unsupported" class="banner hidden"></div>
+
+<section class="connectbar">
+  <button id="btn-connect" class="btn primary" data-i18n="btn.connect">Connect</button>
+  <span class="conn-state"><i id="dot" class="dot"></i><span id="status" class="status" data-i18n="status.idle">Not connected</span></span>
+  <p id="driver-hint" class="hint hidden" data-i18n="err.driver"></p>
+</section>
+
+<main id="panels">
+
+  <section class="hero">
+    <div class="hero-main">
+      <span class="hero-label" data-i18n="field.packVoltage">Pack voltage</span>
+      <output id="hero-voltage" class="hero-value">—</output>
+    </div>
+    <div class="hero-side">
+      <output id="hero-model" class="hero-model">—</output>
+      <span id="state-badge" class="badge hidden"></span>
+    </div>
+  </section>
+
+  <section class="actions">
+    <button id="btn-read" class="btn primary needs-connection" data-i18n="btn.read" disabled>Read battery info</button>
+    <button id="btn-cells" class="btn needs-connection" data-i18n="btn.cells" disabled>Read cell voltages</button>
+    <button id="btn-clear" class="btn danger needs-connection" data-i18n="btn.clearErrors" disabled>Clear errors</button>
+    <button id="btn-leds-on" class="btn ghost needs-connection" data-i18n="btn.ledsOn" disabled>LEDs on</button>
+    <button id="btn-leds-off" class="btn ghost needs-connection" data-i18n="btn.ledsOff" disabled>LEDs off</button>
+  </section>
+
+  <p id="note-limited" class="hint warn hidden" data-i18n="note.limited"></p>
+
+  <div class="grid">
+
+    <article class="card">
+      <h2 data-i18n="sec.voltages">Voltages</h2>
+      <div id="cell-bars" class="bars"></div>
+      <dl id="cell-fields" class="fields compact"></dl>
+      <dl id="voltage-fields" class="fields"></dl>
+    </article>
+
+    <article class="card">
+      <h2 data-i18n="sec.identity">Identity</h2>
+      <dl id="identity-fields" class="fields"></dl>
+      <div class="msg-wrap">
+        <dt data-i18n="field.message">Battery message</dt>
+        <dd id="v-message" class="mono wrap">—</dd>
+      </div>
+    </article>
+
+  </div>
+
+  <p class="footnote" data-i18n="note.charge"></p>
+
+  <section class="logsec">
+    <button id="btn-log" class="btn ghost small" data-i18n="log.show">Show log</button>
+    <div id="log" class="log hidden" aria-live="polite"></div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span>PowerDiag OBI</span>
+  <a href="https://github.com/PowerDiag/powerdiag-obi" target="_blank" rel="noopener">GitHub</a>
+</footer>
+
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
