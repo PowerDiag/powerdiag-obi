@@ -1,0 +1,393 @@
+/*
+ * PowerDiag UI — the shared visual language for PowerDiag browser tools.
+ *
+ * Instrument first: square corners, flat fills, tabular figures, dark by
+ * default because these tools sit on a bench next to the pack. Drop the file
+ * in, add one app-specific stylesheet on top, and every tool looks like it
+ * came from the same company.
+ *
+ * Plain CSS, no build step. Override anything through the tokens below.
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+/* ==========================================================================
+   Tokens
+   ========================================================================== */
+
+:root {
+  /* Surfaces */
+  --pd-bg: #0b0f14;
+  --pd-bg-raised: #121821;
+  --pd-bg-sunken: #080b0f;
+
+  /* Lines */
+  --pd-line: #1e2733;
+  --pd-line-soft: #172029;
+
+  /* Text */
+  --pd-text: #e6edf5;
+  --pd-text-dim: #8494a8;
+
+  /* Signal colours. Accent is the brand green; the rest are states. */
+  --pd-accent: #35d0a5;
+  --pd-accent-dim: #1c7d64;
+  --pd-accent-hover: #46e0b4;
+  --pd-warn: #f0b429;
+  --pd-danger: #f2555a;
+  --pd-info: #6ea8e0;
+
+  /* Shape. Corners stay near-square on purpose. */
+  --pd-radius: 3px;
+  --pd-radius-sm: 2px;
+
+  /* Rhythm */
+  --pd-gutter: clamp(12px, 4vw, 40px);
+
+  /* Type */
+  --pd-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --pd-sans: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP",
+             "Microsoft YaHei", Roboto, sans-serif;
+}
+
+/* Light mode keeps the same layout and weight, only the surfaces invert.
+   Workshops are bright; the tool has to stay readable there. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --pd-bg: #f4f6f9;
+    --pd-bg-raised: #ffffff;
+    --pd-bg-sunken: #eef1f5;
+    --pd-line: #dde3ea;
+    --pd-line-soft: #e9edf2;
+    --pd-text: #10161d;
+    --pd-text-dim: #5d6b7c;
+    --pd-accent: #0f9c78;
+    --pd-accent-dim: #6fd0b6;
+    --pd-accent-hover: #0c8567;
+    --pd-info: #2a6ab0;
+  }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--pd-bg);
+  color: var(--pd-text);
+  font-family: var(--pd-sans);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   App shell
+
+   .app-shell on <body> pins a bar to the top and a status strip to the
+   bottom, with the content stretching between them and never scrolling the
+   page itself. Below the breakpoint the columns would be unusably narrow, so
+   it falls back to ordinary document scrolling.
+   ========================================================================== */
+
+.app-content { padding: 18px var(--pd-gutter) 28px; }
+
+@media (min-width: 860px) and (min-height: 620px) {
+  body.app-shell {
+    height: 100vh; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  body.app-shell > .appbar,
+  body.app-shell > .statusbar { flex: none; }
+  body.app-shell > .app-main { flex: 1; min-height: 0; }
+
+  body.app-shell .app-content {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column; gap: 14px;
+    padding: 16px var(--pd-gutter);
+  }
+}
+
+/* ==========================================================================
+   App bar
+   ========================================================================== */
+
+.appbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+  padding: 10px var(--pd-gutter);
+  border-bottom: 1px solid var(--pd-line);
+  background: var(--pd-bg-raised);
+}
+
+.appbar-left { display: flex; align-items: baseline; gap: 9px; }
+.appbar-right { display: flex; align-items: center; gap: 10px; }
+
+.appbar-brand {
+  font-size: 1rem; font-weight: 650; letter-spacing: .2px;
+  color: var(--pd-text); text-decoration: none;
+}
+.appbar-brand:hover { color: var(--pd-accent); }
+
+.appbar-product {
+  font-family: var(--pd-mono); font-size: .76rem;
+  letter-spacing: .14em; color: var(--pd-text-dim);
+}
+
+/* Device identity in the bar: which port, which firmware. */
+.port { font-family: var(--pd-mono); font-size: .78rem; color: var(--pd-text-dim); }
+
+/* ==========================================================================
+   Status bar
+   ========================================================================== */
+
+.statusbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 8px var(--pd-gutter);
+  border-top: 1px solid var(--pd-line);
+  background: var(--pd-bg-raised);
+  font-size: .78rem;
+}
+.statusbar .status { font-size: .78rem; }
+.copyright { color: var(--pd-text-dim); }
+
+/* ==========================================================================
+   Status text and indicators
+   ========================================================================== */
+
+.status { font-size: .9rem; color: var(--pd-text-dim); }
+.status.ok { color: var(--pd-accent); }
+.status.warn { color: var(--pd-warn); }
+.status.error { color: var(--pd-danger); }
+
+.conn-state { display: flex; align-items: center; gap: 9px; }
+
+/* Square, so it reads as a panel indicator rather than a chat bubble. */
+.dot {
+  width: 8px; height: 8px; flex: none;
+  background: #3a4756;
+  transition: background .2s, box-shadow .2s;
+}
+.dot.on { background: var(--pd-accent); box-shadow: 0 0 0 4px rgb(53 208 165 / .13); }
+.dot.warn { background: var(--pd-warn); box-shadow: 0 0 0 4px rgb(240 180 41 / .13); }
+.dot.error { background: var(--pd-danger); box-shadow: 0 0 0 4px rgb(242 85 90 / .13); }
+
+.badge {
+  font-size: .78rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 6px 14px; border-radius: var(--pd-radius-sm); border: 1px solid;
+}
+.badge.ok     { color: var(--pd-accent); border-color: var(--pd-accent-dim); background: rgb(53 208 165 / .08); }
+.badge.warn   { color: var(--pd-warn);   border-color: #7d5c12;              background: rgb(240 180 41 / .08); }
+.badge.danger { color: var(--pd-danger); border-color: #6b2b2f;              background: rgb(242 85 90 / .09); }
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn {
+  appearance: none; cursor: pointer;
+  font: inherit; font-weight: 550; font-size: .9rem;
+  padding: 11px 22px; border-radius: var(--pd-radius-sm);
+  border: 1px solid var(--pd-line);
+  background: var(--pd-bg-raised); color: var(--pd-text);
+  transition: border-color .15s, background .15s, color .15s, transform .05s, opacity .15s;
+}
+.btn:hover:not(:disabled) { border-color: #2f3d4d; background: var(--pd-bg-sunken); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .38; cursor: not-allowed; }
+
+.btn.primary {
+  background: var(--pd-accent); border-color: var(--pd-accent); color: #04140f;
+}
+.btn.primary:hover:not(:disabled) {
+  background: var(--pd-accent-hover); border-color: var(--pd-accent-hover);
+}
+
+.btn.danger { border-color: #4a2429; color: #ff9ba0; background: transparent; }
+.btn.danger:hover:not(:disabled) { background: rgb(242 85 90 / .1); border-color: #6b3138; }
+
+.btn.ghost { background: transparent; color: var(--pd-text-dim); }
+.btn.ghost:hover:not(:disabled) { color: var(--pd-text); background: transparent; }
+
+.btn.small { padding: 7px 14px; font-size: .8rem; }
+.btn.big { padding: 15px 52px; font-size: 1.05rem; }
+
+/* Square icon button, e.g. the close control in the app bar. */
+.iconbtn {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; flex: none;
+  border: 1px solid var(--pd-line); border-radius: var(--pd-radius-sm);
+  background: transparent; color: var(--pd-text-dim);
+  text-decoration: none; cursor: pointer;
+  font-size: 1.25rem; line-height: 1;
+  transition: color .15s, border-color .15s;
+}
+.iconbtn:hover { color: var(--pd-danger); border-color: #6b3138; }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.actions .status { margin-left: 6px; }
+
+/* ==========================================================================
+   Form controls
+   ========================================================================== */
+
+select, input[type="text"], input[type="number"] {
+  background: var(--pd-bg-raised); color: var(--pd-text);
+  border: 1px solid var(--pd-line); border-radius: var(--pd-radius-sm);
+  padding: 7px 10px; font: inherit; font-size: .85rem;
+}
+select { cursor: pointer; }
+select:focus-visible, input:focus-visible {
+  outline: 2px solid var(--pd-accent); outline-offset: 1px;
+}
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+
+.grid {
+  display: grid; gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+}
+
+.card {
+  background: var(--pd-bg-raised);
+  border: 1px solid var(--pd-line);
+  border-radius: var(--pd-radius);
+  padding: 16px 20px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.card h2 {
+  margin: 0 0 12px; font-size: .74rem; font-weight: 600;
+  letter-spacing: .15em; text-transform: uppercase; color: var(--pd-text-dim);
+}
+
+/* ==========================================================================
+   Readout — one large number, the thing you read from across the bench
+   ========================================================================== */
+
+.readout {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+  background: var(--pd-bg-raised);
+  border: 1px solid var(--pd-line);
+  border-radius: var(--pd-radius);
+  padding: 16px 22px;
+}
+
+.readout-label {
+  display: block; font-size: .72rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--pd-text-dim);
+}
+
+.readout-value {
+  display: block;
+  font-family: var(--pd-mono);
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  font-weight: 600; line-height: 1.05; letter-spacing: -.02em;
+  color: var(--pd-accent);
+  text-shadow: 0 0 22px rgb(53 208 165 / .13);
+  font-variant-numeric: tabular-nums;
+}
+
+.readout-side { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.readout-aux { font-family: var(--pd-mono); font-size: 1.5rem; color: var(--pd-text); }
+
+/* ==========================================================================
+   Lists — label on the left, value on the right, aligned figures
+   ========================================================================== */
+
+.fields { margin: 0; }
+
+.fields .row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+  padding: 9px 0; border-bottom: 1px solid var(--pd-line-soft);
+}
+.fields .row:last-child { border-bottom: none; }
+.fields.compact .row { padding: 6px 0; }
+
+.fields dt { color: var(--pd-text-dim); font-size: .85rem; }
+.fields dd {
+  margin: 0; font-family: var(--pd-mono); font-size: .92rem;
+  text-align: right; font-variant-numeric: tabular-nums;
+}
+
+/* A block value that needs its own line, e.g. a raw frame dump. */
+.block-field { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--pd-line-soft); }
+.block-field dt { color: var(--pd-text-dim); font-size: .85rem; margin-bottom: 7px; }
+.block-field dd { margin: 0; }
+
+/* ==========================================================================
+   Meters — a labelled value against a range, e.g. per-cell voltage
+   ========================================================================== */
+
+.meters { display: flex; flex-direction: column; gap: 9px; }
+
+.meter { display: flex; align-items: center; gap: 11px; }
+.meter-name { width: 3.4em; flex: none; font-size: .78rem; color: var(--pd-text-dim); }
+
+.meter-track {
+  flex: 1; height: 10px;
+  background: var(--pd-bg-sunken);
+  border: 1px solid var(--pd-line-soft);
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--pd-accent-dim), var(--pd-accent));
+  transition: width .45s cubic-bezier(.2, .8, .3, 1);
+}
+.meter-fill.warn { background: linear-gradient(90deg, #8a6a12, var(--pd-warn)); }
+.meter-fill.crit { background: linear-gradient(90deg, #7d2529, var(--pd-danger)); }
+
+.meter-value {
+  width: 5.2em; text-align: right; flex: none;
+  font-family: var(--pd-mono); font-size: .84rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Notices
+   ========================================================================== */
+
+.hint { font-size: .84rem; color: var(--pd-text-dim); margin: 0; }
+.hint.warn { color: var(--pd-warn); }
+.footnote { font-size: .78rem; color: var(--pd-text-dim); margin: 18px 0 0; }
+
+.banner {
+  padding: 14px 18px; border-radius: var(--pd-radius);
+  background: rgb(242 85 90 / .1); border: 1px solid #6b3138; color: #ff9ba0;
+}
+.banner.warn { background: rgb(240 180 41 / .1); border-color: #7d5c12; color: var(--pd-warn); }
+
+/* ==========================================================================
+   Log — raw traffic, the first thing support asks for
+   ========================================================================== */
+
+.log {
+  padding: 14px 16px;
+  max-height: 260px; overflow-y: auto;
+  background: var(--pd-bg-sunken);
+  border: 1px solid var(--pd-line);
+  border-radius: var(--pd-radius);
+  font-family: var(--pd-mono); font-size: .76rem; line-height: 1.7;
+}
+.log-line.tx  { color: var(--pd-info); }
+.log-line.rx  { color: var(--pd-accent); }
+.log-line.err { color: var(--pd-danger); }
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+.hidden { display: none !important; }
+.mono { font-family: var(--pd-mono); font-size: .78rem; }
+.wrap { word-break: break-all; color: var(--pd-text-dim); line-height: 1.7; }

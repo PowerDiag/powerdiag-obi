@@ -42,10 +42,10 @@ function buildLayout() {
   el('cell-fields').innerHTML = '';
   el('cell-bars').innerHTML = [1, 2, 3, 4, 5]
     .map(
-      (n) => `<div class="bar-row">
-        <span class="bar-name"><span data-i18n="field.cell">${t('field.cell')}</span> ${n}</span>
-        <span class="bar-track"><span class="bar-fill" id="bar-${n}"></span></span>
-        <span class="bar-value" id="v-cell${n}">—</span>
+      (n) => `<div class="meter">
+        <span class="meter-name"><span data-i18n="field.cell">${t('field.cell')}</span> ${n}</span>
+        <span class="meter-track"><span class="meter-fill" id="bar-${n}"></span></span>
+        <span class="meter-value" id="v-cell${n}">—</span>
       </div>`,
     )
     .join('');
@@ -61,7 +61,7 @@ function drawCellBar(index, volts) {
   if (!fill) return;
   const ratio = (volts - CELL_MIN) / (CELL_MAX - CELL_MIN);
   fill.style.width = `${Math.max(0, Math.min(1, ratio)) * 100}%`;
-  fill.className = `bar-fill${volts < 3.0 ? ' crit' : volts < 3.3 ? ' low' : ''}`;
+  fill.className = `meter-fill${volts < 3.0 ? ' crit' : volts < 3.3 ? ' warn' : ''}`;
 }
 
 function set(slot, value) {
@@ -70,8 +70,8 @@ function set(slot, value) {
 }
 
 function clearValues() {
-  document.querySelectorAll('#panels dd, .bar-value').forEach((node) => { node.textContent = '—'; });
-  document.querySelectorAll('.bar-fill').forEach((node) => { node.style.width = '0'; });
+  document.querySelectorAll('#panels dd, .meter-value').forEach((node) => { node.textContent = '—'; });
+  document.querySelectorAll('.meter-fill').forEach((node) => { node.style.width = '0'; });
   el('hero-voltage').textContent = '—';
   el('hero-model').textContent = '—';
   el('state-badge').className = 'badge hidden';
@@ -234,7 +234,7 @@ async function readAll() {
 
   const badge = el('state-badge');
   badge.textContent = t(info.locked ? 'state.locked' : 'state.unlocked');
-  badge.className = `badge ${info.locked ? 'locked' : 'unlocked'}`;
+  badge.className = `badge ${info.locked ? 'danger' : 'ok'}`;
   set('state', badge.textContent);
 
   const { model, limited } = await battery.readModel();

@@ -114,7 +114,8 @@ customers do not install anything — they open the page, pick the board once an
 
     web/
       index.html            markup
-      styles.css            styling
+      vendor/powerdiag.css  shared visual language (PowerDiag/powerdiag-ui)
+      styles.css            what is specific to this tool
       icon.svg              app + tab icon
       manifest.webmanifest  PWA metadata, so it installs as a windowed app
       sw.js                 service worker, network first with an offline fallback
@@ -122,6 +123,11 @@ customers do not install anything — they open the page, pick the board once an
       js/lxt.js             Makita LXT commands and parsing
       js/i18n.js            Japanese / English / Chinese strings
       js/app.js             UI
+
+The shared stylesheet is vendored rather than linked from a shared URL, so the tool stays
+self-contained and works offline and on `localhost`. Update it by copying a newer
+`powerdiag.css` from [powerdiag-ui](https://github.com/PowerDiag/powerdiag-ui) and bumping `CACHE`
+in `sw.js`.
 
 **Deploying:** copy the contents of `web/` to `powerdiag.jp/obi`. Every path in the app is relative,
 so it runs from any sub-path without a build step. It must be served over **HTTPS** — Web Serial is

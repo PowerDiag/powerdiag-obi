@@ -1,10 +1,11 @@
 /* Offline shell for the OBI tool. Bump CACHE when any asset below changes,
  * otherwise returning users keep the old build until they hard-reload. */
-const CACHE = "powerdiag-obi-v1";
+const CACHE = "powerdiag-obi-v2";
 
 const ASSETS = [
   "./",
   "./index.html",
+  "./vendor/powerdiag.css",
   "./styles.css",
   "./icon.svg",
   "./manifest.webmanifest",

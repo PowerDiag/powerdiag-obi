@@ -8,9 +8,10 @@
 <meta name="theme-color" content="#0b0f14">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./vendor/powerdiag.css">
 <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
+<body class="app-shell">
 
 <header class="appbar">
   <div class="appbar-left">
@@ -26,7 +27,7 @@
 </header>
 
 <!-- Shown until a board is connected: name, one button, nothing else. -->
-<section id="landing" class="landing">
+<section id="landing" class="landing app-main">
   <img src="./icon.svg" alt="" width="76" height="76">
   <h1 class="landing-title">PowerDiag OBI</h1>
   <p class="landing-sub" data-i18n="app.subtitle">Battery diagnostics</p>
@@ -36,17 +37,17 @@
   <div id="unsupported" class="banner hidden"></div>
 </section>
 
-<div id="dashboard" class="hidden">
+<div id="dashboard" class="app-main hidden">
 
-  <main id="panels">
+  <main id="panels" class="app-content">
 
-    <section class="hero">
-      <div class="hero-main">
-        <span class="hero-label" data-i18n="field.packVoltage">Pack voltage</span>
-        <output id="hero-voltage" class="hero-value">&mdash;</output>
+    <section class="readout">
+      <div>
+        <span class="readout-label" data-i18n="field.packVoltage">Pack voltage</span>
+        <output id="hero-voltage" class="readout-value">&mdash;</output>
       </div>
-      <div class="hero-side">
-        <output id="hero-model" class="hero-model">&mdash;</output>
+      <div class="readout-side">
+        <output id="hero-model" class="readout-aux">&mdash;</output>
         <span id="state-badge" class="badge hidden"></span>
       </div>
     </section>
@@ -65,7 +66,7 @@
 
       <article class="card">
         <h2 data-i18n="sec.voltages">Voltages</h2>
-        <div id="cell-bars" class="bars"></div>
+        <div id="cell-bars" class="meters"></div>
         <dl id="cell-fields" class="fields compact"></dl>
         <dl id="voltage-fields" class="fields"></dl>
       </article>
@@ -73,7 +74,7 @@
       <article class="card">
         <h2 data-i18n="sec.identity">Identity</h2>
         <dl id="identity-fields" class="fields"></dl>
-        <div class="msg-wrap">
+        <div class="block-field">
           <dt data-i18n="field.message">Battery message</dt>
           <dd id="v-message" class="mono wrap">&mdash;</dd>
         </div>
