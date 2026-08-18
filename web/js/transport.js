@@ -74,7 +74,20 @@ export class Transport extends EventTarget {
   }
 
   async open(port) {
-    await port.open({ baudRate: BAUD_RATE });
+    try {
+      await port.open({ baudRate: BAUD_RATE });
+    } catch (error) {
+      /* A port left open by an earlier failed attempt refuses to open again.
+       * Close it and retry once, rather than making the user replug the board
+       * or reload the page. */
+      if (error?.name !== 'InvalidStateError') throw error;
+      try {
+        await port.close();
+      } catch {
+        throw error; // held by something we cannot clear; report the original
+      }
+      await port.open({ baudRate: BAUD_RATE });
+    }
     this.port = port;
     this.buffer = new Uint8Array(0);
     this.writer = port.writable.getWriter();
@@ -118,12 +131,31 @@ export class Transport extends EventTarget {
     if (!this.port) return;
     const port = this.port;
     this.port = null;
-    try { await this.reader?.cancel(); } catch { /* already gone */ }
-    try { this.reader?.releaseLock(); } catch { /* already released */ }
-    try { await this.readLoopDone; } catch { /* ignore */ }
-    try { this.writer?.releaseLock(); } catch { /* already released */ }
-    try { await port.close(); } catch { /* already closed */ }
+
+    /* Order matters. Releasing a reader that still has a pending read throws,
+     * and swallowing that used to leave the underlying port open while our
+     * state said closed: the next connect then failed with "the port is
+     * already open". Cancel, let the loop finish, then let go of the lock. */
+    try {
+      await this.reader?.cancel();
+      await this.readLoopDone;
+      this.reader?.releaseLock();
+    } catch { /* the device may already be unplugged */ }
+
+    try {
+      this.writer?.releaseLock();
+    } catch { /* a write was still in flight */ }
+
     this.reader = this.writer = null;
+
+    try {
+      await port.close();
+    } catch (error) {
+      /* Say so rather than pretending: a port we failed to close will refuse
+       * the next open, and this line is the only clue why. */
+      this.log('err', `close failed: ${error.message}`);
+    }
+
     this.dispatchEvent(new Event('close'));
   }
 

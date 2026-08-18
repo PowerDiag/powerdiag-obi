@@ -166,23 +166,29 @@ function describePort(port) {
 async function connect(port) {
   status('status.connecting');
   await transport.open(port);
-  battery.reset();
 
-  /* Any CH340 on the machine shows up in the picker, so identify the board
-   * before letting the user drive it. The version command answers on every
-   * OBI firmware; silence means this is some other serial device, and saying
-   * so beats letting every later command time out mysteriously. */
-  let version;
+  /* Past this point the port is open, so every failure has to close it again.
+   * A port left open reports "already open" on the next attempt, with the UI
+   * insisting nothing is connected. */
   try {
-    version = await battery.interfaceVersion();
-  } catch {
-    await transport.close();
-    throw new ObiError('err.notObi');
-  }
+    battery.reset();
 
-  setConnected(true);
-  el('port-name').textContent = `${describePort(port)} · FW ${version}`;
-  status('status.connected', 'ok');
+    /* Any CH340 on the machine shows up in the picker, so identify the board
+     * before letting the user drive it. The version command answers on every
+     * OBI firmware; silence means this is some other serial device, and saying
+     * so beats letting every later command time out mysteriously. */
+    const version = await battery.interfaceVersion();
+
+    setConnected(true);
+    el('port-name').textContent = `${describePort(port)} · FW ${version}`;
+    status('status.connected', 'ok');
+  } catch (error) {
+    await transport.close();
+    setConnected(false);
+    throw error instanceof ObiError && error.messageKey !== 'err.timeout'
+      ? error
+      : new ObiError('err.notObi');
+  }
 }
 
 async function onConnectClick() {
