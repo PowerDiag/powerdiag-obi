@@ -254,17 +254,10 @@ select, input[type="text"], input[type="number"] {
   padding: 0 10px; font: inherit; font-size: .85rem;
 }
 
-/* The native arrow sits wherever the platform puts it, usually far right with
-   a gap nothing can close, so draw our own on the background. Painting it on
-   the control itself keeps this working without a wrapper element. */
-select {
-  cursor: pointer;
-  appearance: none; -webkit-appearance: none;
-  padding-right: 26px;
-  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1 5 5 9 1' fill='none' stroke='%237d8b9c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 9px center;
-}
+/* Deliberately left with the platform arrow. Suppressing it with
+   appearance:none and drawing a replacement cost us a working dropdown once
+   already; a slightly wide arrow gap is not worth that risk. */
+select { cursor: pointer; }
 
 select:focus-visible, input:focus-visible {
   outline: 2px solid var(--pd-accent); outline-offset: 1px;
