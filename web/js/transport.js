@@ -80,6 +80,11 @@ export class Transport extends EventTarget {
       /* A port left open by an earlier failed attempt refuses to open again.
        * Close it and retry once, rather than making the user replug the board
        * or reload the page. */
+      /* Held by something outside this page: another tab running this tool,
+       * or a serial monitor left open. Nothing here can take it away, so say
+       * what to go and close. */
+      if (error?.name === 'NetworkError') throw new ObiError('err.portBusy');
+
       if (error?.name !== 'InvalidStateError') throw error;
       try {
         await port.close();

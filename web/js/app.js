@@ -348,6 +348,11 @@ async function init() {
     if (transport.port === event.target) transport.close();
   });
 
+  /* Hand the port back when the page goes away. The OS releases it when the
+   * process exits anyway, but a reload or a closed tab is not a process exit,
+   * and the next window would find the device claimed. */
+  window.addEventListener('pagehide', () => { transport.close(); });
+
   setConnected(false);
   status('status.idle');
 

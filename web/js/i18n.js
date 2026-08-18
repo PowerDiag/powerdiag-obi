@@ -33,6 +33,7 @@ const STRINGS = {
     'err.shortResponse': '応答が不完全です。', 'err.noResponse': '応答がありません。',
     'err.mismatch': '応答の形式が一致しません。OBI 基板ではない可能性があります。',
     'err.notObi': 'この端末は応答しません。OBI 基板ではない可能性があります。別のポートを選んでください。',
+    'err.portBusy': 'ポートが他で使用中です。このツールを開いている他のタブや、シリアルモニターを閉じてください。',
     'err.driver': 'ポート一覧に基板が出ない場合は USB シリアルドライバー（CH340 など）が必要です。',
   },
   en: {
@@ -65,6 +66,7 @@ const STRINGS = {
     'err.shortResponse': 'Incomplete response.', 'err.noResponse': 'No response.',
     'err.mismatch': 'The reply does not match the request — probably not an OBI board.',
     'err.notObi': 'That device did not answer. It is probably not an OBI board — pick a different port.',
+    'err.portBusy': 'The port is in use. Close any other tab running this tool, or a serial monitor holding it.',
     'err.driver': 'If the board is missing from the port list, install the USB-serial driver (CH340 or similar).',
   },
   zh: {
@@ -97,6 +99,7 @@ const STRINGS = {
     'err.shortResponse': '响应不完整。', 'err.noResponse': '没有响应。',
     'err.mismatch': '响应格式不匹配，可能不是 OBI 板。',
     'err.notObi': '该设备没有响应，可能不是 OBI 板。请换一个端口。',
+    'err.portBusy': '端口被占用。请关闭开着本工具的其他标签页，或占用串口的串口监视器。',
     'err.driver': '端口列表里找不到本板时，需要安装 USB 串口驱动（CH340 等）。',
   },
 };
