@@ -83,22 +83,24 @@ function applyLanguage() {
     node.textContent = t(node.dataset.i18n);
   });
   document.title = `${t('app.title')} — ${t('app.subtitle')}`;
-  el('btn-connect').textContent = transport.isOpen ? t('btn.disconnect') : t('btn.connect');
   el('btn-log').textContent = el('log').classList.contains('hidden') ? t('log.show') : t('log.hide');
 }
 
 function status(key, tone = 'info') {
-  const node = el('status');
-  node.textContent = t(key);
-  node.className = `status ${tone}`;
+  document.querySelectorAll('.status').forEach((node) => {
+    node.textContent = t(key);
+    node.className = `status ${tone === 'info' ? '' : tone}`.trim();
+  });
 }
 
 function fail(error) {
   const key = error instanceof ObiError ? error.messageKey : null;
-  const node = el('status');
-  node.textContent = key ? t(key) : String(error.message || error);
-  node.className = 'status error';
-  log('err', node.textContent);
+  const text = key ? t(key) : String(error.message || error);
+  document.querySelectorAll('.status').forEach((node) => {
+    node.textContent = text;
+    node.className = 'status error';
+  });
+  log('err', text);
 }
 
 function log(kind, text) {
@@ -117,10 +119,23 @@ transport.addEventListener('log', (event) => log(event.detail.direction, event.d
 /* ---------- connection ---------- */
 
 function setConnected(connected) {
-  el('btn-connect').textContent = connected ? t('btn.disconnect') : t('btn.connect');
-  el('btn-connect').classList.toggle('connected', connected);
+  el('landing').classList.toggle('hidden', connected);
+  el('dashboard').classList.toggle('hidden', !connected);
   document.querySelectorAll('.needs-connection').forEach((node) => { node.disabled = !connected; });
-  el('dot').classList.toggle('on', connected);
+}
+
+/* Web Serial deliberately withholds the OS port name, so the closest thing to
+ * "which port" we can show the user is the USB identity behind it. */
+const USB_CHIPS = {
+  0x1a86: 'CH340', 0x0403: 'FTDI', 0x10c4: 'CP210x',
+  0x2341: 'Arduino', 0x1b4f: 'SparkFun', 0x303a: 'ESP32',
+};
+
+function describePort(port) {
+  const { usbVendorId: vid, usbProductId: pid } = port.getInfo?.() ?? {};
+  if (vid === undefined) return 'USB';
+  const id = `${vid.toString(16).padStart(4, '0').toUpperCase()}:${(pid ?? 0).toString(16).padStart(4, '0').toUpperCase()}`;
+  return USB_CHIPS[vid] ? `${USB_CHIPS[vid]} · ${id}` : id;
 }
 
 async function connect(port) {
@@ -128,19 +143,19 @@ async function connect(port) {
   await transport.open(port);
   battery.reset();
   setConnected(true);
+
+  let label = describePort(port);
   try {
-    el('fw-version').textContent = `FW ${await battery.interfaceVersion()}`;
+    label += ` · FW ${await battery.interfaceVersion()}`;
   } catch {
-    el('fw-version').textContent = '';
+    /* An older board that does not answer the version command still works. */
   }
+  el('port-name').textContent = label;
+
   status('status.connected', 'ok');
 }
 
 async function onConnectClick() {
-  if (transport.isOpen) {
-    await transport.close();
-    return;
-  }
   try {
     const port = await Transport.requestPort();
     await connect(port);
@@ -156,7 +171,7 @@ async function onConnectClick() {
 
 transport.addEventListener('close', () => {
   setConnected(false);
-  el('fw-version').textContent = '';
+  clearValues();
   status('status.idle');
 });
 
@@ -286,6 +301,7 @@ async function init() {
   }
 
   el('btn-connect').addEventListener('click', () => guard(onConnectClick));
+  el('btn-disconnect').addEventListener('click', () => transport.close());
   el('btn-read').addEventListener('click', () => guard(readAll));
   el('btn-cells').addEventListener('click', () => guard(readCells));
   el('btn-clear').addEventListener('click', () => guard(clearErrors));

@@ -1,7 +1,7 @@
 {
   "name": "PowerDiag OBI",
   "short_name": "OBI",
-  "description": "Makita LXT battery diagnostics in the browser, over USB.",
+  "description": "Battery pack diagnostics in the browser, over USB.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

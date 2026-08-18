@@ -5,7 +5,7 @@
 const STRINGS = {
   ja: {
     'app.title': 'PowerDiag OBI',
-    'app.subtitle': 'マキタ LXT バッテリー診断',
+    'app.subtitle': 'バッテリー診断ツール',
     'btn.connect': '接続', 'btn.disconnect': '切断',
     'btn.read': 'バッテリー情報を読み取る', 'btn.cells': 'セル電圧を読み取る',
     'btn.clearErrors': 'エラーを解除', 'btn.ledsOn': 'LED 点灯', 'btn.ledsOff': 'LED 消灯',
@@ -34,7 +34,7 @@ const STRINGS = {
   },
   en: {
     'app.title': 'PowerDiag OBI',
-    'app.subtitle': 'Makita LXT battery diagnostics',
+    'app.subtitle': 'Battery pack diagnostics',
     'btn.connect': 'Connect', 'btn.disconnect': 'Disconnect',
     'btn.read': 'Read battery info', 'btn.cells': 'Read cell voltages',
     'btn.clearErrors': 'Clear errors', 'btn.ledsOn': 'LEDs on', 'btn.ledsOff': 'LEDs off',
@@ -50,7 +50,7 @@ const STRINGS = {
     'sec.identity': 'Identity', 'sec.voltages': 'Voltages', 'sec.log': 'Communication log',
     'log.show': 'Show log', 'log.hide': 'Hide log',
     'confirm.clear': 'This clears the error flags on the pack. On some batteries it also resets stored counters such as the charge count. Continue?',
-    'note.charge': '* Charge count is a best-effort reading, not an official Makita figure.',
+    'note.charge': '* Charge count is a best-effort reading, not an official manufacturer figure.',
     'note.limited': 'This pack (F0513) only supports limited diagnostics.',
     'err.unsupported': 'This browser does not support Web Serial. Use desktop Chrome or Edge.',
     'err.insecure': 'Web Serial needs HTTPS.',
@@ -63,7 +63,7 @@ const STRINGS = {
   },
   zh: {
     'app.title': 'PowerDiag OBI',
-    'app.subtitle': '牧田 LXT 电池诊断',
+    'app.subtitle': '电池诊断工具',
     'btn.connect': '连接', 'btn.disconnect': '断开',
     'btn.read': '读取电池信息', 'btn.cells': '读取电芯电压',
     'btn.clearErrors': '清除错误', 'btn.ledsOn': '点亮 LED', 'btn.ledsOff': '熄灭 LED',
@@ -79,7 +79,7 @@ const STRINGS = {
     'sec.identity': '识别信息', 'sec.voltages': '电压', 'sec.log': '通信日志',
     'log.show': '显示日志', 'log.hide': '隐藏日志',
     'confirm.clear': '将清除电池的错误标志。部分电池会同时把充电次数等记录清零。是否继续？',
-    'note.charge': '* 充电次数为读取推算值，非牧田官方口径。',
+    'note.charge': '* 充电次数为读取推算值，非厂商官方口径。',
     'note.limited': '该型号（F0513）仅支持有限的诊断功能。',
     'err.unsupported': '当前浏览器不支持 Web Serial，请使用电脑版 Chrome 或 Edge。',
     'err.insecure': 'Web Serial 需要 HTTPS 才能使用。',

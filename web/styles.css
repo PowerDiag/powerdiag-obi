@@ -50,7 +50,7 @@ body {
 .brand p { margin: 0; font-size: .82rem; color: var(--text-dim); }
 
 .topbar-right { display: flex; align-items: center; gap: 12px; }
-.fw { font-family: var(--mono); font-size: .75rem; color: var(--text-dim); }
+.port { font-family: var(--mono); font-size: .8rem; color: var(--text-dim); }
 
 select {
   background: var(--bg-raised); color: var(--text);
@@ -58,12 +58,36 @@ select {
   padding: 7px 10px; font: inherit; font-size: .85rem; cursor: pointer;
 }
 
-/* ---------- connect bar ---------- */
+/* ---------- landing ---------- */
 
-.connectbar {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-  margin-bottom: 22px;
+/* Until a board is connected the page is only the product name and one
+   button: nothing to read, nothing to get wrong. */
+.landing {
+  min-height: 82vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; gap: 4px;
 }
+
+.landing img { margin-bottom: 22px; filter: drop-shadow(0 12px 34px #35d0a533); }
+
+.landing-title {
+  margin: 0;
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
+  font-weight: 650; letter-spacing: -.02em;
+}
+
+.landing-sub {
+  margin: 6px 0 34px;
+  font-size: 1rem; color: var(--text-dim);
+}
+
+.landing-status { margin: 18px 0 0; min-height: 1.4em; }
+
+.landing .hint { max-width: 34em; margin-top: 12px; }
+.landing .banner { max-width: 34em; margin-top: 20px; }
+
+.lang-float { position: fixed; top: 16px; right: 18px; z-index: 5; }
 
 .conn-state { display: flex; align-items: center; gap: 9px; }
 
@@ -105,6 +129,7 @@ select {
 .btn.ghost { background: transparent; color: var(--text-dim); }
 .btn.ghost:hover:not(:disabled) { color: var(--text); }
 .btn.small { padding: 7px 14px; font-size: .8rem; }
+.btn.big { padding: 15px 46px; font-size: 1.05rem; border-radius: 13px; }
 
 /* ---------- hero readout ---------- */
 
@@ -148,7 +173,11 @@ select {
 
 /* ---------- actions ---------- */
 
-.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.actions {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  margin-bottom: 18px;
+}
+.actions .status { margin-left: 6px; }
 
 /* ---------- cards ---------- */
 
@@ -266,4 +295,35 @@ select {
   .hero-value { text-shadow: none; }
   .btn.primary { color: #ffffff; }
   .log-line.tx { color: #2a6ab0; }
+}
+
+/* ---------- single-screen layout ----------
+   On a normal laptop everything has to be visible at once: the page itself
+   never scrolls, and only a card scrolls internally if its content overflows.
+   Below these sizes the columns would be unusable squeezed, so the layout
+   falls back to ordinary scrolling. */
+
+@media (min-width: 860px) and (min-height: 620px) {
+  body { height: 100vh; overflow: hidden; padding-bottom: 0; }
+
+  #dashboard { height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar { padding: 14px 0 12px; margin-bottom: 14px; }
+
+  #panels {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .hero { padding: 16px 22px; margin-bottom: 0; }
+  .hero-value { font-size: clamp(2.2rem, 6vw, 3.4rem); }
+
+  .actions { margin-bottom: 0; }
+
+  .grid { flex: 1; min-height: 0; }
+  .card { min-height: 0; overflow-y: auto; padding: 16px 20px; }
+  .card h2 { margin-bottom: 12px; }
+
+  .logsec { margin-top: 0; flex: none; }
+  .log { max-height: 22vh; }
 }
