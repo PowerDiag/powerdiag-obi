@@ -2,9 +2,10 @@ name: Check the web app
 
 on:
   push:
-    paths: ['web/**']
+    paths: ['web/**', '.github/workflows/check.yml']
   pull_request:
-    paths: ['web/**']
+    paths: ['web/**', '.github/workflows/check.yml']
+  workflow_dispatch:
 
 jobs:
   syntax:
