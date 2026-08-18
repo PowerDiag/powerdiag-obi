@@ -30,6 +30,10 @@ const VOLTAGE_FIELDS = [
 
 let busy = false;
 
+/* The last reading, kept so a language switch can redraw the screen instead
+ * of throwing away values that are still perfectly good. */
+const reading = { identity: null, cells: null, terminal: null };
+
 /* Each in its own language: someone looking for their language cannot read
  * the name of it written in another. */
 const LANG_NAMES = {
@@ -79,6 +83,7 @@ function set(slot, value) {
 }
 
 function clearValues() {
+  reading.identity = reading.cells = reading.terminal = null;
   document.querySelectorAll('#panels dd, .tile-value').forEach((node) => { node.textContent = '—'; });
   document.querySelectorAll('.tile').forEach((node) => { node.className = 'tile'; });
   el('readout-voltage').textContent = '—';
@@ -242,11 +247,23 @@ async function guard(action) {
 }
 
 async function showTerminalVoltage() {
-  const volts = await battery.terminalVoltage();
-  set('terminalVoltage', volts === null ? null : `${volts.toFixed(2)} V`);
+  reading.terminal = await battery.terminalVoltage();
+  renderTerminal();
+}
+
+function renderTerminal() {
+  const volts = reading.terminal;
+  set('terminalVoltage', volts === null || volts === undefined ? null : `${volts.toFixed(2)} V`);
 }
 
 function showCells(data) {
+  reading.cells = data;
+  renderCells();
+}
+
+function renderCells() {
+  const data = reading.cells;
+  if (!data) return;
   el('readout-voltage').textContent = `${data.packVoltage.toFixed(2)} V`;
   data.cells.forEach((v, i) => {
     set(`cell${i + 1}`, `${v.toFixed(3)} V`);
@@ -262,6 +279,22 @@ async function readIdentity() {
   status('status.reading');
 
   const info = await battery.readStatic();
+
+  /* Reading the model also settles which dialect the pack speaks, which the
+   * cell read depends on. */
+  const { model, limited } = await battery.readModel();
+
+  reading.identity = { ...info, model, limited };
+  renderIdentity();
+
+  status('status.done', 'ok');
+}
+
+function renderIdentity() {
+  const info = reading.identity;
+  if (!info) return;
+
+  set('model', info.model);
   set('chargeCount', info.chargeCount);
   set('statusCode', info.statusCode);
   set('capacity', `${info.capacityAh.toFixed(1)} Ah`);
@@ -275,13 +308,7 @@ async function readIdentity() {
   badge.className = `badge ${info.locked ? 'danger' : 'ok'}`;
   set('state', badge.textContent);
 
-  /* Reading the model also settles which dialect the pack speaks, which the
-   * cell read depends on. */
-  const { model, limited } = await battery.readModel();
-  set('model', model);
-  el('note-limited').classList.toggle('hidden', !limited);
-
-  status('status.done', 'ok');
+  el('note-limited').classList.toggle('hidden', !info.limited);
 }
 
 /* What the voltages card shows. */
@@ -370,9 +397,11 @@ async function init() {
   langSelect.value = i18n.lang;
   langSelect.addEventListener('change', () => {
     i18n.set(langSelect.value);
-    buildLayout();
+    buildLayout();    // labels like "Cell 1" are assembled, so they are rebuilt
     applyLanguage();
-    clearValues();
+    renderIdentity(); // and the reading is redrawn, not discarded
+    renderCells();
+    renderTerminal();
   });
 
   el('btn-log').addEventListener('click', () => {
