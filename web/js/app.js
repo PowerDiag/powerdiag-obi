@@ -126,9 +126,7 @@ function clearLog() {
 function exportLog() {
   if (!logLines.length) return;
   const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const blob = new Blob([logLines.join('
-') + '
-'], { type: 'text/plain' });
+  const blob = new Blob([logLines.join('\n') + '\n'], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
