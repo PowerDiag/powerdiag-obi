@@ -15,10 +15,10 @@ const RESPONSE_TIMEOUT_MS = 2000;
 const DEFAULT_ATTEMPTS = 2;
 
 /* Opening the port toggles DTR, and on a Nano that line is coupled to RESET,
- * so the board reboots the moment we connect. The bootloader then owns the
- * UART for a moment before the sketch starts, and anything written in that
- * window is swallowed with no reply at all. */
-const BOOT_SETTLE_MS = 2000;
+ * so the board can reboot as we connect. Rather than making every connection
+ * wait out the worst case, we settle the control lines briefly and let the
+ * version probe retry through the boot window. */
+const SIGNAL_SETTLE_MS = 250;
 
 /* CH340 (QinHeng) and the other USB-serial bridges found on Nano boards, so the
  * browser's port picker only offers the interface board and not every COM port
@@ -88,7 +88,7 @@ export class Transport extends EventTarget {
     } catch {
       /* Not every platform exposes the control lines; the wait still helps. */
     }
-    await new Promise((resolve) => setTimeout(resolve, BOOT_SETTLE_MS));
+    await new Promise((resolve) => setTimeout(resolve, SIGNAL_SETTLE_MS));
     this.buffer = new Uint8Array(0); // discard any bootloader chatter
 
     this.dispatchEvent(new Event('open'));
@@ -163,6 +163,14 @@ export class Transport extends EventTarget {
         const response = await this.take(expected, timeoutMs);
         const payload = response.slice(2);
         this.log('rx', payload);
+
+        const cmd = frame[3];
+        if (response[0] !== cmd || response[1] !== rspLen) {
+          throw new ObiError(
+            'err.mismatch',
+            `header ${response[0].toString(16)} ${response[1].toString(16)}, expected ${cmd.toString(16)} ${rspLen.toString(16)}`,
+          );
+        }
 
         if (rspLen === 0) return null;
 

@@ -169,16 +169,21 @@ async function connect(port) {
   status('status.connecting');
   await transport.open(port);
   battery.reset();
-  setConnected(true);
 
-  let label = describePort(port);
+  /* Any CH340 on the machine shows up in the picker, so identify the board
+   * before letting the user drive it. The version command answers on every
+   * OBI firmware; silence means this is some other serial device, and saying
+   * so beats letting every later command time out mysteriously. */
+  let version;
   try {
-    label += ` · FW ${await battery.interfaceVersion()}`;
+    version = await battery.interfaceVersion();
   } catch {
-    /* An older board that does not answer the version command still works. */
+    await transport.close();
+    throw new ObiError('err.notObi');
   }
-  el('port-name').textContent = label;
 
+  setConnected(true);
+  el('port-name').textContent = `${describePort(port)} · FW ${version}`;
   status('status.connected', 'ok');
 }
 
