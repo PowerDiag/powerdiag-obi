@@ -121,7 +121,7 @@ body {
    it falls back to ordinary document scrolling.
    ========================================================================== */
 
-.app-content { padding: 18px var(--pd-gutter) 28px; }
+.app-content { padding: 14px var(--pd-gutter) 20px; }
 
 @media (min-width: 860px) and (min-height: 620px) {
   body.app-shell {
@@ -134,8 +134,8 @@ body {
 
   body.app-shell .app-content {
     flex: 1; min-height: 0;
-    display: flex; flex-direction: column; gap: 14px;
-    padding: 16px var(--pd-gutter);
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 12px var(--pd-gutter);
   }
 }
 
@@ -146,7 +146,7 @@ body {
 .appbar {
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px; flex-wrap: wrap;
-  padding: 10px var(--pd-gutter);
+  padding: 8px var(--pd-gutter);
   border-bottom: 1px solid var(--pd-line);
   background: var(--pd-bg-raised);
 }
@@ -175,7 +175,7 @@ body {
 .statusbar {
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px;
-  padding: 8px var(--pd-gutter);
+  padding: 6px var(--pd-gutter);
   border-top: 1px solid var(--pd-line);
   background: var(--pd-bg-raised);
   font-size: .78rem;
@@ -300,7 +300,7 @@ select:focus-visible, input:focus-visible {
    ========================================================================== */
 
 .grid {
-  display: grid; gap: 18px;
+  display: grid; gap: 12px;
   grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
 }
 
@@ -308,13 +308,13 @@ select:focus-visible, input:focus-visible {
   background: var(--pd-bg-raised);
   border: 1px solid var(--pd-line);
   border-radius: var(--pd-radius);
-  padding: 16px 20px;
+  padding: 14px 18px;
   min-height: 0;
   overflow-y: auto;
 }
 
 .card h2 {
-  margin: 0 0 12px; font-size: .74rem; font-weight: 600;
+  margin: 0 0 10px; font-size: .74rem; font-weight: 600;
   letter-spacing: .15em; text-transform: uppercase; color: var(--pd-text-dim);
 }
 
@@ -328,7 +328,7 @@ select:focus-visible, input:focus-visible {
   background: var(--pd-bg-raised);
   border: 1px solid var(--pd-line);
   border-radius: var(--pd-radius);
-  padding: 16px 22px;
+  padding: 12px 18px;
 }
 
 .readout-label {
@@ -339,7 +339,7 @@ select:focus-visible, input:focus-visible {
 .readout-value {
   display: block;
   font-family: var(--pd-mono);
-  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  font-size: clamp(1.9rem, 4.6vw, 2.7rem);
   font-weight: 600; line-height: 1.05; letter-spacing: -.02em;
   color: var(--pd-accent);
   text-shadow: 0 0 22px rgb(53 208 165 / .13);
@@ -347,20 +347,25 @@ select:focus-visible, input:focus-visible {
 }
 
 .readout-side { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.readout-aux { font-family: var(--pd-mono); font-size: 1.5rem; color: var(--pd-text); }
+.readout-aux { font-family: var(--pd-mono); font-size: 1.25rem; color: var(--pd-text); }
 
 /* ==========================================================================
    Lists — label on the left, value on the right, aligned figures
+
+   Capped in width on purpose. Pushed to the two edges of a wide card the
+   label and its value end up hundreds of pixels apart, and reading one row
+   means tracking all the way across; a reading should be takeable at a
+   glance. Values stay right-aligned so the figures still form a column.
    ========================================================================== */
 
-.fields { margin: 0; }
+.fields { margin: 0; max-width: 26em; }
 
 .fields .row {
   display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
-  padding: 9px 0; border-bottom: 1px solid var(--pd-line-soft);
+  padding: 6px 0; border-bottom: 1px solid var(--pd-line-soft);
 }
 .fields .row:last-child { border-bottom: none; }
-.fields.compact .row { padding: 6px 0; }
+.fields.compact .row { padding: 4px 0; }
 
 .fields dt { color: var(--pd-text-dim); font-size: .85rem; }
 .fields dd {
@@ -369,7 +374,7 @@ select:focus-visible, input:focus-visible {
 }
 
 /* A block value that needs its own line, e.g. a raw frame dump. */
-.block-field { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--pd-line-soft); }
+.block-field { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--pd-line-soft); max-width: 40em; }
 .block-field dt { color: var(--pd-text-dim); font-size: .85rem; margin-bottom: 7px; }
 .block-field dd { margin: 0; }
 
@@ -377,7 +382,7 @@ select:focus-visible, input:focus-visible {
    Meters — a labelled value against a range, e.g. per-cell voltage
    ========================================================================== */
 
-.meters { display: flex; flex-direction: column; gap: 9px; }
+.meters { display: flex; flex-direction: column; gap: 6px; max-width: 26em; }
 
 .meter { display: flex; align-items: center; gap: 11px; }
 .meter-name { width: 3.4em; flex: none; font-size: .78rem; color: var(--pd-text-dim); }
@@ -409,7 +414,7 @@ select:focus-visible, input:focus-visible {
 
 .hint { font-size: .84rem; color: var(--pd-text-dim); margin: 0; }
 .hint.warn { color: var(--pd-warn); }
-.footnote { font-size: .78rem; color: var(--pd-text-dim); margin: 18px 0 0; }
+.footnote { font-size: .78rem; color: var(--pd-text-dim); margin: 12px 0 0; }
 
 .banner {
   padding: 14px 18px; border-radius: var(--pd-radius);
@@ -423,7 +428,7 @@ select:focus-visible, input:focus-visible {
 
 .log {
   padding: 14px 16px;
-  max-height: 260px; overflow-y: auto;
+  max-height: 210px; overflow-y: auto;
   background: var(--pd-bg-sunken);
   border: 1px solid var(--pd-line);
   border-radius: var(--pd-radius);
