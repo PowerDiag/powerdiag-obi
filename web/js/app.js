@@ -49,7 +49,7 @@ const LANG_NAMES = {
 /* ---------- rendering ---------- */
 
 function fieldRow(labelKey, slot) {
-  return `<div class="row"><dt data-i18n="${labelKey}">${t(labelKey)}</dt><dd id="v-${slot}">—</dd></div>`;
+  return `<div class="row"><dt data-i18n="${labelKey}">${t(labelKey)}</dt><dd id="v-${slot}" class="empty">—</dd></div>`;
 }
 
 function buildLayout() {
@@ -79,12 +79,19 @@ function markCell(index, volts) {
 
 function set(slot, value) {
   const node = el(`v-${slot}`);
-  if (node) node.textContent = value === null || value === undefined || value === '' ? '—' : value;
+  if (!node) return;
+  const empty = value === null || value === undefined || value === '';
+  node.textContent = empty ? '—' : value;
+  /* Chipped lists frame their values; an unread row should not be framed. */
+  node.classList.toggle('empty', empty);
 }
 
 function clearValues() {
   reading.identity = reading.cells = reading.terminal = null;
-  document.querySelectorAll('#panels dd, .tile-value').forEach((node) => { node.textContent = '—'; });
+  document.querySelectorAll('#panels dd, .tile-value').forEach((node) => {
+    node.textContent = '—';
+    node.classList.add('empty');
+  });
   document.querySelectorAll('.tile').forEach((node) => { node.className = 'tile'; });
   el('readout-voltage').textContent = '—';
   el('state-badge').className = 'badge hidden';
