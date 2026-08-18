@@ -167,10 +167,6 @@ the PC application keeps working unchanged.
 Firmware support for the buttons, the WS2812 and the ADC is implemented in `ArduinoOBI` — see
 [ArduinoOBI/README.md](ArduinoOBI/README.md#stand-alone-operation) for the LED colour codes.
 
-> **Note for ESP builds:** if you use an ESP32-C3 instead of the Nano, the pull-ups must go to
-> **3.3V, not 5V**, or the GPIOs will be damaged. The divider values still work, but the voltage
-> conversion has to be redone for the 3.3 V / 12-bit ADC. See `ArduinoOBI/README.md`.
-
 ---
 
 ## Board

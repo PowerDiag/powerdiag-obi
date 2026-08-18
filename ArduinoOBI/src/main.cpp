@@ -9,16 +9,6 @@
 /** Patch version number (x.x.X) */
 #define ARDUINO_OBI_VERSION_PATCH 0
 
-#ifdef ESP_BUILD
-#define ONEWIRE_PIN ESP_OW_PIN
-#define ENABLE_PIN ESP_EN_PIN
-#define STATUS_LED_PIN ESP_LED_PIN
-#define BTN_READ_PIN ESP_BTN1_PIN
-#define BTN_CLEAR_PIN ESP_BTN2_PIN
-#define VBAT_ADC_PIN ESP_ADC_PIN
-#define ADC_MAX_COUNTS 4095.0f
-#define ADC_REF_VOLTS 3.3f
-#else
 #define ONEWIRE_PIN 6
 #define ENABLE_PIN 8
 /** U5, WS2812 DIN */
@@ -34,7 +24,6 @@
  * USB VBUS minus a diode drop and moves with the port, the cable and the load.
  * 1.1V across the 1:21 divider gives a 23.1V full scale. */
 #define ADC_REF_VOLTS 1.1f
-#endif
 
 /** Divider ratio of R10 (200k) / R11 (10k) */
 #define VBAT_DIVIDER 21.0f
@@ -498,7 +487,6 @@ void setup() {
 	pinMode(ENABLE_PIN, OUTPUT);
 	//pinMode(2, OUTPUT);
 
-#ifndef ESP_BUILD
 	// Pack voltage is measured against the internal 1.1V bandgap, not AVCC.
 	// AREF (U1 pin 18) is left unconnected on the board, so this is safe.
 	analogReference(INTERNAL);
@@ -506,7 +494,6 @@ void setup() {
 	delay(10);
 	analogRead(VBAT_ADC_PIN);
 	analogRead(VBAT_ADC_PIN);
-#endif
 
 	// Status LED and buttons
 	status_led.begin();
