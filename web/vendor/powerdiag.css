@@ -397,13 +397,11 @@ select:focus-visible, input:focus-visible {
 /* ==========================================================================
    Lists — label on the left, value on the right, aligned figures
 
-   Capped in width on purpose. Pushed to the two edges of a wide card the
-   label and its value end up hundreds of pixels apart, and reading one row
-   means tracking all the way across; a reading should be takeable at a
-   glance. Values stay right-aligned so the figures still form a column.
+   The distance a row spans is governed by --pd-measure on the content, not
+   here: capping the list as well only leaves a dead strip inside the card.
    ========================================================================== */
 
-.fields { margin: 0; max-width: 26em; }
+.fields { margin: 0; }
 
 .fields .row {
   display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
@@ -419,7 +417,7 @@ select:focus-visible, input:focus-visible {
 }
 
 /* A block value that needs its own line, e.g. a raw frame dump. */
-.block-field { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--pd-line-soft); max-width: 40em; }
+.block-field { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--pd-line-soft); }
 .block-field dt { color: var(--pd-text-dim); font-size: .85rem; margin-bottom: 7px; }
 .block-field dd { margin: 0; }
 
@@ -463,7 +461,7 @@ select:focus-visible, input:focus-visible {
    Meters — a labelled value against a range, e.g. per-cell voltage
    ========================================================================== */
 
-.meters { display: flex; flex-direction: column; gap: 6px; max-width: 26em; }
+.meters { display: flex; flex-direction: column; gap: 6px; }
 
 .meter { display: flex; align-items: center; gap: 11px; }
 .meter-name { width: 3.4em; flex: none; font-size: .78rem; color: var(--pd-text-dim); }
