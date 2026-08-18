@@ -129,6 +129,15 @@ self-contained and works offline and on `localhost`. Update it by copying a newe
 `powerdiag.css` from [powerdiag-ui](https://github.com/PowerDiag/powerdiag-ui) and bumping `CACHE`
 in `sw.js`.
 
+**Before deploying,** stamp the build so the status bar names what the customer is running:
+
+```
+python tools/stamp-version.py
+```
+
+It writes `web/js/version.js` from whatever HEAD is at that moment, and marks the stamp with a `+`
+if the working tree is dirty. Bump `CACHE` in `sw.js` in the same breath when assets changed.
+
 **Deploying:** copy the contents of `web/` to `powerdiag.jp/obi`. Every path in the app is relative,
 so it runs from any sub-path without a build step. It must be served over **HTTPS** — Web Serial is
 unavailable on plain HTTP.

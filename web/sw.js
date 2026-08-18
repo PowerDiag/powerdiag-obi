@@ -1,6 +1,6 @@
 /* Offline shell for the OBI tool. Bump CACHE when any asset below changes,
  * otherwise returning users keep the old build until they hard-reload. */
-const CACHE = "powerdiag-obi-v10";
+const CACHE = "powerdiag-obi-v11";
 
 const ASSETS = [
   "./",
@@ -13,6 +13,7 @@ const ASSETS = [
   "./js/transport.js",
   "./js/lxt.js",
   "./js/i18n.js",
+  "./js/version.js",
 ];
 
 self.addEventListener("install", (event) => {

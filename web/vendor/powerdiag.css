@@ -163,7 +163,11 @@ body {
   font-size: .78rem;
 }
 .statusbar .status { font-size: .78rem; }
+.statusbar-right { display: flex; align-items: center; gap: 14px; }
 .copyright { color: var(--pd-text-dim); }
+
+/* Which build is running, for the first question support always asks. */
+.build { font-family: var(--pd-mono); font-size: .72rem; color: var(--pd-text-dim); }
 
 /* ==========================================================================
    Status text and indicators

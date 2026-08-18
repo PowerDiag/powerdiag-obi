@@ -1,6 +1,7 @@
 import { Transport, ObiError } from './transport.js';
 import { LxtBattery } from './lxt.js';
 import { i18n } from './i18n.js';
+import { VERSION } from './version.js';
 
 const transport = new Transport();
 const battery = new LxtBattery(transport);
@@ -309,6 +310,11 @@ function guardUnsupported() {
 
 async function init() {
   document.documentElement.lang = i18n.lang;
+
+  /* Which build the customer is actually running: the first thing to
+   * establish before believing any bug report. */
+  el('build').textContent = `${VERSION.date} · ${VERSION.commit}`;
+
   buildLayout();
   applyLanguage();
 
