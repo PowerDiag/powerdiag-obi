@@ -17,17 +17,40 @@
 
 /* Out of the flow on purpose. In the column it pushed the mark, the name and
    the button down and the whole group re-centred around it; the band belongs
-   in the empty upper half, with everything else left where it was. */
-.tagline {
+   in the empty upper half, with everything else left where it was. The note
+   travels with it so it stays tied to the band it sits under. */
+.landing-head {
   position: absolute;
   top: clamp(20px, 11vh, 140px);
   left: var(--pd-gutter); right: var(--pd-gutter);
   width: auto; max-width: 780px;
   margin: 0 auto;
+}
+
+.tagline {
+  margin: 0;
   padding: 16px 24px;
   font-size: clamp(1rem, 2.4vw, 1.3rem);
   font-weight: 600; letter-spacing: .01em;
 }
+
+/* Someone arriving here without the board has to be told, and told where to
+   get one — both ways, since half of them would rather build it. Ends flush
+   with the band above it. */
+.landing-note {
+  width: fit-content; max-width: 100%;
+  margin: 10px 0 0 auto;
+  padding: 8px 14px;
+  background: var(--pd-bg-raised);
+  border: 1px solid var(--pd-line);
+  border-radius: var(--pd-radius);
+  font-size: .82rem; color: var(--pd-text-dim);
+  text-align: left;
+}
+
+.landing-note a { color: var(--pd-accent); text-decoration: none; }
+.landing-note a:hover { text-decoration: underline; }
+.landing-note .sep { opacity: .5; margin: 0 2px; }
 
 .landing img { margin-bottom: 22px; }
 

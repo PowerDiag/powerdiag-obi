@@ -30,7 +30,16 @@
 
 <!-- Shown until a board is connected: name, one button, nothing else. -->
 <section id="landing" class="landing app-main">
-  <p class="tagline invert" data-i18n="landing.tagline">Diagnose your battery over the web!</p>
+  <div class="landing-head">
+    <p class="tagline invert" data-i18n="landing.tagline">Diagnose your battery in your browser.</p>
+    <p class="landing-note">
+      <span data-i18n="landing.needBoard">Reading a pack needs the interface board.</span>
+      <a href="https://github.com/PowerDiag/powerdiag-obi" target="_blank" rel="noopener"
+         data-i18n="landing.buildIt">Build one</a>
+      <span class="sep">/</span>
+      <a href="https://powerdiag.jp/d1l.html" data-i18n="landing.buyIt">Buy one</a>
+    </p>
+  </div>
   <img src="./icon.svg" alt="" width="76" height="76">
   <h1 class="landing-title">PowerDiag OBI</h1>
   <p class="landing-sub" data-i18n="app.subtitle">Battery diagnostics</p>
