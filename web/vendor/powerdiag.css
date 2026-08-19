@@ -591,6 +591,9 @@ select:focus-visible, input:focus-visible {
   display: block; margin-top: 2px;
   font-family: var(--pd-mono); font-size: .92rem;
   font-variant-numeric: tabular-nums;
+  /* A figure and its unit are one thing to read; split across two lines they
+     stop being a reading and start being a puzzle. */
+  white-space: nowrap;
 }
 
 /* Normal stays neutral so an exception is the only coloured thing in the row. */
@@ -711,6 +714,34 @@ dialog.dialog::backdrop { background: rgb(0 0 0 / .55); }
 /* A bar sliding forever is the kind of motion that makes some people ill, but
    a bar holding still reads as one that has stopped working. Fade instead:
    no travel, and it is still visibly alive. */
+/* ==========================================================================
+   Narrow screens
+
+   A phone is not a bench, but it is where someone first meets the tool — from
+   a search result, or a link from the shop page. Nothing here has to be
+   comfortable to work in; it has to be readable and not obviously broken.
+   ========================================================================== */
+
+@media (max-width: 560px) {
+  /* Five tiles across a phone leaves each too narrow for its own number, so
+     they run three and two instead. */
+  .tile { min-width: 88px; }
+
+  /* The bar carries a device name that can be long — a demo label, a chip and
+     an id. One line, cut short, rather than a bar twice as tall. */
+  .appbar { gap: 8px 10px; }
+  .port {
+    max-width: 42vw;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .statusbar { flex-wrap: wrap; gap: 2px 12px; }
+  .statusbar .status { flex: 1 1 100%; }
+
+  /* Two columns of cards on a phone is one column of nothing. */
+  .grid { grid-template-columns: 1fr; }
+}
+
 /* ==========================================================================
    Notices
    ========================================================================== */
