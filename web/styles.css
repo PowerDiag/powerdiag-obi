@@ -66,11 +66,25 @@
 }
 
 /* Reserve the line so the layout does not jump when a message appears. */
-/* Connect is the action; the demo is the way out for someone who cannot take
-   it yet. Centred rather than stretched, so it stays the smaller of the two. */
+/* Connect is the action, and it keeps the centre of the page to itself. The
+   demo is for the visitor who cannot connect yet — set off to the side, out
+   of the path of everyone who came here to plug something in. */
 .landing-actions {
-  display: flex; gap: 12px; flex-wrap: wrap;
-  align-items: center; justify-content: center;
+  position: relative;
+  display: flex; justify-content: center;
+}
+
+#btn-demo {
+  position: absolute;
+  left: calc(100% + 52px); top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+/* Narrow enough and there is no side to put it on; it falls in below. */
+@media (max-width: 700px) {
+  .landing-actions { flex-wrap: wrap; gap: 12px; }
+  #btn-demo { position: static; transform: none; }
 }
 
 .landing-status { margin: 18px 0 0; min-height: 1.4em; }
