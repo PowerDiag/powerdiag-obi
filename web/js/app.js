@@ -37,7 +37,8 @@ let demo = false;
 const DEMO = {
   identity: {
     model: 'BL1860B', locked: false, statusCode: '67', chargeCount: 25,
-    capacityAh: 6.0, batteryType: 18, manufactured: '25/07/2021',
+    capacityAh: 6.0, batteryType: 18,
+    manufactured: { year: 2021, month: 7, day: 25 },
     romId: '15 07 19 64 14 08 01 6C',
     message: 'F1 26 BD 13 14 58 00 00 94 94 40 21 D0 80 02 1E C3 D0 8E 67 60 F7 00 21 02 02 0E 91 00 51 01 33',
   },
@@ -88,6 +89,20 @@ function buildLayout() {
  * 3.0 V it is the reason the pack is on the bench. */
 const CELL_LOW = 3.3;
 const CELL_CRITICAL = 3.0;
+
+/* A pack whose date makes no sense keeps its raw figures. A diagnostic tool
+ * that quietly rolls month 13 into January of the next year is worse than one
+ * that shows the fault — that reading is a symptom, not a formatting problem.
+ * The Gregorian calendar is forced because some locales default to another,
+ * and a manufacturing date is not the place to surprise anyone. */
+function formatDate({ year, month, day }) {
+  if (!(month >= 1 && month <= 12 && day >= 1 && day <= 31)) {
+    return `${year}-${month}-${day} ?`;
+  }
+  return new Intl.DateTimeFormat(`${i18n.lang}-u-ca-gregory`, {
+    year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC',
+  }).format(new Date(Date.UTC(year, month - 1, day)));
+}
 
 function markCell(index, volts) {
   const tile = el(`tile-${index}`);
@@ -378,7 +393,7 @@ function renderIdentity() {
   set('statusCode', info.statusCode);
   set('capacity', `${info.capacityAh.toFixed(1)} Ah`);
   set('batteryType', info.batteryType);
-  set('manufactured', info.manufactured);
+  set('manufactured', formatDate(info.manufactured));
   set('romId', info.romId);
   set('message', info.message);
 

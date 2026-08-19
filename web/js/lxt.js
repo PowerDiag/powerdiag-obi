@@ -36,8 +36,6 @@ const u16le = (payload, offset) => payload[offset] | (payload[offset + 1] << 8);
 
 const nibbleSwap = (byte) => ((byte & 0xf0) >> 4) | ((byte & 0x0f) << 4);
 
-const pad2 = (value) => String(value).padStart(2, '0');
-
 export class LxtBattery {
   constructor(transport) {
     this.transport = transport;
@@ -87,7 +85,9 @@ export class LxtBattery {
       chargeCount,
       locked: (payload[28] & 0x0f) > 0,
       statusCode: payload[27].toString(16).padStart(2, '0').toUpperCase(),
-      manufactured: `${pad2(payload[2])}/${pad2(payload[1])}/20${pad2(payload[0])}`,
+      /* Kept as parts, not a formatted string: how a date is written belongs
+       * to whoever is reading it, and the pack has no opinion. */
+      manufactured: { year: 2000 + payload[0], month: payload[1], day: payload[2] },
       capacityAh: nibbleSwap(payload[24]) / 10,
       batteryType: nibbleSwap(payload[19]),
     };
