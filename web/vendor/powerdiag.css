@@ -282,40 +282,6 @@ body {
 .dot.warn { background: var(--pd-warn); box-shadow: 0 0 0 4px rgb(240 180 41 / .13); }
 .dot.error { background: var(--pd-danger); box-shadow: 0 0 0 4px rgb(242 85 90 / .13); }
 
-/* Card heading row: the title, and the controls that act on that card. It
-   spans the full card so the card reads as a heading over content rather than
-   one undifferentiated block. */
-.card-head {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px;
-  margin: calc(var(--pd-card-pad-y) * -1) calc(var(--pd-card-pad-x) * -1) 12px;
-  padding: 8px var(--pd-card-pad-x);
-  background: var(--pd-bg-sunken);
-  border-bottom: 1px solid var(--pd-line);
-}
-/* In a band of its own the heading can carry weight: the small tracked-out
-   label was sized for sitting directly on the content. Kept centred, and the
-   band holds a height whether or not it has a control in it. */
-.card-head { min-height: calc(var(--pd-control-h) + 16px); }
-
-.card-head h2 {
-  margin: 0;
-  font-size: .95rem; font-weight: 600;
-  letter-spacing: .04em; text-transform: none;
-  color: var(--pd-text);
-}
-.card-head.live h2 { color: var(--pd-accent); }
-
-.card-head-right { display: flex; align-items: center; gap: 10px; }
-
-/* For the card carrying live measurements, as against one showing stored
-   facts. A difference with a reason behind it, not two colours for variety. */
-.card-head.live {
-  background: rgb(53 208 165 / .07);
-  border-bottom-color: var(--pd-accent-dim);
-}
-.card-head.live h2 { color: var(--pd-accent); }
-
 .badge {
   font-size: .78rem; font-weight: 700; letter-spacing: .1em;
   text-transform: uppercase;
@@ -456,6 +422,38 @@ select:focus-visible, input:focus-visible {
   margin: 0 0 10px; font-size: .74rem; font-weight: 600;
   letter-spacing: .15em; text-transform: uppercase; color: var(--pd-text-dim);
 }
+
+/* Card heading row: the title, and the controls that act on that card. It
+   spans the full card so the card reads as a heading over content rather than
+   one undifferentiated block. */
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  margin: calc(var(--pd-card-pad-y) * -1) calc(var(--pd-card-pad-x) * -1) 12px;
+  padding: 8px var(--pd-card-pad-x);
+  min-height: calc(var(--pd-control-h) + 16px);
+  background: var(--pd-bg-sunken);
+  border-bottom: 1px solid var(--pd-line);
+}
+/* In a band of its own the heading can carry weight: the small tracked-out
+   label was sized for sitting directly on the content. Kept centred, and the
+   band holds a height whether or not it has a control in it. */
+.card-head h2 {
+  margin: 0;
+  font-size: .95rem; font-weight: 600;
+  letter-spacing: .04em; text-transform: none;
+  color: var(--pd-text);
+}
+.card-head-right { display: flex; align-items: center; gap: 10px; }
+
+/* For the card carrying live measurements, as against one showing stored
+   facts. A difference with a reason behind it, not two colours for variety. */
+.card-head.live {
+  background: rgb(53 208 165 / .07);
+  border-bottom-color: var(--pd-accent-dim);
+}
+.card-head.live h2 { color: var(--pd-accent); }
+
 
 /* ==========================================================================
    Readout — one large number, the thing you read from across the bench
