@@ -47,7 +47,10 @@
   <img src="./icon.svg" alt="" width="76" height="76">
   <h1 class="landing-title">PowerDiag OBI</h1>
   <p class="landing-sub" data-i18n="app.subtitle">Battery diagnostics</p>
-  <button id="btn-connect" class="btn primary big" data-i18n="btn.connect">Connect</button>
+  <div class="landing-actions">
+    <button id="btn-connect" class="btn primary big" data-i18n="btn.connect">Connect</button>
+    <button id="btn-demo" class="btn big" data-i18n="btn.demo">See a demo</button>
+  </div>
   <div id="busy" class="progress hidden"></div>
   <p class="status landing-status" data-i18n="status.idle">Not connected</p>
   <p id="driver-hint" class="hint hidden" data-i18n="err.driver"></p>
@@ -65,15 +68,15 @@
       <div class="action-group">
         <span class="action-group-label" data-i18n="group.test">Function test</span>
         <div class="action-group-row">
-          <button id="btn-leds-on" class="btn ghost needs-connection" data-i18n="btn.ledsOn">LEDs on</button>
-          <button id="btn-leds-off" class="btn ghost needs-connection" data-i18n="btn.ledsOff">LEDs off</button>
+          <button id="btn-leds-on" class="needs-hardware btn ghost needs-connection" data-i18n="btn.ledsOn">LEDs on</button>
+          <button id="btn-leds-off" class="needs-hardware btn ghost needs-connection" data-i18n="btn.ledsOff">LEDs off</button>
         </div>
       </div>
 
       <div class="action-group danger">
         <span class="action-group-label" data-i18n="group.write">Writes to the battery</span>
         <div class="action-group-row">
-          <button id="btn-clear" class="btn danger needs-connection" data-i18n="btn.clearErrors">Clear errors</button>
+          <button id="btn-clear" class="needs-hardware btn danger needs-connection" data-i18n="btn.clearErrors">Clear errors</button>
         </div>
       </div>
     </section>

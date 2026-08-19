@@ -29,6 +29,25 @@ const VOLTAGE_FIELDS = [
 
 let busy = false;
 
+/* Someone without the board can otherwise only look at a button that does
+ * nothing. These are the readings taken off a real BL1860B, not invented
+ * numbers, so what a visitor sees is what the tool actually shows. */
+let demo = false;
+
+const DEMO = {
+  identity: {
+    model: 'BL1860B', locked: false, statusCode: '67', chargeCount: 25,
+    capacityAh: 6.0, batteryType: 18, manufactured: '25/07/2021',
+    romId: '15 07 19 64 14 08 01 6C',
+    message: 'F1 26 BD 13 14 58 00 00 94 94 40 21 D0 80 02 1E C3 D0 8E 67 60 F7 00 21 02 02 0E 91 00 51 01 33',
+  },
+  cells: {
+    packVoltage: 18.512, cells: [3.706, 3.706, 3.708, 3.708, 3.707],
+    cellDiff: 0.002, tempCell: 30.18, tempMosfet: 30.31,
+  },
+  terminal: 18.47,
+};
+
 /* The last reading, kept so a language switch can redraw the screen instead
  * of throwing away values that are still perfectly good. */
 const reading = { identity: null, cells: null, terminal: null };
@@ -250,6 +269,33 @@ transport.addEventListener('disconnect', () => {
   if (transport.isOpen) transport.close();
 });
 
+function enterDemo() {
+  demo = true;
+  setConnected(true);
+  el('port-name').textContent = t('demo.label');
+  el('conn-info').querySelector('.dot').className = 'dot warn';
+
+  reading.identity = { ...DEMO.identity };
+  reading.cells = { ...DEMO.cells };
+  reading.terminal = DEMO.terminal;
+  renderIdentity();
+  renderCells();
+  renderTerminal();
+
+  /* Nothing to write to, so the actions that would write are off rather than
+   * pretending. */
+  document.querySelectorAll('.needs-hardware').forEach((n) => { n.disabled = true; });
+  status('demo.status', 'warn');
+}
+
+function exitDemo() {
+  demo = false;
+  el('conn-info').querySelector('.dot').className = 'dot on';
+  setConnected(false);
+  clearValues();
+  status('status.idle');
+}
+
 /* ---------- actions ---------- */
 
 function showBusy(on) {
@@ -304,6 +350,7 @@ function renderCells() {
 /* What the identity card shows: who this pack is and what state it is in. */
 async function readIdentity() {
   status('status.reading');
+  if (demo) { renderIdentity(); status('demo.status', 'warn'); return; }
 
   const info = await battery.readStatic();
 
@@ -341,6 +388,7 @@ function renderIdentity() {
 /* What the voltages card shows. */
 async function readCells() {
   status('status.reading');
+  if (demo) { renderCells(); renderTerminal(); status('demo.status', 'warn'); return; }
   await showTerminalVoltage();
   showCells(await battery.readCells());
   status('status.done', 'ok');
@@ -349,6 +397,7 @@ async function readCells() {
 /* The one button most customers ever press: both cards, in the order that
  * lets the model settle the dialect before the cells are read. */
 async function readAll() {
+  if (demo) { enterDemo(); return; }
   clearValues();
   await readIdentity();
   await readCells();
@@ -458,7 +507,11 @@ async function init() {
   }
 
   el('btn-connect').addEventListener('click', () => guard(onConnectClick));
-  el('btn-disconnect').addEventListener('click', () => transport.close());
+  el('btn-demo').addEventListener('click', enterDemo);
+  el('btn-disconnect').addEventListener('click', () => {
+    if (demo) exitDemo();
+    else transport.close();
+  });
   el('btn-read').addEventListener('click', () => guard(readAll));
   el('btn-cells').addEventListener('click', () => guard(readCells));
   el('btn-identity').addEventListener('click', () => guard(readIdentity));
