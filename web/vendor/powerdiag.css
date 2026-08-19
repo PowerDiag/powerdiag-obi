@@ -47,6 +47,8 @@
   --pd-gutter: clamp(12px, 4vw, 40px);
   --pd-measure: 1040px;
   --pd-control-h: 32px;
+  --pd-card-pad-y: 14px;
+  --pd-card-pad-x: 18px;
 
   /* The main action. Dark fill, light label: it has to be the heaviest thing
      on the screen, and on a light page a mid-tone green is not. */
@@ -261,13 +263,27 @@ body {
 .dot.warn { background: var(--pd-warn); box-shadow: 0 0 0 4px rgb(240 180 41 / .13); }
 .dot.error { background: var(--pd-danger); box-shadow: 0 0 0 4px rgb(242 85 90 / .13); }
 
-/* Card heading row: the title, and the controls that act on that card. */
+/* Card heading row: the title, and the controls that act on that card. It
+   spans the full card so the card reads as a heading over content rather than
+   one undifferentiated block. */
 .card-head {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; margin-bottom: 10px;
+  gap: 12px;
+  margin: calc(var(--pd-card-pad-y) * -1) calc(var(--pd-card-pad-x) * -1) 12px;
+  padding: 8px var(--pd-card-pad-x);
+  background: var(--pd-bg-sunken);
+  border-bottom: 1px solid var(--pd-line);
 }
 .card-head h2 { margin: 0; }
 .card-head-right { display: flex; align-items: center; gap: 10px; }
+
+/* For the card carrying live measurements, as against one showing stored
+   facts. A difference with a reason behind it, not two colours for variety. */
+.card-head.live {
+  background: rgb(53 208 165 / .07);
+  border-bottom-color: var(--pd-accent-dim);
+}
+.card-head.live h2 { color: var(--pd-accent); }
 
 .badge {
   font-size: .78rem; font-weight: 700; letter-spacing: .1em;
@@ -386,7 +402,7 @@ select:focus-visible, input:focus-visible {
   background: var(--pd-bg-raised);
   border: 1px solid var(--pd-line);
   border-radius: var(--pd-radius);
-  padding: 14px 18px;
+  padding: var(--pd-card-pad-y) var(--pd-card-pad-x);
   min-height: 0;
   overflow-y: auto;
 }
