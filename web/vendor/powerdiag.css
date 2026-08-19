@@ -705,13 +705,16 @@ dialog.dialog::backdrop { background: rgb(0 0 0 / .55); }
    a bar holding still reads as one that has stopped working. Fade instead:
    no travel, and it is still visibly alive. */
 @media (prefers-reduced-motion: reduce) {
+  /* Thicker and swinging the full range: without travel to catch the eye, a
+     faint pulse reads as decoration rather than as work in progress. */
+  .progress { height: 5px; }
   .progress::after {
     width: 100%;
-    animation: pd-progress-pulse 1.8s ease-in-out infinite;
+    animation: pd-progress-pulse 1.4s ease-in-out infinite;
   }
   @keyframes pd-progress-pulse {
-    0%, 100% { opacity: .28; }
-    50% { opacity: .85; }
+    0%, 100% { opacity: .18; }
+    50% { opacity: 1; }
   }
 }
 
