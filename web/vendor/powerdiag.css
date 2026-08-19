@@ -274,7 +274,19 @@ body {
   background: var(--pd-bg-sunken);
   border-bottom: 1px solid var(--pd-line);
 }
-.card-head h2 { margin: 0; }
+/* In a band of its own the heading can carry weight: the small tracked-out
+   label was sized for sitting directly on the content. Kept centred, and the
+   band holds a height whether or not it has a control in it. */
+.card-head { min-height: calc(var(--pd-control-h) + 16px); }
+
+.card-head h2 {
+  margin: 0;
+  font-size: .95rem; font-weight: 600;
+  letter-spacing: .04em; text-transform: none;
+  color: var(--pd-text);
+}
+.card-head.live h2 { color: var(--pd-accent); }
+
 .card-head-right { display: flex; align-items: center; gap: 10px; }
 
 /* For the card carrying live measurements, as against one showing stored
