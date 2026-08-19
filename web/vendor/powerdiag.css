@@ -366,10 +366,14 @@ body {
 .actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
 .actions .status { margin-left: 6px; }
 
-/* A framed row of actions, set apart from the panels they act on. Aligned to
-   the right so the row ends where the cards end. */
+/* A framed row of actions, set apart from the panels they act on. The frame
+   is drawn around the buttons rather than across the column, and the whole
+   block sits at the right — so nothing inside needs aligning, and there is no
+   empty half-frame to explain. */
 .toolbar {
-  justify-content: flex-end;
+  width: fit-content; max-width: 100%;
+  margin-left: auto;      /* block context */
+  align-self: flex-end;   /* flex-column context */
   padding: 9px 12px;
   background: var(--pd-bg-raised);
   border: 1px solid var(--pd-line);
