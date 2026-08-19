@@ -463,11 +463,13 @@ let installPrompt = null;
 window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();
   installPrompt = event;
+  installed = false;   // it is only offered when the app is not there
   refreshInstallState();
 });
 
 window.addEventListener('appinstalled', () => {
   installPrompt = null;
+  installed = true;
   refreshInstallState();
 });
 
@@ -479,7 +481,6 @@ const INSTALL_VERDICT_MS = 1500;
 let installVerdictDue = false;
 
 function refreshInstallState() {
-  const installed = isInstalled();
   const offered = installPrompt !== null;
 
   el('btn-installed').classList.toggle('hidden', !installed);
@@ -500,9 +501,27 @@ async function install() {
 /* No API removes an installed app — a page that could uninstall itself could
  * uninstall anything — so the most we can do is say where the control lives,
  * and only while the app is actually running installed. */
-function isInstalled() {
+let installed = false;
+
+/* True only while the page is being viewed inside the installed window. */
+function isStandalone() {
   return ['standalone', 'window-controls-overlay', 'minimal-ui']
     .some((mode) => window.matchMedia(`(display-mode: ${mode})`).matches);
+}
+
+/* Installed and then opened in an ordinary tab looks exactly like a browser
+ * that cannot install at all: not standalone, and no prompt offered, because
+ * the prompt is withheld once the app exists. Only the manifest can settle
+ * it, and only if it names itself as a related application. */
+async function detectInstalled() {
+  if (isStandalone()) return true;
+  if (!navigator.getInstalledRelatedApps) return false;
+  try {
+    const apps = await navigator.getInstalledRelatedApps();
+    return apps.some((app) => app.platform === 'webapp');
+  } catch {
+    return false;
+  }
 }
 
 function showUninstallHelp() {
@@ -568,8 +587,12 @@ async function init() {
   el('btn-install').addEventListener('click', install);
   el('btn-installed').addEventListener('click', showUninstallHelp);
 
+  installed = await detectInstalled();
   refreshInstallState();
-  setTimeout(() => {
+  setTimeout(async () => {
+    /* Ask once more before saying it cannot be installed: the answer may have
+     * arrived late, and that verdict is the one worth being sure about. */
+    if (!installed) installed = await detectInstalled();
     installVerdictDue = true;
     refreshInstallState();
   }, INSTALL_VERDICT_MS);
