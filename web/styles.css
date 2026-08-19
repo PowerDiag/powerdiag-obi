@@ -78,8 +78,6 @@
 /* ---------- dashboard nudges ---------- */
 
 .actions { margin-bottom: 0; }
-.logsec { flex: none; }
-.log { max-height: 22vh; }
 .hint.warn { margin: 0 0 14px; }
 
 /* The pack voltage now heads the card it summarises, so it loses the panel
@@ -102,3 +100,18 @@
 .appbar-right .iconbtn[href*="github"]:hover {
   color: var(--pd-accent); border-color: var(--pd-accent-dim);
 }
+
+/* Deliberately English in every language: the person who needs it is the one
+   who cannot read the interface. Sits under the language picker it answers. */
+.landing-langhint {
+  position: absolute;
+  top: 8px; right: var(--pd-gutter);
+  margin: 0;
+  padding: 6px 12px;
+  background: var(--pd-bg-raised);
+  border: 1px solid var(--pd-line);
+  border-radius: var(--pd-radius);
+  font-size: .76rem; color: var(--pd-text-dim);
+}
+.landing-langhint a { color: var(--pd-accent); text-decoration: none; }
+.landing-langhint a:hover { text-decoration: underline; }

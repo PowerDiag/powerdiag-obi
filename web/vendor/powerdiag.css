@@ -190,6 +190,22 @@ body {
     padding: 12px var(--pd-gutter);
     max-width: var(--pd-measure); margin-inline: auto;
   }
+
+  /* Something has to claim the slack or the column stops at its natural
+     height and leaves a gap above the status bar. The panels take most of it;
+     an open log takes what is left and grows with the window, down to a floor
+     that still shows a few exchanges. A closed log claims nothing. */
+  body.app-shell .grid { flex: 2 1 0; min-height: 0; }
+
+  body.app-shell .logsec {
+    flex: none; min-height: 0;
+    display: flex; flex-direction: column;
+  }
+  body.app-shell .logsec:has(.log:not(.hidden)) { flex: 1 1 0; }
+
+  body.app-shell .logsec .log {
+    flex: 1; min-height: 130px; max-height: none;
+  }
 }
 
 /* ==========================================================================
@@ -658,6 +674,9 @@ select:focus-visible, input:focus-visible {
 /* ==========================================================================
    Log — raw traffic, the first thing support asks for
    ========================================================================== */
+
+/* Controls belong to the log they act on, and line up with the toolbar above. */
+.logsec .actions { justify-content: flex-end; }
 
 .log {
   padding: 14px 16px;
