@@ -354,6 +354,16 @@ body {
 .actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
 .actions .status { margin-left: 6px; }
 
+/* A framed row of actions, set apart from the panels they act on. Aligned to
+   the right so the row ends where the cards end. */
+.toolbar {
+  justify-content: flex-end;
+  padding: 9px 12px;
+  background: var(--pd-bg-raised);
+  border: 1px solid var(--pd-line);
+  border-radius: var(--pd-radius);
+}
+
 /* Actions that change the battery should not sit shoulder to shoulder with
    ones that only look at it. Grouping under a label makes the reach
    deliberate. */
