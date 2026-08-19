@@ -214,8 +214,13 @@ async function connect(port) {
 }
 
 async function onConnectClick() {
+  /* The port picker is the user's time, not ours. A bar sliding away while
+   * they read a list of devices says the tool is working when it is only
+   * waiting to be told which one. */
+  showBusy(false);
   try {
     const port = await Transport.requestPort();
+    showBusy(true);
     await connect(port);
   } catch (error) {
     if (error?.name === 'NotFoundError') {
@@ -239,10 +244,14 @@ transport.addEventListener('disconnect', () => {
 
 /* ---------- actions ---------- */
 
+function showBusy(on) {
+  el('busy').classList.toggle('hidden', !on);
+}
+
 async function guard(action) {
   if (busy) return;
   busy = true;
-  el('busy').classList.remove('hidden');
+  showBusy(true);
   document.querySelectorAll('.needs-connection').forEach((n) => { n.disabled = true; });
   try {
     await action();
@@ -250,7 +259,7 @@ async function guard(action) {
     fail(error);
   } finally {
     busy = false;
-    el('busy').classList.add('hidden');
+    showBusy(false);
     document.querySelectorAll('.needs-connection').forEach((n) => { n.disabled = !transport.isOpen; });
   }
 }
