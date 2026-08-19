@@ -66,7 +66,12 @@
 }
 
 /* Reserve the line so the layout does not jump when a message appears. */
-.landing-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+/* Connect is the action; the demo is the way out for someone who cannot take
+   it yet. Centred rather than stretched, so it stays the smaller of the two. */
+.landing-actions {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  align-items: center; justify-content: center;
+}
 
 .landing-status { margin: 18px 0 0; min-height: 1.4em; }
 
