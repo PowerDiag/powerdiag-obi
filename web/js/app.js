@@ -106,8 +106,12 @@ function applyLanguage() {
   el('btn-log').textContent = el('log').classList.contains('hidden') ? t('log.show') : t('log.hide');
 }
 
+/* The key travels with the element. Re-rendering for a language change reads
+ * data-i18n back off the node, so a status left with the key it was born with
+ * would announce "not connected" over a live connection. */
 function status(key, tone = 'info') {
   document.querySelectorAll('.status').forEach((node) => {
+    node.dataset.i18n = key;
     node.textContent = t(key);
     node.className = `status ${tone === 'info' ? '' : tone}`.trim();
   });
@@ -117,6 +121,10 @@ function fail(error) {
   const key = error instanceof ObiError ? error.messageKey : null;
   const text = key ? t(key) : String(error.message || error);
   document.querySelectorAll('.status').forEach((node) => {
+    /* A message we have no key for cannot be re-rendered in another language,
+     * so drop the attribute rather than let it fall back to a stale one. */
+    if (key) node.dataset.i18n = key;
+    else delete node.dataset.i18n;
     node.textContent = text;
     node.className = 'status error';
   });
