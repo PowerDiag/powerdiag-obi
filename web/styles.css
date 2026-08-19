@@ -73,3 +73,9 @@
 /* Sits under the connect button, matching its width so it reads as that
    button working rather than as a separate element. */
 #busy { width: 168px; margin-top: 10px; }
+
+/* The iconbtn hover is red because the close control means "leave". A link
+   out to the source is not destructive, so it lifts to the accent instead. */
+.appbar-right .iconbtn[href*="github"]:hover {
+  color: var(--pd-accent); border-color: var(--pd-accent-dim);
+}
