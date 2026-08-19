@@ -444,6 +444,13 @@ select:focus-visible, input:focus-visible {
   padding: 6px 0; border-bottom: 1px solid var(--pd-line-soft);
 }
 .fields .row:last-child { border-bottom: none; }
+
+/* Unless a block value follows, in which case the list has not ended and its
+   last row keeps the separator: without it that row reads as taller than the
+   ones above, because the next rule sat further down than a row border does. */
+.fields:has(+ .block-field) .row:last-child {
+  border-bottom: 1px solid var(--pd-line-soft);
+}
 .fields.compact .row { padding: 4px 0; }
 
 /* Add .chips to a list whose values are the point of the card: each one gets
@@ -473,8 +480,9 @@ select:focus-visible, input:focus-visible {
   border: 1px solid transparent;
 }
 
-/* A block value that needs its own line, e.g. a raw frame dump. */
-.block-field { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--pd-line-soft); }
+/* A block value that needs its own line, e.g. a raw frame dump. Spaced like
+   one more row, since that is what it is. */
+.block-field { margin-top: 0; padding-top: 6px; }
 .block-field dt { color: var(--pd-text-dim); font-size: .85rem; margin-bottom: 7px; }
 .block-field dd { margin: 0; }
 
