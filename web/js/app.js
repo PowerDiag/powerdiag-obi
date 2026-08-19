@@ -229,6 +229,8 @@ async function connect(port) {
     const version = await battery.interfaceVersion({ attempts: 5 });
 
     setConnected(true);
+    /* A real port name is not a phrase in any language, so it carries no key. */
+    delete el('port-name').dataset.i18n;
     el('port-name').textContent = `${describePort(port)} · FW ${version}`;
     status('status.connected', 'ok');
   } catch (error) {
@@ -272,6 +274,9 @@ transport.addEventListener('disconnect', () => {
 function enterDemo() {
   demo = true;
   setConnected(true);
+  /* Carry the key, or a language change leaves the bar announcing the demo in
+   * whichever language it started in. */
+  el('port-name').dataset.i18n = 'demo.label';
   el('port-name').textContent = t('demo.label');
   el('conn-info').querySelector('.dot').className = 'dot warn';
 
@@ -577,15 +582,25 @@ async function init() {
   el('btn-log-clear').addEventListener('click', clearLog);
   el('btn-log-export').addEventListener('click', exportLog);
 
-  if (guardUnsupported()) {
-    el('btn-connect').disabled = true;
-    return;
-  }
-
-  el('btn-connect').addEventListener('click', () => guard(onConnectClick));
+  /* Everything that does not need a serial port is wired first. The demo
+   * exists precisely for people without the hardware — a phone being the
+   * clearest case — and it used to be wired after the support check, which
+   * returns early there, so on a phone the one button meant for that visitor
+   * did nothing. */
   el('btn-demo').addEventListener('click', enterDemo);
   el('btn-install').addEventListener('click', install);
   el('btn-installed').addEventListener('click', showUninstallHelp);
+  el('btn-copy').addEventListener('click', () => guard(copyReadings));
+  el('btn-read').addEventListener('click', () => guard(readAll));
+  el('btn-cells').addEventListener('click', () => guard(readCells));
+  el('btn-identity').addEventListener('click', () => guard(readIdentity));
+  el('btn-clear').addEventListener('click', () => guard(clearErrors));
+  el('btn-leds-on').addEventListener('click', () => guard(() => battery.ledsOn()));
+  el('btn-leds-off').addEventListener('click', () => guard(() => battery.ledsOff()));
+  el('btn-disconnect').addEventListener('click', () => {
+    if (demo) exitDemo();
+    else transport.close();
+  });
 
   installed = await detectInstalled();
   refreshInstallState();
@@ -596,17 +611,22 @@ async function init() {
     installVerdictDue = true;
     refreshInstallState();
   }, INSTALL_VERDICT_MS);
-  el('btn-disconnect').addEventListener('click', () => {
-    if (demo) exitDemo();
-    else transport.close();
-  });
-  el('btn-read').addEventListener('click', () => guard(readAll));
-  el('btn-cells').addEventListener('click', () => guard(readCells));
-  el('btn-identity').addEventListener('click', () => guard(readIdentity));
-  el('btn-clear').addEventListener('click', () => guard(clearErrors));
-  el('btn-copy').addEventListener('click', () => guard(copyReadings));
-  el('btn-leds-on').addEventListener('click', () => guard(() => battery.ledsOn()));
-  el('btn-leds-off').addEventListener('click', () => guard(() => battery.ledsOff()));
+
+  setConnected(false);
+  status('status.idle');
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => { /* offline support is optional */ });
+  }
+
+  /* Past here needs Web Serial. Without it the tool cannot read a pack, but
+   * everything above still works, so only connecting is taken away. */
+  if (guardUnsupported()) {
+    el('btn-connect').disabled = true;
+    return;
+  }
+
+  el('btn-connect').addEventListener('click', () => guard(onConnectClick));
 
   navigator.serial.addEventListener('disconnect', (event) => {
     if (transport.port === event.target) transport.close();
@@ -617,17 +637,10 @@ async function init() {
    * and the next window would find the device claimed. */
   window.addEventListener('pagehide', () => { transport.close(); });
 
-  setConnected(false);
-  status('status.idle');
-
   /* No reconnect on load. Silently reclaiming a port made disconnect
    * meaningless — a refresh put you straight back — and left it unclear which
    * device the tool had picked. Connecting is a deliberate act, with the
    * picker every time. */
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => { /* offline support is optional */ });
-  }
 }
 
 init();
