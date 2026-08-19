@@ -104,10 +104,17 @@ html[lang="th"] {
   --pd-sans: "Leelawadee UI", Thonburi, "Noto Sans Thai", system-ui, sans-serif;
 }
 
-/* Vietnamese is Latin with heavy diacritics; the default stack carries it. */
-html[lang="en"],
-html[lang="vi"] {
+html[lang="en"] {
   --pd-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Vietnamese is Latin, but its stacked diacritics are not in every Latin face:
+   system-ui on a Japanese machine is a Japanese face without them, so the
+   browser falls back per glyph and words come apart mid-word. Put faces that
+   actually carry the range first. */
+html[lang="vi"] {
+  --pd-sans: "Segoe UI", -apple-system, "Helvetica Neue", "Noto Sans", Roboto,
+             Arial, system-ui, sans-serif;
 }
 
 /* Light mode keeps the same layout and weight, only the surfaces invert.
