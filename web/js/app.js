@@ -454,6 +454,32 @@ async function copyReadings() {
   status('status.copied', 'ok');
 }
 
+/* Installing turns the page into a windowed app with its own icon, still
+ * running on the browser already on the machine. Chromium hands us the prompt
+ * rather than letting us raise one, so the button only appears once it has,
+ * and goes away once the app is installed. */
+let installPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  installPrompt = event;
+  el('btn-install').classList.remove('hidden');
+});
+
+window.addEventListener('appinstalled', () => {
+  installPrompt = null;
+  el('btn-install').classList.add('hidden');
+});
+
+async function install() {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  /* The prompt is single-use whichever way it was answered. */
+  installPrompt = null;
+  el('btn-install').classList.add('hidden');
+}
+
 /* ---------- wiring ---------- */
 
 function guardUnsupported() {
@@ -508,6 +534,7 @@ async function init() {
 
   el('btn-connect').addEventListener('click', () => guard(onConnectClick));
   el('btn-demo').addEventListener('click', enterDemo);
+  el('btn-install').addEventListener('click', install);
   el('btn-disconnect').addEventListener('click', () => {
     if (demo) exitDemo();
     else transport.close();

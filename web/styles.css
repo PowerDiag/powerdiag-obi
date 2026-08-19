@@ -157,3 +157,7 @@
 }
 .landing-langhint a { color: var(--pd-accent); text-decoration: none; }
 .landing-langhint a:hover { text-decoration: underline; }
+
+/* Only ever visible when the browser says the app can be installed, so it
+   sits below the status line rather than holding a place in the layout. */
+#btn-install { margin-top: 14px; }
