@@ -449,15 +449,15 @@ select:focus-visible, input:focus-visible {
 /* Add .chips to a list whose values are the point of the card: each one gets
    a filled chip so the column can be read from a step back. */
 .fields.chips dd {
-  display: inline-block;
-  padding: 1px 9px;
+  padding-inline: 9px;
   background: var(--pd-chip-bg);
-  border: 1px solid var(--pd-chip-border);
+  border-color: var(--pd-chip-border);
   border-radius: var(--pd-radius-sm);
   color: var(--pd-chip-text);
 }
 
-/* Nothing read yet: a row of chipped dashes would be louder than the data. */
+/* Nothing read yet: a row of chipped dashes would be louder than the data.
+   The box stays, only its colours go, so nothing shifts when a value lands. */
 .fields.chips dd.empty {
   background: none; border-color: transparent; color: var(--pd-text-dim);
 }
@@ -466,6 +466,11 @@ select:focus-visible, input:focus-visible {
 .fields dd {
   margin: 0; font-family: var(--pd-mono); font-size: .92rem;
   text-align: right; font-variant-numeric: tabular-nums;
+  /* The chip's padding and border are reserved here, transparent, so a
+     chipped list and a plain one keep the same row height. Without this a
+     card that chips its values sits 4px per row taller than one beside it. */
+  padding-block: 1px;
+  border: 1px solid transparent;
 }
 
 /* A block value that needs its own line, e.g. a raw frame dump. */
