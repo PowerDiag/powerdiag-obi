@@ -67,12 +67,18 @@ const LANG_NAMES = {
 
 /* ---------- rendering ---------- */
 
-function fieldRow(labelKey, slot) {
-  return `<div class="row"><dt data-i18n="${labelKey}">${t(labelKey)}</dt><dd id="v-${slot}" class="empty">—</dd></div>`;
+function fieldRow(labelKey, slot, note = '') {
+  const hint = note ? ` <span class="field-note">${note}</span>` : '';
+  return `<div class="row">
+    <dt><span data-i18n="${labelKey}">${t(labelKey)}</span>${hint}</dt>
+    <dd id="v-${slot}" class="empty">—</dd>
+  </div>`;
 }
 
 function buildLayout() {
-  el('identity-fields').innerHTML = IDENTITY_FIELDS.map(([k, s]) => fieldRow(k, s)).join('');
+  el('identity-fields').innerHTML = IDENTITY_FIELDS
+    .map(([k, s]) => fieldRow(k, s, s === 'manufactured' ? `(${datePattern()})` : ''))
+    .join('');
   el('voltage-fields').innerHTML = VOLTAGE_FIELDS.map(([k, s]) => fieldRow(k, s)).join('');
   el('cell-fields').innerHTML = '';
   el('cell-tiles').innerHTML = [1, 2, 3, 4, 5]
@@ -95,13 +101,30 @@ const CELL_CRITICAL = 3.0;
  * that shows the fault — that reading is a symptom, not a formatting problem.
  * The Gregorian calendar is forced because some locales default to another,
  * and a manufacturing date is not the place to surprise anyone. */
+function dateFormatter() {
+  return new Intl.DateTimeFormat(`${i18n.lang}-u-ca-gregory`, {
+    year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC',
+  });
+}
+
+/* The order changes with the language, so the hint beside the label is read
+ * back out of the formatter rather than written down: a fixed (YYYY/MM/DD)
+ * would be a fresh way to misread the date in every locale that puts the day
+ * first. */
+function datePattern() {
+  const shape = { year: 'YYYY', month: 'MM', day: 'DD' };
+  return dateFormatter()
+    .formatToParts(new Date(Date.UTC(2021, 6, 25)))
+    .map((part) => shape[part.type] ?? part.value)
+    .join('')
+    .trim();
+}
+
 function formatDate({ year, month, day }) {
   if (!(month >= 1 && month <= 12 && day >= 1 && day <= 31)) {
     return `${year}-${month}-${day} ?`;
   }
-  return new Intl.DateTimeFormat(`${i18n.lang}-u-ca-gregory`, {
-    year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC',
-  }).format(new Date(Date.UTC(year, month - 1, day)));
+  return dateFormatter().format(new Date(Date.UTC(year, month - 1, day)));
 }
 
 function markCell(index, volts) {

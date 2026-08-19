@@ -538,6 +538,13 @@ select:focus-visible, input:focus-visible {
 }
 
 .fields dt { color: var(--pd-text-dim); font-size: .85rem; }
+
+/* A note on the label rather than the value: the unit or the shape a figure
+   comes in, said once, instead of repeated on every row. */
+.field-note {
+  font-family: var(--pd-mono); font-size: .72rem;
+  color: var(--pd-text-dim); opacity: .75;
+}
 .fields dd {
   margin: 0; font-family: var(--pd-mono); font-size: .92rem;
   text-align: right; font-variant-numeric: tabular-nums;
