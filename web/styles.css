@@ -69,3 +69,7 @@
 
 
 .logsec .actions { margin-bottom: 10px; }
+
+/* Sits under the connect button, matching its width so it reads as that
+   button working rather than as a separate element. */
+#busy { width: 168px; margin-top: 10px; }

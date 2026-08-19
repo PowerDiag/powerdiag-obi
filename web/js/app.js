@@ -242,6 +242,7 @@ transport.addEventListener('disconnect', () => {
 async function guard(action) {
   if (busy) return;
   busy = true;
+  el('busy').classList.remove('hidden');
   document.querySelectorAll('.needs-connection').forEach((n) => { n.disabled = true; });
   try {
     await action();
@@ -249,6 +250,7 @@ async function guard(action) {
     fail(error);
   } finally {
     busy = false;
+    el('busy').classList.add('hidden');
     document.querySelectorAll('.needs-connection').forEach((n) => { n.disabled = !transport.isOpen; });
   }
 }

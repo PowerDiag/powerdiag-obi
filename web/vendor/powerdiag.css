@@ -563,6 +563,36 @@ select:focus-visible, input:focus-visible {
 }
 
 /* ==========================================================================
+   Progress — something is happening and we cannot say how far along it is
+   ========================================================================== */
+
+.progress {
+  position: relative;
+  width: 100%; height: 3px;
+  background: var(--pd-line-soft);
+  overflow: hidden;
+}
+
+.progress::after {
+  content: "";
+  position: absolute; inset-block: 0;
+  width: 38%;
+  background: var(--pd-accent);
+  animation: pd-progress 1.15s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+
+@keyframes pd-progress {
+  from { left: -38%; }
+  to { left: 100%; }
+}
+
+/* A bar sliding forever is exactly the kind of motion that makes some people
+   ill; hold it still and let the colour alone say the tool is working. */
+@media (prefers-reduced-motion: reduce) {
+  .progress::after { animation: none; width: 100%; opacity: .5; }
+}
+
+/* ==========================================================================
    Notices
    ========================================================================== */
 
