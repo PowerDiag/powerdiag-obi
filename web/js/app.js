@@ -463,13 +463,30 @@ let installPrompt = null;
 window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();
   installPrompt = event;
-  el('btn-install').classList.remove('hidden');
+  refreshInstallState();
 });
 
 window.addEventListener('appinstalled', () => {
   installPrompt = null;
-  el('btn-install').classList.add('hidden');
+  refreshInstallState();
 });
+
+/* Three states, and the third can only be inferred: a browser that can install
+ * offers the prompt shortly after load, so silence past that means this one
+ * cannot. Saying so beats a button that would do nothing, or no answer at all
+ * to a customer wondering where the app went. */
+const INSTALL_VERDICT_MS = 1500;
+let installVerdictDue = false;
+
+function refreshInstallState() {
+  const installed = isInstalled();
+  const offered = installPrompt !== null;
+
+  el('btn-installed').classList.toggle('hidden', !installed);
+  el('btn-install').classList.toggle('hidden', installed || !offered);
+  el('install-unsupported').classList
+    .toggle('hidden', installed || offered || !installVerdictDue);
+}
 
 async function install() {
   if (!installPrompt) return;
@@ -477,7 +494,21 @@ async function install() {
   await installPrompt.userChoice;
   /* The prompt is single-use whichever way it was answered. */
   installPrompt = null;
-  el('btn-install').classList.add('hidden');
+  refreshInstallState();
+}
+
+/* No API removes an installed app — a page that could uninstall itself could
+ * uninstall anything — so the most we can do is say where the control lives,
+ * and only while the app is actually running installed. */
+function isInstalled() {
+  return ['standalone', 'window-controls-overlay', 'minimal-ui']
+    .some((mode) => window.matchMedia(`(display-mode: ${mode})`).matches);
+}
+
+function showUninstallHelp() {
+  el('uninstall-url').textContent =
+    navigator.userAgent.includes('Edg/') ? 'edge://apps' : 'chrome://apps';
+  el('uninstall').showModal();
 }
 
 /* ---------- wiring ---------- */
@@ -535,6 +566,13 @@ async function init() {
   el('btn-connect').addEventListener('click', () => guard(onConnectClick));
   el('btn-demo').addEventListener('click', enterDemo);
   el('btn-install').addEventListener('click', install);
+  el('btn-installed').addEventListener('click', showUninstallHelp);
+
+  refreshInstallState();
+  setTimeout(() => {
+    installVerdictDue = true;
+    refreshInstallState();
+  }, INSTALL_VERDICT_MS);
   el('btn-disconnect').addEventListener('click', () => {
     if (demo) exitDemo();
     else transport.close();

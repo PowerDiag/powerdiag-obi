@@ -39,6 +39,11 @@ jobs:
 
       # Seven languages: a key added to one and forgotten in the others falls
       # back to English silently, mid-sentence.
+      # The failure that took the whole app down once: a broken string literal
+      # is served with a 200 and simply never runs.
+      - name: Check for broken string literals
+        run: python3 tools/check-strings.py
+
       - name: Check translations are complete
         run: python3 tools/check-i18n.py
 

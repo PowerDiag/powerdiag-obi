@@ -56,6 +56,8 @@
   <div id="busy" class="progress hidden"></div>
   <p class="status landing-status" data-i18n="status.idle">Not connected</p>
   <button id="btn-install" class="btn ghost small hidden" data-i18n="btn.install">Install as an app</button>
+  <button id="btn-installed" class="btn ghost small hidden" data-i18n="install.done">Installed as an app</button>
+  <p id="install-unsupported" class="hint hidden" data-i18n="install.unsupported"></p>
   <p id="driver-hint" class="hint hidden" data-i18n="err.driver"></p>
   <div id="unsupported" class="banner hidden"></div>
 </section>
@@ -146,6 +148,17 @@
     <span class="copyright">&copy; 2026 powerdiag.jp</span>
   </span>
 </footer>
+
+<dialog id="uninstall" class="dialog">
+  <p class="dialog-title" data-i18n="uninstall.title">Uninstalling</p>
+  <p class="dialog-body">
+    <span data-i18n="uninstall.body">A page cannot remove itself, so this has to be done from the browser.</span>
+    <br><br><code id="uninstall-url" class="mono"></code>
+  </p>
+  <form method="dialog" class="dialog-actions">
+    <button value="ok" class="btn" data-i18n="btn.close">Close</button>
+  </form>
+</dialog>
 
 <dialog id="confirm" class="dialog">
   <p class="dialog-title danger" data-i18n="group.write">Writes to the battery</p>
