@@ -723,6 +723,14 @@ dialog.dialog::backdrop { background: rgb(0 0 0 / .55); }
    ========================================================================== */
 
 @media (max-width: 560px) {
+  /* The page gutter goes: on a phone those margins are the difference between
+     a figure fitting on its line and not. Cards run edge to edge and keep the
+     reading inset with their own padding, which is where it belongs. */
+  :root { --pd-gutter: 0px; }
+
+  /* The bars have no inner padding of their own, so they keep a little. */
+  .appbar, .statusbar { padding-inline: 10px; }
+
   /* Five tiles across a phone leaves each too narrow for its own number, so
      they run three and two instead. */
   .tile { min-width: 88px; }

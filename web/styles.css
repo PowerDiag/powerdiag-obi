@@ -161,3 +161,10 @@
 /* Only ever visible when the browser says the app can be installed, so it
    sits below the status line rather than holding a place in the layout. */
 #btn-install { margin-top: 14px; }
+
+/* The gutter is zero on a phone and these are positioned against it, so they
+   would otherwise sit flush to the edge. */
+@media (max-width: 560px) {
+  .landing-langhint { right: 8px; }
+  .landing-head { left: 8px; right: 8px; }
+}
