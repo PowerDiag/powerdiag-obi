@@ -41,7 +41,7 @@ const STRINGS = {
   en: {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': 'Battery pack diagnostics',
-    'landing.tagline': 'Diagnose your battery over the web!',
+    'landing.tagline': 'Diagnose your battery in your browser.',
     'btn.connect': 'Connect', 'btn.disconnect': 'Disconnect',
     'btn.read': 'Read everything', 'btn.cells': 'Read cell voltages', 'btn.refresh': 'Read',
     'btn.clearErrors': 'Clear errors', 'btn.ledsOn': 'LEDs on', 'btn.ledsOff': 'LEDs off',
