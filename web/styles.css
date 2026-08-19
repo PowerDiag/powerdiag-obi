@@ -52,7 +52,17 @@
 .landing-note a:hover { text-decoration: underline; }
 .landing-note .sep { opacity: .5; margin: 0 2px; }
 
-.landing img { margin-bottom: 22px; }
+/* Mark beside the name rather than stacked above it: it reads as one lockup,
+   and the block loses the height that was pushing it into the band above. */
+.landing-brand {
+  display: flex; align-items: center;
+  gap: clamp(10px, 1.6vw, 18px);
+}
+
+.landing-brand img {
+  width: clamp(38px, 5.5vw, 62px); height: auto;
+  flex: none;
+}
 
 .landing-title {
   margin: 0;
@@ -88,6 +98,17 @@
 }
 
 .landing-status { margin: 18px 0 0; min-height: 1.4em; }
+
+/* Out of the flow, the band can only stay clear of the centred block while
+   there is room above it. Once the window is small — or zoomed far in, which
+   is the same thing — it rejoins the column instead of landing on top. */
+@media (max-width: 860px), (max-height: 700px) {
+  .landing-head {
+    position: static;
+    margin: 0 auto clamp(18px, 4vh, 32px);
+  }
+  .landing { justify-content: flex-start; padding-top: clamp(16px, 4vh, 40px); }
+}
 
 .landing .hint { max-width: 34em; margin-top: 12px; }
 .landing .banner { max-width: 34em; margin-top: 20px; }
