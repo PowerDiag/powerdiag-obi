@@ -354,8 +354,21 @@ async function readAll() {
   await readCells();
 }
 
+/* The browser's confirm() announces itself as the browser's, cannot be styled
+ * and blocks the whole page; the native dialog carries the tool's own frame
+ * while the browser still handles the focus trap and Esc. */
+function askConfirm(messageKey) {
+  const dialog = el('confirm');
+  el('confirm-text').textContent = t(messageKey);
+  dialog.returnValue = '';
+  dialog.showModal();
+  return new Promise((resolve) => {
+    dialog.addEventListener('close', () => resolve(dialog.returnValue === 'ok'), { once: true });
+  });
+}
+
 async function clearErrors() {
-  if (!window.confirm(t('confirm.clear'))) return;
+  if (!(await askConfirm('confirm.clear'))) return;
   status('status.reading');
   await battery.clearErrors();
   status('status.cleared', 'ok');

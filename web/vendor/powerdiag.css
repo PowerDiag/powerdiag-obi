@@ -631,6 +631,48 @@ select:focus-visible, input:focus-visible {
 }
 
 /* ==========================================================================
+   Dialog — for the question that must be answered before something happens
+
+   Styles the native <dialog>, so the modal behaviour, the focus trap and Esc
+   come from the browser rather than from code we would have to get right. The
+   app calls showModal(); nothing here needs script.
+   ========================================================================== */
+
+dialog.dialog {
+  padding: 0;
+  width: calc(100% - 2 * var(--pd-gutter));
+  max-width: 30em;
+  color: var(--pd-text);
+  background: var(--pd-bg-raised);
+  border: 1px solid var(--pd-line);
+  border-radius: var(--pd-radius);
+}
+
+dialog.dialog::backdrop { background: rgb(0 0 0 / .55); }
+
+.dialog-title {
+  margin: 0;
+  padding: 12px 20px;
+  font-size: .95rem; font-weight: 600;
+  background: var(--pd-bg-sunken);
+  border-bottom: 1px solid var(--pd-line);
+}
+.dialog-title.danger { color: var(--pd-danger); }
+
+.dialog-body {
+  margin: 0;
+  padding: 18px 20px;
+  font-size: .92rem; line-height: 1.7;
+}
+
+.dialog-actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 12px 20px;
+  background: var(--pd-bg-sunken);
+  border-top: 1px solid var(--pd-line);
+}
+
+/* ==========================================================================
    Progress — something is happening and we cannot say how far along it is
    ========================================================================== */
 

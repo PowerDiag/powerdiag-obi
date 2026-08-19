@@ -141,6 +141,15 @@
   </span>
 </footer>
 
+<dialog id="confirm" class="dialog">
+  <p class="dialog-title danger" data-i18n="group.write">Writes to the battery</p>
+  <p id="confirm-text" class="dialog-body"></p>
+  <form method="dialog" class="dialog-actions">
+    <button value="cancel" class="btn ghost" data-i18n="btn.cancel">Cancel</button>
+    <button value="ok" class="btn danger" data-i18n="btn.proceed">Continue</button>
+  </form>
+</dialog>
+
 <script type="module" src="./js/app.js"></script>
 </body>
 </html>
