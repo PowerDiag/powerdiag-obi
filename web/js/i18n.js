@@ -76,7 +76,7 @@ const STRINGS = {
   zh: {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': '电池诊断工具',
-    'landing.tagline': '打开网页就能诊断电池。',
+    'landing.tagline': '打开网页，即可诊断电池',
     'btn.connect': '连接', 'btn.disconnect': '断开',
     'btn.read': '读取全部', 'btn.cells': '读取电芯电压', 'btn.refresh': '读取',
     'btn.clearErrors': '清除错误', 'btn.ledsOn': '点亮 LED', 'btn.ledsOff': '熄灭 LED',
@@ -111,7 +111,7 @@ const STRINGS = {
   'zh-TW': {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': '電池診斷工具',
-    'landing.tagline': '開啟網頁就能診斷電池。',
+    'landing.tagline': '開啟網頁，即可診斷電池',
     'btn.connect': '連線', 'btn.disconnect': '中斷連線',
     'btn.read': '讀取全部', 'btn.cells': '讀取電芯電壓', 'btn.refresh': '讀取',
     'btn.clearErrors': '清除錯誤', 'btn.ledsOn': '點亮 LED', 'btn.ledsOff': '熄滅 LED',
@@ -179,7 +179,7 @@ const STRINGS = {
   vi: {
     'app.title': 'PowerDiag OBI',
     'app.subtitle': 'Công cụ chẩn đoán pin',
-    'landing.tagline': 'Chẩn đoán pin ngay trên trình duyệt!',
+    'landing.tagline': 'Chẩn đoán pin ngay trên trình duyệt',
     'btn.connect': 'Kết nối', 'btn.disconnect': 'Ngắt kết nối',
     'btn.read': 'Đọc tất cả', 'btn.cells': 'Đọc điện áp cell', 'btn.refresh': 'Đọc',
     'btn.clearErrors': 'Xóa lỗi', 'btn.ledsOn': 'Bật LED', 'btn.ledsOff': 'Tắt LED',
