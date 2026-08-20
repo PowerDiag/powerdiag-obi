@@ -1,6 +1,6 @@
 # PowerDiag OBI — Interface Board
 
-**PowerDiag OBI** is a dedicated hardware interface board (OBI Version 2026.08.14) built around an
+**PowerDiag OBI** is a dedicated hardware interface board (OBI V1.0, 2026.08.19) built around an
 **Arduino Nano**, together with the firmware that drives it. It is a fork of
 [Open Battery Information](https://github.com/mnh-jansson/open-battery-information).
 
