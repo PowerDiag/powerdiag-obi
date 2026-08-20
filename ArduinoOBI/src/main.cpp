@@ -12,7 +12,7 @@
 #define ONEWIRE_PIN 6
 #define ENABLE_PIN 8
 /** U5, WS2812 DIN */
-#define STATUS_LED_PIN 9
+#define STATUS_LED_PIN 4
 /** U4, BTN1 - read battery information */
 #define BTN_READ_PIN 3
 /** U3, BTN2 - clear battery errors */

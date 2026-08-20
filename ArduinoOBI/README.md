@@ -31,7 +31,7 @@ The unlock path is the same two frames the PC application sends for *Clear error
 (`D9 96 A5`) followed by reset error (`DA 04`). It only runs from the locked state, so the write to
 the BMS cannot happen unless the board has actually read a locked battery first.
 
-### Status LED (WS2812 on D9)
+### Status LED (WS2812 on D4)
 
 | Colour | Pattern | Meaning |
 | ------ | ------- | ------- |

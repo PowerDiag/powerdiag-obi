@@ -25,7 +25,7 @@ live battery voltage measurement, so the board can be used stand-alone as well a
 A single WS2812 in a 5050 package is used to show battery/tool state at a glance (idle, reading,
 read OK, error, cleared, ...) without having to look at the PC.
 
-* Data in (`DIN`) is driven from Arduino **D9**
+* Data in (`DIN`) is driven from Arduino **D4**
 * Powered from **+5V**, decoupled with **C4 (100 nF)**
 
 ### 2. Two push buttons (U3 / U4)
@@ -209,7 +209,7 @@ appear in the port picker.
 | D3          | `BTN1`        | Button 1 — read / unlock (active low, hold 1 s)   |
 | D6          | `BAT_ONEWIRE` | 1-Wire data, 4.7 kΩ pull-up to +5V                |
 | D8          | `BAT_EN`      | Battery enable, 4.7 kΩ pull-up to +5V             |
-| D9          | `DIN`         | WS2812 data                                       |
+| D4          | `DIN`         | WS2812 data                                       |
 | A0          | `BAT_DIV`     | Battery voltage via 200 k / 10 k divider          |
 | 5V / GND    | —             | Supply for WS2812 and pull-ups                    |
 
