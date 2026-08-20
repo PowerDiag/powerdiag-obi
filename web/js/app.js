@@ -29,6 +29,10 @@ const VOLTAGE_FIELDS = [
 
 let busy = false;
 
+/* Five until a pack says otherwise: an 18 V pack is five cells in series, a
+ * 14.4 V one is four, and they share a connector. */
+let cellCount = 5;
+
 /* Someone without the board can otherwise only look at a button that does
  * nothing. These are the readings taken off a real BL1860B, not invented
  * numbers, so what a visitor sees is what the tool actually shows. */
@@ -37,7 +41,7 @@ let demo = false;
 const DEMO = {
   identity: {
     model: 'BL1860B', locked: false, statusCode: '67', chargeCount: 25,
-    capacityAh: 6.0, batteryType: 18,
+    capacityAh: 6.0, batteryType: 18, cellCount: 5,
     manufactured: { year: 2021, month: 7, day: 25 },
     romId: '15 07 19 64 14 08 01 6C',
     message: 'F1 26 BD 13 14 58 00 00 94 94 40 21 D0 80 02 1E C3 D0 8E 67 60 F7 00 21 02 02 0E 91 00 51 01 33',
@@ -81,7 +85,7 @@ function buildLayout() {
     .join('');
   el('voltage-fields').innerHTML = VOLTAGE_FIELDS.map(([k, s]) => fieldRow(k, s)).join('');
   el('cell-fields').innerHTML = '';
-  el('cell-tiles').innerHTML = [1, 2, 3, 4, 5]
+  el('cell-tiles').innerHTML = Array.from({ length: cellCount }, (_, i) => i + 1)
     .map(
       (n) => `<div class="tile" id="tile-${n}">
         <span class="tile-label"><span data-i18n="field.cell">${t('field.cell')}</span> ${n}</span>
@@ -380,6 +384,7 @@ function showCells(data) {
 function renderCells() {
   const data = reading.cells;
   if (!data) return;
+  setCellCount(data.cells.length);
   el('readout-voltage').textContent = `${data.packVoltage.toFixed(2)} V`;
   data.cells.forEach((v, i) => {
     set(`cell${i + 1}`, `${v.toFixed(3)} V`);
@@ -407,9 +412,20 @@ async function readIdentity() {
   status('status.done', 'ok');
 }
 
+/* The pack decides how many tiles there are, so a change rebuilds them before
+ * anything is written into them. */
+function setCellCount(count) {
+  if (!count || count === cellCount) return;
+  cellCount = count;
+  buildLayout();
+  applyLanguage();
+}
+
 function renderIdentity() {
   const info = reading.identity;
   if (!info) return;
+
+  setCellCount(info.cellCount);
 
   set('model', info.model);
   set('chargeCount', info.chargeCount);

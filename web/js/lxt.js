@@ -36,16 +36,31 @@ const u16le = (payload, offset) => payload[offset] | (payload[offset + 1] << 8);
 
 const nibbleSwap = (byte) => ((byte & 0xf0) >> 4) | ((byte & 0x0f) << 4);
 
+/* How many cells in series, from the flags byte of the basic frame. Taken from
+ * the D1L firmware, which notes this is steadier than reading the model name —
+ * the name comes from a command a faulty pack often refuses, while this byte
+ * arrives with the frame we already have. Verified against a real BL1860B:
+ * byte 25 is 0xD0, which swaps to 0x0D. */
+const CELLS_BY_FLAG = { 0x0a: 4, 0x0d: 5, 0x0e: 5, 0x1e: 10 };
+
+/* A lithium cell cannot exceed about 4.5 V, so neither can the pack. Anything
+ * above that is a corrupt read — a stuck bit turns 0x0E into 0x4E and a cell
+ * reads twenty volts. Deliberately no lower bound: a dead cell really does
+ * report 0 mV, and that is the reading a repair shop came for. */
+const CELL_CEILING = 4.5;
+
 export class LxtBattery {
   constructor(transport) {
     this.transport = transport;
     this.dialect = null;      // null until a model read succeeds, then '' or 'F0513'
     this.voltageSupported = null; // null = not probed, false = board has no divider
+    this.cellCount = 5;       // until the pack says otherwise
   }
 
   reset() {
     this.dialect = null;
     this.voltageSupported = null;
+    this.cellCount = 5;
   }
 
   /** Firmware version of the interface board itself, e.g. "0.3.0". */
@@ -79,7 +94,14 @@ export class LxtBattery {
     const chargeCount =
       (((nibbleSwap(payload[34]) << 8) | nibbleSwap(payload[35])) & 0x0fff);
 
+    /* 14.4 V packs are four cells and 18 V packs are five, on the same
+     * connector: read five slots from a four-cell pack and the empty one looks
+     * like a cell that has died. */
+    const cellCount = CELLS_BY_FLAG[nibbleSwap(payload[25])] ?? null;
+    this.cellCount = cellCount ?? 5;
+
     return {
+      cellCount,
       romId: hex(payload.slice(0, 8)),
       message: hex(payload.slice(8, 40)),
       chargeCount,
@@ -119,17 +141,31 @@ export class LxtBattery {
   async readCells() {
     if (this.dialect === 'F0513') return this.readCellsF0513();
 
-    const payload = await this.transport.request(CMD.READ_DATA);
-    if (payload.length < 20) throw new ObiError('err.shortResponse', `${payload.length}/20`);
+    /* The 1-Wire read is bit-marginal and a flipped bit shows up as a cell at
+     * twenty volts. Re-reading clears it; three tries is where the firmware
+     * settled, since a pack that has stopped answering never recovers and each
+     * attempt costs half a second. */
+    for (let attempt = 1; ; attempt += 1) {
+      const payload = await this.transport.request(CMD.READ_DATA);
+      if (payload.length < 20) throw new ObiError('err.shortResponse', `${payload.length}/20`);
 
-    const cells = [0, 1, 2, 3, 4].map((i) => u16le(payload, 2 + i * 2) / 1000);
-    return {
-      packVoltage: u16le(payload, 0) / 1000,
-      cells,
-      cellDiff: Math.max(...cells) - Math.min(...cells),
-      tempCell: u16le(payload, 14) / 100,
-      tempMosfet: u16le(payload, 16) / 100,
-    };
+      const slots = [0, 1, 2, 3, 4].map((i) => u16le(payload, 2 + i * 2) / 1000);
+      const cells = slots.slice(0, Math.min(this.cellCount, slots.length));
+      const packVoltage = u16le(payload, 0) / 1000;
+
+      const sane = packVoltage <= CELL_CEILING * cells.length
+        && cells.every((volts) => volts <= CELL_CEILING);
+      if (!sane && attempt < 3) continue;
+      if (!sane) throw new ObiError('err.implausible', `${packVoltage} V`);
+
+      return {
+        packVoltage,
+        cells,
+        cellDiff: Math.max(...cells) - Math.min(...cells),
+        tempCell: u16le(payload, 14) / 100,
+        tempMosfet: u16le(payload, 16) / 100,
+      };
+    }
   }
 
   async readCellsF0513() {
