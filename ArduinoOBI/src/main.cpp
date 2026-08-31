@@ -289,7 +289,9 @@ void led_selftest() {
 		led_set(SEQUENCE[i], LED_SOLID, 0, 220);
 		led_wait();
 	}
-	led_set(COLOR_OFF, LED_SOLID, 0, 80);
+	/* A full second dark, so the self-test reads as finished before the idle
+	 * colour arrives. Any shorter and the last blue runs straight into it. */
+	led_set(COLOR_OFF, LED_SOLID, 0, 1000);
 	led_wait();
 }
 
