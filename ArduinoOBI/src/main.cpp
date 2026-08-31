@@ -276,6 +276,23 @@ uint32_t voltage_color(float volts) {
 
 /* --- Indication ----------------------------------------------------------- */
 
+/**
+ * Red, green, blue at power-up. It says the firmware started, and it says the
+ * three channels of the WS2812 all work — a dead channel would otherwise show
+ * up much later as an idle colour that reads wrong, which is a hard fault to
+ * even notice, let alone diagnose.
+ */
+void led_selftest() {
+	static const uint32_t SEQUENCE[] = { RGB(255, 0, 0), RGB(0, 255, 0), RGB(0, 0, 255) };
+
+	for (uint8_t i = 0; i < 3; i++) {
+		led_set(SEQUENCE[i], LED_SOLID, 0, 220);
+		led_wait();
+	}
+	led_set(COLOR_OFF, LED_SOLID, 0, 80);
+	led_wait();
+}
+
 /** Idle indication: pack presence, and pack voltage as a colour. */
 void show_idle() {
 	float volts = read_pack_voltage();
@@ -503,7 +520,8 @@ void setup() {
 	button_init(&btn_read, BTN_READ_PIN);
 	button_init(&btn_clear, BTN_CLEAR_PIN);
 
-	led_set(COLOR_BUSY, LED_SOLID, 0, 300);
+	led_selftest();
+	show_idle();
 }
 
 void send_usb(byte *rsp, byte rsp_len) {

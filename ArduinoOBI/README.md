@@ -35,6 +35,7 @@ the BMS cannot happen unless the board has actually read a locked battery first.
 
 | Colour | Pattern | Meaning |
 | ------ | ------- | ------- |
+| Red, green, blue | once at power-up | Firmware started, and all three channels work |
 | Blue | slow breathe | No pack detected (measured voltage below 5 V) |
 | Red → amber → green | solid | Pack present, colour follows the pack voltage (15 V → 21 V) |
 | Blue | blink | BTN1 held, and talking to the battery |
