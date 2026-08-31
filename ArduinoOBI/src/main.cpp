@@ -34,13 +34,9 @@
  */
 #define VBAT_CALIBRATION 1.000f
 /** Below this the pack is considered absent */
-#define VBAT_PRESENT_V 5.0f
 /** Pack voltage mapped to the "empty" indicator colour */
-#define VBAT_EMPTY_V 15.0f
 /** Pack voltage mapped to the "full" indicator colour */
-#define VBAT_FULL_V 21.0f
 /** Interval between idle voltage measurements */
-#define VBAT_SAMPLE_MS 200
 
 #define BTN_DEBOUNCE_MS 25
 /** Both buttons act on a hold, not on a plain press */
@@ -81,8 +77,6 @@ Adafruit_NeoPixel status_led(1, STATUS_LED_PIN, NEO_GRB + NEO_KHZ800);
 #define COLOR_LOCKED RGB(255, 0, 0)
 /** No usable answer from the battery */
 #define COLOR_FAIL RGB(255, 0, 255)
-/** No pack detected on the terminals */
-#define COLOR_NOBATT RGB(0, 40, 255)
 /** BTN2 held, the result is about to be dismissed */
 #define COLOR_ARMED RGB(255, 255, 255)
 /** Unlock done */
@@ -125,7 +119,6 @@ static Button btn_clear;
 static bool read_armed = false;
 static bool clear_armed = false;
 static uint8_t last_result = RESULT_NONE;
-static uint32_t last_sample = 0;
 
 void cmd_and_read_33(byte *cmd, uint8_t cmd_len, byte *rsp, uint8_t rsp_len) {
 	int i;
@@ -260,20 +253,6 @@ float read_pack_voltage() {
 	return (acc / 8.0f) * (ADC_REF_VOLTS / ADC_MAX_COUNTS) * VBAT_DIVIDER * VBAT_CALIBRATION;
 }
 
-/** Red at VBAT_EMPTY_V, through amber, to green at VBAT_FULL_V. */
-uint32_t voltage_color(float volts) {
-	float t = (volts - VBAT_EMPTY_V) / (VBAT_FULL_V - VBAT_EMPTY_V);
-
-	if (t < 0.0f) {
-		t = 0.0f;
-	}
-	if (t > 1.0f) {
-		t = 1.0f;
-	}
-
-	return RGB((uint8_t)(255.0f * (1.0f - t)), (uint8_t)(255.0f * t), 0);
-}
-
 /* --- Indication ----------------------------------------------------------- */
 
 /**
@@ -295,18 +274,16 @@ void led_selftest() {
 	led_wait();
 }
 
-/** Idle indication: pack presence, and pack voltage as a colour. */
+/**
+ * Idle: dark. The LED says one thing now — whether the last read found the
+ * pack locked — and it said two before. Green meant a full pack and it also
+ * meant an unlocked one, told apart only by whether a result happened to be
+ * latched, which is not something anyone can see. The voltage is on the PC to
+ * three decimal places; the lock state is the only thing the board alone can
+ * tell you.
+ */
 void show_idle() {
-	float volts = read_pack_voltage();
-
-	last_sample = millis();
-
-	if (volts < VBAT_PRESENT_V) {
-		led_set(COLOR_NOBATT, LED_BREATHE, 3000, 0);
-	}
-	else {
-		led_set(voltage_color(volts), LED_SOLID, 0, 0);
-	}
+	led_set(COLOR_OFF, LED_SOLID, 0, 0);
 }
 
 /**
@@ -488,12 +465,9 @@ void handle_buttons() {
 	}
 }
 
-/** Refresh the idle voltage indication when no result is latched. */
+/** Nothing to refresh: the LED holds the last result, or stays dark. */
 void update_status() {
 	if (last_result != RESULT_NONE || read_armed || clear_armed || led_holding()) {
-		return;
-	}
-	if ((millis() - last_sample) < VBAT_SAMPLE_MS) {
 		return;
 	}
 

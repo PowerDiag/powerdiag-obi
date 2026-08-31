@@ -36,14 +36,18 @@ the BMS cannot happen unless the board has actually read a locked battery first.
 | Colour | Pattern | Meaning |
 | ------ | ------- | ------- |
 | Red, green, blue | once at power-up | Firmware started, and all three channels work |
-| Blue | slow breathe | No pack detected (measured voltage below 5 V) |
-| Red → amber → green | solid | Pack present, colour follows the pack voltage (15 V → 21 V) |
+| Dark | — | Idle. The LED speaks only about the last read |
 | Blue | blink | BTN1 held, and talking to the battery |
 | **Green** | **solid** | **Read OK — BMS is unlocked** |
 | **Red / green** | **alternating** | **Read OK — BMS is LOCKED**, hold BTN1 again to unlock |
 | Magenta | fast blink | No usable answer (all `0x00` / all `0xFF`) — check the pack is seated |
 | White | fast blink | BTN2 held, result is about to be dismissed |
 | Cyan | fast blink | Unlock done, reading back |
+
+The LED does not show the pack voltage. It did, as a red-to-green gradient, and that made green mean
+two unrelated things — a full pack, and an unlocked one — told apart only by whether a result
+happened to be latched, which nobody can see. The voltage is on the PC to three decimal places; the
+lock state is the only thing this board can tell you on its own.
 
 Results are **latched**: they stay on the LED until BTN2 dismisses them or another read replaces
 them. Only then does the LED return to the idle voltage indication. Brightness is set by
