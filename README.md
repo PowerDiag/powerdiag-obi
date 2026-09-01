@@ -249,9 +249,10 @@ Import it into [EasyEDA Pro](https://pro.easyeda.com/) and order the board strai
 0603 and similar, all on the top side; the Nano, the connector and the switches are through-hole.
 See [obi-interface-board/README.md](obi-interface-board/README.md).
 
-## TODO
+## Enclosure
 
-* **Enclosure** — 3D printable STL files for a case are being worked on and will be added here.
+A two-part printable case is in [`case/`](case/), as STLs and as the Fusion 360 sources they were
+made from — the sources are there so you can move a cutout rather than start over.
 
 ---
 
