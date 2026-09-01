@@ -39,13 +39,13 @@
 /** Interval between idle voltage measurements */
 
 /** How long a failed read complains before the LED goes dark */
-#define RESULT_FAIL_MS 3000
+#define RESULT_FAIL_MS 2000
 
 #define BTN_DEBOUNCE_MS 25
 /** Both buttons act on a hold, not on a plain press */
 #define BTN_HOLD_MS 1000
-/** BTN2 is unlit while held, so give it a hold long enough to be deliberate */
-#define BTN_CLEAR_HOLD_MS 3000
+/** Dismiss only touches the display, so this is just anti-fumble, not a guard */
+#define BTN_CLEAR_HOLD_MS 1000
 /** Global scaling of the WS2812, 0-255 */
 #define STATUS_LED_BRIGHTNESS 48
 
@@ -472,10 +472,10 @@ void handle_buttons() {
 	}
 
 	/*
-	 * BTN2 dismisses the latched result after a 3 s hold. It shows nothing
+	 * BTN2 dismisses the latched result after a 1 s hold. It shows nothing
 	 * while held: the LED is saying whether the pack is locked, and blinking
 	 * white over that answer to report a button being pressed buried the one
-	 * thing it is there for. Going dark at 3 s is the confirmation.
+	 * thing it is there for. Going dark at the 1 s mark is the confirmation.
 	 */
 	button_update(&btn_clear, &pressed, &released);
 	if (pressed) {

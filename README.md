@@ -34,9 +34,9 @@ Both act on a hold, never on a stray press:
 
 * **BTN1 → D3**, held **1 s** — read battery information. If the battery is already showing as
   locked, the same hold unlocks it (clears the error flags) and reads back the new state.
-* **BTN2 → D2**, held **3 s** — dismiss the result and return the LED to dark. It shows nothing
+* **BTN2 → D2**, held **1 s** — dismiss the result and return the LED to dark. It shows nothing
   while held: the LED is answering whether the pack is locked, and blinking over that answer to
-  report a button being pressed buried the one thing it is there for. Going dark at 3 s is the
+  report a button being pressed buried the one thing it is there for. Going dark at 1 s is the
   confirmation, and it needs the longer hold because there is nothing else to tell you it worked.
 
 Both buttons switch the pin to **GND**, so they are active-low and are configured with
@@ -209,7 +209,7 @@ appear in the port picker.
 
 | Arduino pin | Net           | Function                                          |
 | ----------- | ------------- | ------------------------------------------------- |
-| D2          | `BTN2`        | Button 2 — dismiss result (active low, hold 3 s)  |
+| D2          | `BTN2`        | Button 2 — dismiss result (active low, hold 1 s)  |
 | D3          | `BTN1`        | Button 1 — read / unlock (active low, hold 1 s)   |
 | D6          | `BAT_ONEWIRE` | 1-Wire data, 4.7 kΩ pull-up to +5V                |
 | D8          | `BAT_EN`      | Battery enable, 4.7 kΩ pull-up to +5V             |
