@@ -42,9 +42,10 @@ Both act on a hold, never on a stray press:
 Both buttons switch the pin to **GND**, so they are active-low and are configured with
 `INPUT_PULLUP` in firmware. No external pull-up resistors are fitted for the buttons.
 
-### 3. Real-time battery voltage measurement (ADC)
+### 3. Battery voltage measurement (ADC)
 
-The pack voltage (`BATT_20V`) is measured continuously through a resistor divider into **A0**:
+The pack voltage (`BATT_20V`) reaches **A0** through a resistor divider, and is sampled when the
+PC asks for it:
 
 * **R3 = 200 kΩ** (high side) / **R4 = 10 kΩ** (low side) → divider ratio **1:21**
 * **U7 = BZT52C5V1** (5.1 V zener) clamps `BAT_DIV` to protect the ADC input
