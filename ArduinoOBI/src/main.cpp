@@ -15,7 +15,7 @@
 #define STATUS_LED_PIN 4
 /** U4, BTN1 - read battery information */
 #define BTN_READ_PIN 3
-/** U3, BTN2 - clear battery errors */
+/** U3, BTN2 - dismiss the latched read result */
 #define BTN_CLEAR_PIN 2
 /** BAT_DIV, pack voltage through the R10/R11 divider */
 #define VBAT_ADC_PIN A0
@@ -38,9 +38,14 @@
 /** Pack voltage mapped to the "full" indicator colour */
 /** Interval between idle voltage measurements */
 
+/** How long a failed read complains before the LED goes dark */
+#define RESULT_FAIL_MS 3000
+
 #define BTN_DEBOUNCE_MS 25
 /** Both buttons act on a hold, not on a plain press */
 #define BTN_HOLD_MS 1000
+/** BTN2 is unlit while held, so give it a hold long enough to be deliberate */
+#define BTN_CLEAR_HOLD_MS 3000
 /** Global scaling of the WS2812, 0-255 */
 #define STATUS_LED_BRIGHTNESS 48
 
@@ -77,8 +82,6 @@ Adafruit_NeoPixel status_led(1, STATUS_LED_PIN, NEO_GRB + NEO_KHZ800);
 #define COLOR_LOCKED RGB(255, 0, 0)
 /** No usable answer from the battery */
 #define COLOR_FAIL RGB(255, 0, 255)
-/** BTN2 held, the result is about to be dismissed */
-#define COLOR_ARMED RGB(255, 255, 255)
 /** Unlock done */
 #define COLOR_CLEARED RGB(0, 255, 255)
 
@@ -90,6 +93,7 @@ enum LedMode {
 	LED_ALTERNATE,
 };
 
+static bool led_off_at_expiry = false;
 static uint32_t led_color = COLOR_OFF;
 static uint32_t led_color_b = COLOR_OFF;
 static uint8_t led_mode = LED_SOLID;
@@ -186,11 +190,23 @@ void cmd_and_read(byte *cmd, uint8_t cmd_len, byte *rsp, uint8_t rsp_len) {
  * @param hold_ms   Time before the pattern expires, 0 to keep it indefinitely.
  */
 void led_set(uint32_t color, uint8_t mode, uint16_t period_ms, uint16_t hold_ms) {
+	led_off_at_expiry = false;
 	led_color = color;
 	led_color_b = color;
 	led_mode = mode;
 	led_period = period_ms ? period_ms : 1000;
 	led_expiry = hold_ms ? millis() + hold_ms : 0;
+}
+
+/**
+ * A pattern that says its piece and stops. Without this an expired hold keeps
+ * animating — expiry only ends led_holding(), it never touched the pixel — so
+ * anything not replaced by a later led_set() blinked until the board was
+ * unplugged.
+ */
+void led_set_transient(uint32_t color, uint8_t mode, uint16_t period_ms, uint16_t hold_ms) {
+	led_set(color, mode, period_ms, hold_ms);
+	led_off_at_expiry = true;
 }
 
 /** Alternate between two colours, half the period each. */
@@ -206,6 +222,11 @@ bool led_holding() {
 /** Drive the WS2812 from the current pattern. Non-blocking, call often. */
 void led_update() {
 	uint32_t now = millis();
+
+	if (led_off_at_expiry && !led_holding()) {
+		led_set(COLOR_OFF, LED_SOLID, 0, 0);
+	}
+
 	uint32_t base = led_color;
 	uint16_t level = 255;
 
@@ -287,8 +308,10 @@ void show_idle() {
 }
 
 /**
- * Show the latched result of the last read. Results do not time out, they stay
- * on the LED until BTN2 dismisses them or another read replaces them.
+ * Show the latched result of the last read. The lock state stays up until BTN2
+ * dismisses it or another read replaces it — it is the answer, and an answer
+ * that erases itself is no use to someone who looked away. A failed read is
+ * not an answer, so it says so for 3 s and gets out of the way.
  */
 void show_result() {
 	switch (last_result) {
@@ -299,7 +322,7 @@ void show_result() {
 			led_set_alternate(COLOR_LOCKED, COLOR_OK, 500, 0);
 			break;
 		case RESULT_FAIL:
-			led_set(COLOR_FAIL, LED_BLINK, 150, 0);
+			led_set_transient(COLOR_FAIL, LED_BLINK, 150, RESULT_FAIL_MS);
 			break;
 		default:
 			show_idle();
@@ -416,7 +439,7 @@ void local_unlock() {
 	cmd_and_read_33(RESET_ERROR_DATA, sizeof(RESET_ERROR_DATA), payload, RESET_ERROR_RSP_LEN);
 	digitalWrite(ENABLE_PIN, LOW);
 
-	led_set(COLOR_CLEARED, LED_BLINK, 120, 600);
+	led_set_transient(COLOR_CLEARED, LED_BLINK, 120, 600);
 	led_wait();
 
 	/* Show what the battery reports now that the errors have been cleared. */
@@ -448,26 +471,29 @@ void handle_buttons() {
 		show_result();
 	}
 
+	/*
+	 * BTN2 dismisses the latched result after a 3 s hold. It shows nothing
+	 * while held: the LED is saying whether the pack is locked, and blinking
+	 * white over that answer to report a button being pressed buried the one
+	 * thing it is there for. Going dark at 3 s is the confirmation.
+	 */
 	button_update(&btn_clear, &pressed, &released);
 	if (pressed) {
 		clear_armed = true;
-		led_set(COLOR_ARMED, LED_BLINK, 120, 0);
 	}
-	if (clear_armed && btn_clear.state && (millis() - btn_clear.t_pressed) >= BTN_HOLD_MS) {
+	if (clear_armed && btn_clear.state && (millis() - btn_clear.t_pressed) >= BTN_CLEAR_HOLD_MS) {
 		clear_armed = false;
-		/* Dismiss the latched result, back to the idle voltage indication. */
 		last_result = RESULT_NONE;
 		show_idle();
 	}
-	if (released && clear_armed) {
+	if (released) {
 		clear_armed = false;
-		show_result();
 	}
 }
 
 /** Nothing to refresh: the LED holds the last result, or stays dark. */
 void update_status() {
-	if (last_result != RESULT_NONE || read_armed || clear_armed || led_holding()) {
+	if (last_result != RESULT_NONE || read_armed || led_holding()) {
 		return;
 	}
 

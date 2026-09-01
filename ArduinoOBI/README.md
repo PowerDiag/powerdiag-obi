@@ -40,9 +40,16 @@ the BMS cannot happen unless the board has actually read a locked battery first.
 | Blue | blink | BTN1 held, and talking to the battery |
 | **Green** | **solid** | **Read OK — BMS is unlocked** |
 | **Red / green** | **alternating** | **Read OK — BMS is LOCKED**, hold BTN1 again to unlock |
-| Magenta | fast blink | No usable answer (all `0x00` / all `0xFF`) — check the pack is seated |
-| White | fast blink | BTN2 held, result is about to be dismissed |
-| Cyan | fast blink | Unlock done, reading back |
+| Magenta | blink, 3 s | No usable answer (all `0x00` / all `0xFF`) — check the pack is seated |
+| Cyan | blink, brief | Unlock done, reading back |
+
+The lock state stays up until BTN2 dismisses it or another read replaces it: it is the answer, and an
+answer that erases itself is no use to someone who looked away. Everything else is transient and the
+LED returns to dark.
+
+**BTN2 shows nothing while held.** It dismisses the latched result after a **3 s** hold, and the LED
+going dark is the confirmation. It used to blink white from the moment it was pressed, which painted
+over the lock state — the one thing the LED is there for — to report a button being pressed.
 
 The LED does not show the pack voltage. It did, as a red-to-green gradient, and that made green mean
 two unrelated things — a full pack, and an unlocked one — told apart only by whether a result
