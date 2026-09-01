@@ -23,12 +23,13 @@ The project is set up so you can have the board made directly:
 1. Import the `.epro2` into EasyEDA Pro.
 2. Order it from **[JLCPCB](https://jlcpcb.com/)** straight from the editor, or export Gerbers and
    use any other manufacturer.
-3. Everything on the board is through-hole and hand-solderable — the BOM is an Arduino Nano, a
-   Makita LXT connector, one WS2812 in a 5050 package, two tactile switches, five resistors,
-   one zener and one 100 nF capacitor. See the pin and component tables in the main README.
+3. The BOM is an Arduino Nano, a Makita LXT connector, one WS2812 in a 5050 package, two tactile
+   switches, four resistors, one zener and one 100 nF capacitor. The Nano, the connector and the
+   switches are through-hole; the rest are 0603-and-similar SMD parts, all on the top side. See the
+   pin and component tables in the main README.
 
 Feel free to copy, modify or re-spin the board.
 
 ## Enclosure
 
-3D printable STL files for a case are still being made and will be added to this folder.
+STLs for a printable two-part case are in [`../case/`](../case/).

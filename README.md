@@ -1,6 +1,6 @@
 # PowerDiag OBI — Interface Board
 
-**PowerDiag OBI** is a dedicated hardware interface board (OBI V1.0, 2026.08.19) built around an
+**PowerDiag OBI** is a dedicated hardware interface board (OBI V1.1, 2026.09.01) built around an
 **Arduino Nano**, together with the firmware that drives it. It is a fork of
 [Open Battery Information](https://github.com/mnh-jansson/open-battery-information).
 
@@ -26,7 +26,7 @@ A single WS2812 in a 5050 package is used to show battery/tool state at a glance
 read OK, error, cleared, ...) without having to look at the PC.
 
 * Data in (`DIN`) is driven from Arduino **D4**
-* Powered from **+5V**, decoupled with **C4 (100 nF)**
+* Powered from **+5V**, decoupled with **C1 (100 nF)**
 
 ### 2. Two push buttons (U3 / U4)
 
@@ -46,8 +46,8 @@ Both buttons switch the pin to **GND**, so they are active-low and are configure
 
 The pack voltage (`BATT_20V`) is measured continuously through a resistor divider into **A0**:
 
-* **R10 = 200 kΩ** (high side) / **R11 = 10 kΩ** (low side) → divider ratio **1:21**
-* **U6 = BZT52C5V1** (5.1 V zener) clamps `BAT_DIV` to protect the ADC input
+* **R3 = 200 kΩ** (high side) / **R4 = 10 kΩ** (low side) → divider ratio **1:21**
+* **U7 = BZT52C5V1** (5.1 V zener) clamps `BAT_DIV` to protect the ADC input
 
 The ADC runs against the ATmega328P's **internal 1.1 V bandgap reference**, not against `AVCC`.
 `AVCC` is only the USB rail minus a diode drop and moves with the port, the cable and the load,
@@ -81,12 +81,12 @@ It is fetched once per read, not polled.
 **Load on the pack.** The divider is the only thing connected to `BATT_20V`, and it draws about
 **100 µA** (21 V / 210 kΩ). The board can be left on a battery without meaningfully discharging it.
 
-**What the zener is actually for.** In normal use U6 never conducts — a full pack only produces
-1.0 V at A0, nowhere near the 5.1 V breakdown. It covers the fault case: if R11 goes open circuit
-or is not fitted, A0 would otherwise see the full pack voltage, and U6 clamps it instead.
+**What the zener is actually for.** In normal use U7 never conducts — a full pack only produces
+1.0 V at A0, nowhere near the 5.1 V breakdown. It covers the fault case: if R4 goes open circuit
+or is not fitted, A0 would otherwise see the full pack voltage, and U7 clamps it instead.
 
 **Inserting a battery with the Nano unpowered is safe.** A0 sits about 0.6 V above the dead 5 V
-rail, so the MCU's ESD clamp conducts, but R10 limits that current to the same ~100 µA — two orders
+rail, so the MCU's ESD clamp conducts, but R3 limits that current to the same ~100 µA — two orders
 of magnitude below the ±1 mA injection limit. `BATT_20V` reaches nothing else on the board; the
 Nano's `VIN` is not connected, the board is USB powered only.
 
@@ -227,13 +227,14 @@ Firmware support for the buttons, the WS2812 and the ADC is implemented in `Ardu
 
 ## Board
 
-| Layout | Top | Bottom |
-| ------ | --- | ------ |
-| ![pcb layout](docs/images/obi-pcb-layout.png) | ![pcb top](docs/images/obi-pcb-3d-top.png) | ![pcb bottom](docs/images/obi-pcb-3d-bottom.png) |
+| Layout | 3D |
+| ------ | -- |
+| ![pcb layout](docs/images/obi-pcb-layout.png) | ![pcb top](docs/images/obi-pcb-3d-top.png) |
 
-The Arduino Nano sits in a socket on the top side; the buttons (U3/U4), the WS2812 (U5) and the
-battery terminals (`BAT_VCC` / `BAT_GND`, plus the `EN` and `DA` pads) are on the same side.
-The passive components — R1, R2, R10, R11, the zener U6 and C4 — are on the bottom side.
+Everything is on the top side. The Arduino Nano sits in a socket, with the buttons (U3/U4), the
+WS2812 (U5), the battery terminals (`BAT_VCC` / `BAT_GND`, plus the `EN` and `DA` pads) and the
+passives — R1, R2, R3, R4, the zener U7 and C1 — alongside it. Nothing is fitted to the bottom, so
+the board sits flat and the case only has to clear one side.
 
 ## Getting the board
 
@@ -244,8 +245,9 @@ Search for **`open battery information`**
 **Or build it yourself** — the full schematic and PCB are in
 [obi-interface-board/](obi-interface-board/) as an **EasyEDA Pro 3.0** project (`ProDoc_OBI.epro2`).
 Import it into [EasyEDA Pro](https://pro.easyeda.com/) and order the board straight from
-[JLCPCB](https://jlcpcb.com/), or export Gerbers and have it made anywhere else. Everything is
-through-hole and hand-solderable. See [obi-interface-board/README.md](obi-interface-board/README.md).
+[JLCPCB](https://jlcpcb.com/), or export Gerbers and have it made anywhere else. The SMD parts are
+0603 and similar, all on the top side; the Nano, the connector and the switches are through-hole.
+See [obi-interface-board/README.md](obi-interface-board/README.md).
 
 ## TODO
 
