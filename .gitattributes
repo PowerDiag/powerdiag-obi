@@ -1,0 +1,6 @@
+# core.autocrlf is on, and a line-ending rewrite inside a mesh or a Fusion
+# archive corrupts it silently. Name them so it never gets the chance.
+*.stl  binary
+*.f3d  binary
+*.epro2 binary
+*.hex  text eol=lf

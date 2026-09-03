@@ -1,6 +1,6 @@
 /* Offline shell for the OBI tool. Bump CACHE when any asset below changes,
  * otherwise returning users keep the old build until they hard-reload. */
-const CACHE = "powerdiag-obi-v71";
+const CACHE = "powerdiag-obi-v72";
 
 const ASSETS = [
   "./",
@@ -18,6 +18,12 @@ const ASSETS = [
   "./js/lxt.js",
   "./js/i18n.js",
   "./js/version.js",
+  "./js/stk500.js",
+  /* Flashing has to work for someone who has just soldered a board and is
+   * not near their own network, so the images are part of the shell. */
+  "./firmware/index.json",
+  "./firmware/powerdiag-obi.hex",
+  "./firmware/arduino-obi-upstream.hex",
 ];
 
 self.addEventListener("install", (event) => {

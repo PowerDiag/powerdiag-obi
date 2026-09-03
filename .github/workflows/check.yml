@@ -47,6 +47,26 @@ jobs:
       - name: Check translations are complete
         run: python3 tools/check-i18n.py
 
+      # The flasher serves images the catalogue names; a missing file or an
+      # unwritten translation key both show up only when someone clicks Flash.
+      - name: Check the firmware catalogue
+        run: |
+          python3 - <<'PY'
+          import io, json, sys
+          cat = json.load(io.open('web/firmware/index.json', encoding='utf-8'))
+          i18n = io.open('web/js/i18n.js', encoding='utf-8').read()
+          bad = 0
+          for image in cat['images']:
+              import os
+              if not os.path.exists('web/firmware/' + image['file']):
+                  print('::error::missing image: ' + image['file']); bad = 1
+              for field in ('nameKey', 'descKey'):
+                  if ("'%s':" % image[field]) not in i18n:
+                      print('::error::key not translated: ' + image[field]); bad = 1
+          print('catalogue ok' if not bad else 'catalogue broken')
+          sys.exit(bad)
+          PY
+
       # Every class in the markup has to be defined somewhere, or it is a typo.
       - name: Check stylesheet coverage
         run: |
