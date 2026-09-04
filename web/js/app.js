@@ -1,5 +1,4 @@
-import { Transport, ObiError, PORT_FILTERS } from './transport.js';
-import { flash, parseIntelHex } from './stk500.js';
+import { Transport, ObiError } from './transport.js';
 import { LxtBattery } from './lxt.js';
 import { i18n } from './i18n.js';
 import { VERSION } from './version.js';
@@ -463,99 +462,6 @@ async function readAll() {
   await readCells();
 }
 
-/* ---------- flashing ----------
- *
- * A kit arrives as a bare board and a Nano the buyer solders on themselves, so
- * the first thing it needs is firmware — and requiring a toolchain for that put
- * a whole afternoon between a finished solder joint and a working tool. The
- * bootloader is already there on every Nano; all that was missing was
- * something to talk to it.
- */
-
-let firmwareImages = null;
-
-async function loadFirmwareIndex() {
-  if (firmwareImages) return firmwareImages;
-  const response = await fetch('./firmware/index.json', { cache: 'no-cache' });
-  if (!response.ok) throw new ObiError('err.firmwareIndex', String(response.status));
-  const body = await response.json();
-  firmwareImages = body.images;
-  return firmwareImages;
-}
-
-/* Version and size are read off the image rather than written into the
- * description, so the two cannot drift apart. */
-function renderFlashDescription() {
-  const select = el('flash-image');
-  const image = firmwareImages.find((entry) => entry.id === select.value);
-  if (!image) return;
-
-  const meta = document.createElement('p');
-  meta.className = 'flash-desc-meta';
-  meta.textContent = `v${image.version} · ${image.bytes} B · ${image.file}`;
-
-  const text = document.createElement('p');
-  text.style.margin = '0';
-  text.dataset.i18n = image.descKey;
-  text.textContent = t(image.descKey);
-
-  const box = el('flash-desc');
-  box.textContent = '';
-  box.append(text, meta);
-}
-
-async function openFlashDialog() {
-  await loadFirmwareIndex();
-
-  const select = el('flash-image');
-  select.innerHTML = firmwareImages
-    .map((image) => `<option value="${image.id}">${t(image.nameKey)}</option>`)
-    .join('');
-  renderFlashDescription();
-
-  const dialog = el('flash');
-  dialog.returnValue = '';
-  dialog.showModal();
-
-  const chosen = await new Promise((resolve) => {
-    dialog.addEventListener('close', () => resolve(dialog.returnValue === 'ok'), { once: true });
-  });
-  if (!chosen) return;
-
-  await guard(() => runFlash(select.value));
-}
-
-async function runFlash(id) {
-  const image = firmwareImages.find((entry) => entry.id === id);
-
-  /* The application speaks 9600 and the bootloader does not, so the port has
-   * to be given up entirely rather than reconfigured underneath us. */
-  if (transport.isOpen) await transport.close();
-
-  status('flash.fetching');
-  const response = await fetch(`./firmware/${image.file}`, { cache: 'no-cache' });
-  if (!response.ok) throw new ObiError('err.firmwareFetch', String(response.status));
-  const flashImage = parseIntelHex(await response.text());
-
-  const port = await navigator.serial.requestPort({ filters: PORT_FILTERS });
-
-  let lastShown = -1;
-  const onProgress = (phase, done, total) => {
-    /* One status write per percent. Repainting on all 63 pages of a 8 kB image
-     * made the text flicker without telling anyone anything more. */
-    const percent = Math.round((done / total) * 100);
-    if (percent === lastShown) return;
-    lastShown = percent;
-    const node = document.querySelector('.status');
-    node.dataset.i18n = phase === 'write' ? 'flash.writing' : 'flash.verifying';
-    node.textContent = `${t(node.dataset.i18n)} ${percent}%`;
-  };
-
-  status('flash.writing');
-  await flash(port, flashImage, onProgress);
-  status('flash.done', 'ok');
-}
-
 /* The browser's confirm() announces itself as the browser's, cannot be styled
  * and blocks the whole page; the native dialog carries the tool's own frame
  * while the browser still handles the focus trap and Esc. */
@@ -736,7 +642,6 @@ async function init() {
    * returns early there, so on a phone the one button meant for that visitor
    * did nothing. */
   el('btn-demo').addEventListener('click', enterDemo);
-  el('flash-image').addEventListener('change', renderFlashDescription);
   el('btn-install').addEventListener('click', install);
   el('btn-installed').addEventListener('click', showUninstallHelp);
   el('btn-copy').addEventListener('click', () => guard(copyReadings));
@@ -772,14 +677,10 @@ async function init() {
    * everything above still works, so only connecting is taken away. */
   if (guardUnsupported()) {
     el('btn-connect').disabled = true;
-    el('btn-flash').disabled = true;
     return;
   }
 
   el('btn-connect').addEventListener('click', () => guard(onConnectClick));
-  /* Not wrapped in guard(): the dialog is open while the user reads it, and
-   * holding the busy flag that whole time would grey out the page behind. */
-  el('btn-flash').addEventListener('click', () => openFlashDialog().catch(fail));
 
   navigator.serial.addEventListener('disconnect', (event) => {
     if (transport.port === event.target) transport.close();

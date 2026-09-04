@@ -50,7 +50,6 @@
   </div>
   <p class="landing-sub" data-i18n="app.subtitle">Battery diagnostics</p>
   <div class="landing-actions">
-    <button id="btn-flash" class="btn" data-i18n="btn.flash">Flash firmware</button>
     <button id="btn-connect" class="btn primary big" data-i18n="btn.connect">Connect</button>
     <button id="btn-demo" class="btn" data-i18n="btn.demo">See a demo</button>
   </div>
@@ -157,20 +156,6 @@
   </p>
   <form method="dialog" class="dialog-actions">
     <button value="ok" class="btn" data-i18n="btn.close">Close</button>
-  </form>
-</dialog>
-
-<dialog id="flash" class="dialog">
-  <p class="dialog-title" data-i18n="flash.title">Flash firmware</p>
-  <div class="dialog-body">
-    <p data-i18n="flash.intro">Pick an image, then choose the board's port.</p>
-    <select id="flash-image" aria-label="Firmware"></select>
-    <div id="flash-desc" class="flash-desc"></div>
-    <p class="flash-safe" data-i18n="flash.safe">The bootloader is never touched, so a flash that fails can simply be run again.</p>
-  </div>
-  <form method="dialog" class="dialog-actions">
-    <button value="cancel" class="btn ghost" data-i18n="btn.cancel">Cancel</button>
-    <button value="ok" class="btn primary" data-i18n="btn.flashStart">Flash</button>
   </form>
 </dialog>
 

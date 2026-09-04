@@ -91,41 +91,11 @@
   white-space: nowrap;
 }
 
-/* Flashing is what a freshly soldered kit needs first, so it sits on the
-   connect screen rather than behind one. It takes the other flank from the
-   demo, leaving Connect alone in the middle where the eye lands. */
-#btn-flash {
-  position: absolute;
-  right: calc(100% + 52px); top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-}
-
-/* Narrow enough and there is no side to put it on; they fall in below. */
+/* Narrow enough and there is no side to put it on; it falls in below. */
 @media (max-width: 700px) {
-  .landing-actions { flex-wrap: wrap; gap: 12px; justify-content: center; }
-  #btn-demo, #btn-flash { position: static; transform: none; }
+  .landing-actions { flex-wrap: wrap; gap: 12px; }
+  #btn-demo { position: static; transform: none; }
 }
-
-/* What the selected image actually is. Someone about to overwrite a board is
-   entitled to read that before the button, not after. */
-.flash-desc {
-  margin-top: 10px;
-  padding: 10px 12px;
-  background: var(--pd-bg-sunken);
-  border: 1px solid var(--pd-line);
-  border-radius: var(--pd-radius);
-  font-size: .84rem;
-}
-
-.flash-desc .flash-desc-meta {
-  margin-top: 6px;
-  font-family: var(--pd-mono); font-size: .76rem; color: var(--pd-text-dim);
-}
-
-.flash-safe { margin: 12px 0 0; font-size: .78rem; color: var(--pd-text-dim); }
-
-#flash-image { width: 100%; }
 
 .landing-status { margin: 18px 0 0; min-height: 1.4em; }
 
