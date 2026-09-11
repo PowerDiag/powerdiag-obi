@@ -119,6 +119,15 @@
 
 /* ---------- dashboard nudges ---------- */
 
+/* The top of the dashboard keeps its natural height and never scrolls; the log
+   takes the remaining space and scrolls inside itself. The shared library gives
+   .grid flex:2 and lets the cards scroll when the column squeezes them — that is
+   the scrollbar that showed up on the voltage/identity cards. Pin the grid to
+   its content instead; a .card's own overflow-y:auto then has nothing to do. */
+@media (min-width: 860px) and (min-height: 620px) {
+  body.app-shell .grid { flex: none; }
+}
+
 .actions { margin-bottom: 0; }
 .hint.warn { margin: 0 0 14px; }
 
@@ -171,8 +180,10 @@
 
 /* ---------- remote-connect dialog ----------
    The app's only text inputs, so the field styling lives here rather than in
-   the shared library. Channel pick-list + PIN, stacked. */
-.remote-form { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; text-align: left; }
+   the shared library. Channel pick-list + PIN, stacked. The 20px sides match
+   .dialog-body so the fields line up under its text; the actions footer is a
+   sibling (not nested here) so its strip still spans the full dialog width. */
+.remote-form { display: flex; flex-direction: column; gap: 12px; padding: 0 20px 16px; text-align: left; }
 .remote-field { display: flex; flex-direction: column; gap: 6px; font-size: .85rem; color: var(--pd-text-dim); }
 .remote-row { display: flex; gap: 8px; align-items: center; }
 
