@@ -169,16 +169,40 @@ export class LxtBattery {
   }
 
   async readCellsF0513() {
-    /* These packs need the bus settled before they answer reliably. */
-    await this.transport.request(CMD.CLEAR);
-    await this.transport.request(CMD.CLEAR);
+    /* F0513 has no pack-voltage register — the pack voltage is the sum of the
+     * five cell registers 0x31..0x35. Getting them to answer took a lot of
+     * hardware time; this mirrors the sequence the D1L firmware settled on,
+     * after three things the old code here did turned out to be exactly wrong:
+     *
+     *  - It sent CLEAR (F0 00) first, meaning to "settle the bus". On F0513 that
+     *    does the opposite: it leaves the BMS in a state where the cell
+     *    registers read back 0. That was why every cell read 0.00 V. No CLEAR.
+     *  - It read each register once. Switching the bus onto the CC register path
+     *    cold makes the first read or two miss, so each register is read three
+     *    times and only the last is kept (drakosha's discard/discard/use).
+     *  - It never primed the bus. A full basic transaction (0x33 AA 00) first
+     *    settles the pack onto a known state — and re-settles it after the model
+     *    read, which ends with a CLEAR of its own. */
+    const prime = async () => {
+      try { await this.transport.request(CMD.READ_MSG); } catch { /* content unused */ }
+    };
+    await prime();
+    await prime();
+
+    /* Read a register three times, keep the last. */
+    const readReg = async (command) => {
+      let payload;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        payload = await this.transport.request(command);
+      }
+      return payload;
+    };
 
     const cells = [];
     for (const command of CMD.F0513_VCELL) {
-      const payload = await this.transport.request(command);
-      cells.push(u16le(payload, 0) / 1000);
+      cells.push(u16le(await readReg(command), 0) / 1000);
     }
-    const temp = await this.transport.request(CMD.F0513_TEMP);
+    const temp = await readReg(CMD.F0513_TEMP);
 
     return {
       packVoltage: cells.reduce((sum, v) => sum + v, 0),
