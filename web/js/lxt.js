@@ -27,6 +27,10 @@ const CMD = {
   F0513_TESTMODE: [0x01, 0x01, 0x00, 0xcc, 0x99],
   F0513_TEMP:     [0x01, 0x01, 0x02, 0xcc, 0x52],
   F0513_VCELL:    [1, 2, 3, 4, 5].map((n) => [0x01, 0x01, 0x02, 0xcc, 0x30 + n]),
+  /* One command that reads all five cell registers atomically inside a single
+   * powered session — the only way F0513 cells come out. Needs OBI firmware
+   * >= 0.3.1; older firmware answers nothing to 0x36. Reply is five u16 LE. */
+  F0513_CELLS:    [0x01, 0x00, 0x0a, 0x36],
 };
 
 const hex = (bytes) =>
@@ -170,44 +174,30 @@ export class LxtBattery {
 
   async readCellsF0513() {
     /* F0513 has no pack-voltage register — the pack voltage is the sum of the
-     * five cell registers 0x31..0x35. Getting them to answer took a lot of
-     * hardware time; this mirrors the sequence the D1L firmware settled on,
-     * after three things the old code here did turned out to be exactly wrong:
-     *
-     *  - It sent CLEAR (F0 00) first, meaning to "settle the bus". On F0513 that
-     *    does the opposite: it leaves the BMS in a state where the cell
-     *    registers read back 0. That was why every cell read 0.00 V. No CLEAR.
-     *  - It read each register once. Switching the bus onto the CC register path
-     *    cold makes the first read or two miss, so each register is read three
-     *    times and only the last is kept (drakosha's discard/discard/use).
-     *  - It never primed the bus. A full basic transaction (0x33 AA 00) first
-     *    settles the pack onto a known state — and re-settles it after the model
-     *    read, which ends with a CLEAR of its own. */
-    const prime = async () => {
-      try { await this.transport.request(CMD.READ_MSG); } catch { /* content unused */ }
-    };
-    await prime();
-    await prime();
+     * five cell registers 0x31..0x35, and those only answer after the bus is
+     * primed and each is read a few times, all within one powered session. A
+     * per-command transport cannot do that (it powers the pack down between
+     * commands), which is why reading the registers one at a time returned 0 V
+     * on every cell. The firmware's 0x36 runs the whole sequence in one EN
+     * session; the long timeout covers its internal retries. Temperature is a
+     * plain register read and stays a separate command. */
+    const payload = await this.transport.request(CMD.F0513_CELLS, { attempts: 1, timeoutMs: 12000 });
+    const slots = [0, 1, 2, 3, 4].map((i) => u16le(payload, i * 2) / 1000);
 
-    /* Read a register three times, keep the last. */
-    const readReg = async (command) => {
-      let payload;
-      for (let attempt = 0; attempt < 3; attempt += 1) {
-        payload = await this.transport.request(command);
-      }
-      return payload;
-    };
+    /* A slot the pack did not answer reads as an implausible voltage; show it as
+     * 0 so a failed read is visible rather than a wild number, and keep only the
+     * plausible ones for the pack sum. A four-cell F0513 (BL14xx) leaves the
+     * fifth slot empty, so a trailing empty slot is dropped from the display. */
+    const clean = slots.map((v) => (v > 0.1 && v <= CELL_CEILING ? v : 0));
+    const valid = clean.filter((v) => v > 0);
+    const cells = clean[4] === 0 ? clean.slice(0, 4) : clean;
 
-    const cells = [];
-    for (const command of CMD.F0513_VCELL) {
-      cells.push(u16le(await readReg(command), 0) / 1000);
-    }
-    const temp = await readReg(CMD.F0513_TEMP);
+    const temp = await this.transport.request(CMD.F0513_TEMP);
 
     return {
-      packVoltage: cells.reduce((sum, v) => sum + v, 0),
+      packVoltage: valid.reduce((sum, v) => sum + v, 0),
       cells,
-      cellDiff: Math.max(...cells) - Math.min(...cells),
+      cellDiff: valid.length ? Math.max(...valid) - Math.min(...valid) : 0,
       tempCell: u16le(temp, 0) / 100,
       tempMosfet: null,
     };

@@ -7,7 +7,8 @@
 /** Minor version number (x.X.x) */
 #define ARDUINO_OBI_VERSION_MINOR 3
 /** Patch version number (x.x.X) */
-#define ARDUINO_OBI_VERSION_PATCH 0
+/* 0.3.1: command 0x36 reads F0513 cell voltages atomically. */
+#define ARDUINO_OBI_VERSION_PATCH 1
 
 #define ONEWIRE_PIN 6
 #define ENABLE_PIN 8
@@ -615,6 +616,52 @@ void read_usb() {
             case 0xCC:
                 cmd_and_read_cc(data, len, &rsp[2], rsp_len);
                 break;
+            case 0x36: {
+                /* F0513 cell voltages (five u16 LE in rsp[2..11]), read
+                 * atomically in this one EN session. F0513 has no pack-voltage
+                 * register: the pack voltage is the sum of cell registers
+                 * 0x31..0x35, and those only answer after the bus is primed with
+                 * a full basic transaction, with the first read or two after the
+                 * switch to the CC path missing. So prime twice (power-cycling
+                 * between) and read each register three times, keeping the last.
+                 * Ported from the D1L firmware's f0513_read_all, where this was
+                 * proven. The per-command path (case 0xCC) cannot do it: prime
+                 * and reads must share one powered session, and each USB command
+                 * is its own session. */
+                static byte F0513_BASIC[2] = {0xAA, 0x00};
+                byte warm[40];
+                for (uint8_t i = 0; i < 10; i++) rsp[2 + i] = 0;
+
+                for (uint8_t attempt = 0; attempt < 5; attempt++) {
+                    if (attempt) {
+                        digitalWrite(ENABLE_PIN, LOW);  delay(30);
+                        digitalWrite(ENABLE_PIN, HIGH); delay(400);
+                    }
+                    cmd_and_read_33(F0513_BASIC, 2, warm, 32);
+                    digitalWrite(ENABLE_PIN, LOW);  delay(30);
+                    digitalWrite(ENABLE_PIN, HIGH); delay(400);
+                    cmd_and_read_33(F0513_BASIC, 2, warm, 32);
+
+                    uint16_t sum = 0;
+                    uint8_t got = 0;
+                    for (uint8_t i = 0; i < 5; i++) {
+                        byte rc[1] = { (byte)(0x31 + i) };
+                        byte reg[2] = { 0xFF, 0xFF };
+                        cmd_and_read_cc(rc, 1, reg, 2);   // discard
+                        cmd_and_read_cc(rc, 1, reg, 2);   // discard
+                        cmd_and_read_cc(rc, 1, reg, 2);   // keep
+                        rsp[2 + 2 * i] = reg[0];
+                        rsp[3 + 2 * i] = reg[1];
+                        uint16_t cv = (uint16_t)reg[0] | ((uint16_t)reg[1] << 8);
+                        if (cv >= 100 && cv <= 5000) { sum += cv; got++; }
+                    }
+                    uint16_t c1 = (uint16_t)rsp[2] | ((uint16_t)rsp[3] << 8);
+                    if (c1 >= 100 && c1 <= 5000 && got >= 4 && sum >= 3000 && sum <= 30000) {
+                        break;   // good read; rsp[2..11] holds the five cells
+                    }
+                }
+                break;
+            }
             default:
                 rsp_len = 0;
                 break;
