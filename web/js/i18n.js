@@ -37,6 +37,8 @@ const STRINGS = {
     'err.notObi': 'この端末は応答しません。OBI 基板ではない可能性があります。別のポートをお選びください。',
     'err.portBusy': 'ポートが他で使用中です。このツールを開いている他のタブや、シリアルモニターを閉じてください。',
     'err.driver': 'ポート一覧に基板が出ない場合は USB シリアルドライバー（CH340 など）が必要です。',
+    'err.relayClosed': 'リレーとの接続が切断されました。',
+    'err.relayNoDevice': 'このチャンネルではまだポートが共有されていません。',
   },
   en: {
     'app.title': 'PowerDiag OBI',
@@ -72,6 +74,8 @@ const STRINGS = {
     'err.notObi': 'That device did not answer. It is probably not an OBI board — pick a different port.',
     'err.portBusy': 'The port is in use. Close any other tab running this tool, or a serial monitor holding it.',
     'err.driver': 'If the board is missing from the port list, install the USB-serial driver (CH340 or similar).',
+    'err.relayClosed': 'The relay connection closed.',
+    'err.relayNoDevice': 'No port is shared on that channel yet.',
   },
   zh: {
     'app.title': 'PowerDiag OBI',
@@ -107,6 +111,8 @@ const STRINGS = {
     'err.notObi': '该设备没有响应，可能不是 OBI 板。请换一个端口。',
     'err.portBusy': '端口被占用。请关闭开着本工具的其他标签页，或占用串口的串口监视器。',
     'err.driver': '端口列表里找不到本板时，需要安装 USB 串口驱动（CH340 等）。',
+    'err.relayClosed': '与中继的连接已断开。',
+    'err.relayNoDevice': '这个通道上还没有共享串口。',
   },
   'zh-TW': {
     'app.title': 'PowerDiag OBI',
@@ -141,6 +147,8 @@ const STRINGS = {
     'err.notObi': '此裝置沒有回應，可能不是 OBI 板。請改選其他序列埠。',
     'err.portBusy': '序列埠被占用。請關閉開著本工具的其他分頁，或占用序列埠的序列埠監控程式。',
     'err.driver': '在序列埠清單中找不到本板時，需要安裝 USB 序列埠驅動程式（CH340 等）。',
+    'err.relayClosed': '與中繼的連線已中斷。',
+    'err.relayNoDevice': '這個通道上還沒有共享序列埠。',
   },
   ko: {
     'app.title': 'PowerDiag OBI',
@@ -175,6 +183,8 @@ const STRINGS = {
     'err.notObi': '이 장치는 응답하지 않습니다. OBI 보드가 아닐 수 있으니 다른 포트를 선택하세요.',
     'err.portBusy': '포트를 다른 곳에서 사용 중입니다. 이 도구를 연 다른 탭이나 시리얼 모니터를 닫으세요.',
     'err.driver': '포트 목록에 보드가 없으면 USB 시리얼 드라이버(CH340 등)가 필요합니다.',
+    'err.relayClosed': '릴레이 연결이 끊어졌습니다.',
+    'err.relayNoDevice': '이 채널에는 아직 공유된 포트가 없습니다.',
   },
   vi: {
     'app.title': 'PowerDiag OBI',
@@ -209,6 +219,8 @@ const STRINGS = {
     'err.notObi': 'Thiết bị này không phản hồi. Có thể đây không phải bo mạch OBI — hãy chọn cổng khác.',
     'err.portBusy': 'Cổng đang được dùng. Hãy đóng tab khác đang mở công cụ này, hoặc trình theo dõi cổng nối tiếp.',
     'err.driver': 'Nếu không thấy bo mạch trong danh sách cổng, hãy cài driver USB-serial (CH340 hoặc tương tự).',
+    'err.relayClosed': 'Kết nối tới relay đã đóng.',
+    'err.relayNoDevice': 'Chưa có cổng nào được chia sẻ trên kênh này.',
   },
   th: {
     'app.title': 'PowerDiag OBI',
@@ -243,6 +255,8 @@ const STRINGS = {
     'err.notObi': 'อุปกรณ์นี้ไม่ตอบสนอง อาจไม่ใช่บอร์ด OBI กรุณาเลือกพอร์ตอื่น',
     'err.portBusy': 'พอร์ตถูกใช้งานอยู่ กรุณาปิดแท็บอื่นที่เปิดเครื่องมือนี้ หรือโปรแกรม serial monitor',
     'err.driver': 'หากไม่พบบอร์ดในรายการพอร์ต ต้องติดตั้งไดรเวอร์ USB-serial (เช่น CH340)',
+    'err.relayClosed': 'การเชื่อมต่อกับรีเลย์ถูกปิด',
+    'err.relayNoDevice': 'ยังไม่มีการแชร์พอร์ตในช่องนี้',
   },
 };
 
