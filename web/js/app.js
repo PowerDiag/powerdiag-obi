@@ -1,10 +1,22 @@
 import { Transport, ObiError } from './transport.js';
+import { RelayTransport } from './relay-transport.js';
 import { LxtBattery } from './lxt.js';
 import { i18n } from './i18n.js';
 import { VERSION } from './version.js';
 
-const transport = new Transport();
-const battery = new LxtBattery(transport);
+const localTransport = new Transport();
+const relayTransport = new RelayTransport();
+/* One battery, pointed at whichever transport is live. LxtBattery only ever
+ * reads this.transport, so swapping it on connect is all a remote session
+ * needs — every read and command then flows over the relay unchanged. */
+const battery = new LxtBattery(localTransport);
+let active = localTransport;      // the transport the UI is driving right now
+let remoteReadOnly = false;       // a relay session does not write the pack
+
+const relayApi = (path) => (
+  location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+    ? `http://127.0.0.1:8788${path}` : `/com-relay${path}`
+);
 
 const el = (id) => document.getElementById(id);
 const t = (key) => i18n.t(key);
@@ -226,7 +238,22 @@ function exportLog() {
   URL.revokeObjectURL(url);
 }
 
-transport.addEventListener('log', (event) => log(event.detail.direction, event.detail.hex));
+/* Both transports feed the same log, and whichever is active owns the
+ * connection lifecycle. A transport firing after a switch away is ignored. */
+function wireTransport(tp) {
+  tp.addEventListener('log', (event) => log(event.detail.direction, event.detail.hex));
+  tp.addEventListener('close', () => {
+    if (active !== tp) return;
+    setConnected(false);
+    clearValues();
+    status('status.idle');
+  });
+  tp.addEventListener('disconnect', () => {
+    if (tp.isOpen) tp.close();
+  });
+}
+wireTransport(localTransport);
+wireTransport(relayTransport);
 
 /* ---------- connection ---------- */
 
@@ -237,7 +264,10 @@ function setConnected(connected) {
    * hidden explicitly rather than disappearing with the dashboard. */
   el('conn-info').classList.toggle('hidden', !connected);
   el('btn-disconnect').classList.toggle('hidden', !connected);
-  document.querySelectorAll('.needs-connection').forEach((node) => { node.disabled = !connected; });
+  document.querySelectorAll('.needs-connection').forEach((node) => {
+    /* Writes stay off in a read-only (remote) session even while connected. */
+    node.disabled = !connected || (remoteReadOnly && node.classList.contains('needs-hardware'));
+  });
 }
 
 /* Web Serial deliberately withholds the OS port name, so the closest thing to
@@ -255,8 +285,11 @@ function describePort(port) {
 }
 
 async function connect(port) {
+  active = localTransport;
+  battery.transport = localTransport;
+  remoteReadOnly = false;
   status('status.connecting');
-  await transport.open(port);
+  await localTransport.open(port);
 
   /* Past this point the port is open, so every failure has to close it again.
    * A port left open reports "already open" on the next attempt, with the UI
@@ -276,12 +309,90 @@ async function connect(port) {
     el('port-name').textContent = `${describePort(port)} · FW ${version}`;
     status('status.connected', 'ok');
   } catch (error) {
-    await transport.close();
+    await localTransport.close();
     setConnected(false);
     throw error instanceof ObiError && error.messageKey !== 'err.timeout'
       ? error
       : new ObiError('err.notObi');
   }
+}
+
+/* Join a shared channel over the relay and bring up the same dashboard. Reads
+ * flow exactly as they do locally (the battery just points at the relay
+ * transport); writes are held off for the session — the pack is not in front
+ * of whoever is driving, and a write we cannot watch land is the case that has
+ * bitten us before. */
+async function connectRemote(room, pin) {
+  status('status.connecting');
+  await relayTransport.open({ room, pin });   // throws on wrong PIN / no channel
+
+  active = relayTransport;
+  battery.transport = relayTransport;
+  remoteReadOnly = true;
+  try {
+    battery.reset();
+    const version = await battery.interfaceVersion({ attempts: 5 });
+    setConnected(true);
+    delete el('port-name').dataset.i18n;
+    el('port-name').textContent = `${t('remote.label')} ${room} · FW ${version}`;
+    status('status.connected', 'ok');
+  } catch (error) {
+    await relayTransport.close();
+    active = localTransport;
+    battery.transport = localTransport;
+    remoteReadOnly = false;
+    setConnected(false);
+    throw error instanceof ObiError && error.messageKey !== 'err.timeout'
+      ? error
+      : new ObiError('err.notObi');
+  }
+}
+
+/* ---------- remote-connect dialog ---------- */
+
+async function loadChannels() {
+  const select = el('remote-list');
+  const note = el('remote-note');
+  note.classList.add('hidden');
+  select.replaceChildren();
+  try {
+    const res = await fetch(relayApi('/api/channels'), { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { channels } = await res.json();
+    if (!channels || !channels.length) {
+      note.textContent = t('remote.none');
+      note.classList.remove('hidden');
+      el('btn-remote-go').disabled = true;
+      return;
+    }
+    for (const ch of channels) {
+      const option = document.createElement('option');
+      option.value = ch.room;
+      option.textContent = ch.room;
+      select.append(option);
+    }
+    el('btn-remote-go').disabled = false;
+  } catch {
+    note.textContent = t('remote.listFail');
+    note.classList.remove('hidden');
+    el('btn-remote-go').disabled = true;
+  }
+}
+
+function openRemoteDialog() {
+  el('remote-pin').value = '';
+  el('remote-note').classList.add('hidden');
+  el('btn-remote-go').disabled = true;
+  el('remote').showModal();
+  loadChannels();
+}
+
+function submitRemote() {
+  const room = el('remote-list').value;
+  const pin = el('remote-pin').value.trim().toUpperCase();
+  if (!room) return;
+  el('remote').close();
+  guard(() => connectRemote(room, pin));
 }
 
 async function onConnectClick() {
@@ -303,15 +414,6 @@ async function onConnectClick() {
   }
 }
 
-transport.addEventListener('close', () => {
-  setConnected(false);
-  clearValues();
-  status('status.idle');
-});
-
-transport.addEventListener('disconnect', () => {
-  if (transport.isOpen) transport.close();
-});
 
 function enterDemo() {
   demo = true;
@@ -361,7 +463,9 @@ async function guard(action) {
   } finally {
     busy = false;
     showBusy(false);
-    document.querySelectorAll('.needs-connection').forEach((n) => { n.disabled = !transport.isOpen; });
+    document.querySelectorAll('.needs-connection').forEach((n) => {
+      n.disabled = !active.isOpen || (remoteReadOnly && n.classList.contains('needs-hardware'));
+    });
   }
 }
 
@@ -653,8 +757,15 @@ async function init() {
   el('btn-leds-off').addEventListener('click', () => guard(() => battery.ledsOff()));
   el('btn-disconnect').addEventListener('click', () => {
     if (demo) exitDemo();
-    else transport.close();
+    else active.close();
   });
+
+  /* Remote connect needs no serial port, so it is wired here with the rest of
+   * the no-hardware controls — it works even where Web Serial does not. */
+  el('btn-remote').addEventListener('click', openRemoteDialog);
+  el('btn-remote-refresh').addEventListener('click', loadChannels);
+  el('btn-remote-cancel').addEventListener('click', () => el('remote').close());
+  el('btn-remote-go').addEventListener('click', submitRemote);
 
   installed = await detectInstalled();
   refreshInstallState();
@@ -683,13 +794,13 @@ async function init() {
   el('btn-connect').addEventListener('click', () => guard(onConnectClick));
 
   navigator.serial.addEventListener('disconnect', (event) => {
-    if (transport.port === event.target) transport.close();
+    if (localTransport.port === event.target) localTransport.close();
   });
 
   /* Hand the port back when the page goes away. The OS releases it when the
    * process exits anyway, but a reload or a closed tab is not a process exit,
    * and the next window would find the device claimed. */
-  window.addEventListener('pagehide', () => { transport.close(); });
+  window.addEventListener('pagehide', () => { active.close(); });
 
   /* No reconnect on load. Silently reclaiming a port made disconnect
    * meaningless — a refresh put you straight back — and left it unclear which

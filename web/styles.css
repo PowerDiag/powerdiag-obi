@@ -168,3 +168,20 @@
   .landing-langhint { right: 8px; }
   .landing-head { left: 8px; right: 8px; }
 }
+
+/* ---------- remote-connect dialog ----------
+   The app's only text inputs, so the field styling lives here rather than in
+   the shared library. Channel pick-list + PIN, stacked. */
+.remote-form { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; text-align: left; }
+.remote-field { display: flex; flex-direction: column; gap: 6px; font-size: .85rem; color: var(--pd-text-dim); }
+.remote-row { display: flex; gap: 8px; align-items: center; }
+
+.remote-form select, .remote-form input {
+  background: var(--pd-bg-sunken); color: var(--pd-text);
+  border: 1px solid var(--pd-line); border-radius: var(--pd-radius-sm);
+  padding: 0 12px; height: var(--pd-control-h); font: inherit;
+}
+.remote-form select { flex: 1 1 auto; min-width: 0; }
+.remote-form input:focus, .remote-form select:focus { outline: none; border-color: var(--pd-accent-dim); }
+#remote-pin { text-transform: uppercase; letter-spacing: .18em; }
+.remote-form .dialog-actions { margin-top: 4px; }

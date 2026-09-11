@@ -55,6 +55,7 @@
   </div>
   <div id="busy" class="progress hidden"></div>
   <p class="status landing-status" data-i18n="status.idle">Not connected</p>
+  <button id="btn-remote" class="btn ghost small" data-i18n="btn.remote">Connect a remote port</button>
   <button id="btn-install" class="btn ghost small hidden" data-i18n="btn.install">Install as an app</button>
   <button id="btn-installed" class="btn ghost small hidden" data-i18n="install.done">Installed as an app</button>
   <p id="install-unsupported" class="hint hidden" data-i18n="install.unsupported"></p>
@@ -157,6 +158,29 @@
   <form method="dialog" class="dialog-actions">
     <button value="ok" class="btn" data-i18n="btn.close">Close</button>
   </form>
+</dialog>
+
+<dialog id="remote" class="dialog">
+  <p class="dialog-title" data-i18n="remote.title">Connect a remote port</p>
+  <p class="dialog-body" data-i18n="remote.body">Pick a shared channel and enter its PIN.</p>
+  <div class="remote-form">
+    <label class="remote-field">
+      <span data-i18n="remote.channel">Channel</span>
+      <span class="remote-row">
+        <select id="remote-list" class="mono"></select>
+        <button type="button" id="btn-remote-refresh" class="btn ghost small" data-i18n="remote.refresh">Refresh</button>
+      </span>
+    </label>
+    <label class="remote-field">
+      <span data-i18n="remote.pin">PIN</span>
+      <input id="remote-pin" class="mono" type="text" maxlength="6" placeholder="PIN" autocomplete="off" spellcheck="false" inputmode="numeric">
+    </label>
+    <p id="remote-note" class="field-note hidden"></p>
+    <div class="dialog-actions">
+      <button type="button" id="btn-remote-cancel" class="btn ghost" data-i18n="btn.cancel">Cancel</button>
+      <button type="button" id="btn-remote-go" class="btn primary" data-i18n="btn.proceed">Continue</button>
+    </div>
+  </div>
 </dialog>
 
 <dialog id="confirm" class="dialog">
