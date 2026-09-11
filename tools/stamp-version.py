@@ -1,17 +1,24 @@
-"""Write web/js/version.js from the current git state.
+"""Write web/js/version.js and stamp web/sw.js from the current git state.
 
 There is no build step, so the version the customer sees has to be written
 into a file. Run this before deploying: it stamps whatever HEAD is at that
 moment, which is the commit being deployed.
 
+It also rewrites the service-worker CACHE name to the same commit, so every
+deploy busts the old cache automatically. That bump used to be manual, and the
+one time it was forgotten a returning browser kept serving an old js file for
+a change that was otherwise correct end to end — hours to find.
+
     python tools/stamp-version.py
 """
 import io
 import os
+import re
 import subprocess
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "web", "js", "version.js")
+SW = os.path.join(ROOT, "web", "sw.js")
 
 
 def git(*args):
@@ -31,4 +38,19 @@ body = (
 )
 
 io.open(OUT, "w", encoding="utf-8", newline="\n").write(body)
-print("stamped %s %s%s" % (date, commit, " (working tree dirty)" if dirty else ""))
+
+# Stamp the service-worker cache name with the same commit. The service worker's
+# activate handler drops every cache whose name is not the current one, so a new
+# name on each deploy is what forces returning browsers onto the fresh files. The
+# dirty marker keeps a dirty redeploy after a clean one from colliding.
+stamp = "%s%s" % (commit, "+" if dirty else "")
+sw = io.open(SW, encoding="utf-8").read()
+new_sw, hits = re.subn(r'const CACHE = "[^"]*";',
+                       'const CACHE = "powerdiag-obi-%s";' % stamp, sw, count=1)
+if hits != 1:
+    raise SystemExit("stamp-version: could not find the CACHE line in web/sw.js")
+if new_sw != sw:
+    io.open(SW, "w", encoding="utf-8", newline="\n").write(new_sw)
+
+print("stamped %s %s%s  cache=powerdiag-obi-%s"
+      % (date, commit, " (working tree dirty)" if dirty else "", stamp))

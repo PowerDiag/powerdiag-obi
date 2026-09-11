@@ -1,6 +1,10 @@
-/* Offline shell for the OBI tool. Bump CACHE when any asset below changes,
- * otherwise returning users keep the old build until they hard-reload. */
-const CACHE = "powerdiag-obi-v73";
+/* Offline shell for the OBI tool. CACHE is stamped with the deploy commit by
+ * tools/stamp-version.py (run before every deploy), so each deploy gets a fresh
+ * name and the activate handler below drops the old one — returning browsers
+ * pick up the new files without a manual bump. The value here is a placeholder
+ * that stamp-version.py overwrites; leaving it unstamped would keep every
+ * deploy on one cache name and strand returning users on stale js. */
+const CACHE = "powerdiag-obi-dev";
 
 const ASSETS = [
   "./",
