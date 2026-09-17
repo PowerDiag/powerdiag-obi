@@ -18,6 +18,16 @@ const relayApi = (path) => (
     ? `http://127.0.0.1:8788${path}` : `/com-relay${path}`
 );
 
+const apiBase = (path) => (
+  location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+    ? `http://127.0.0.1:3000${path}` : `https://api.powerdiag.jp${path}`
+);
+
+/* Opt-out, not opt-in: the checkbox starts checked, and the choice is
+ * remembered so a technician who turns it off once is not asked again every
+ * session. */
+const SEND_READING_KEY = 'powerdiag-obi-send-reading';
+
 const el = (id) => document.getElementById(id);
 const t = (key) => i18n.t(key);
 
@@ -40,6 +50,11 @@ const VOLTAGE_FIELDS = [
 ];
 
 let busy = false;
+
+/* The interface board's firmware version, captured once at connect and sent
+ * along with any reading — it is not part of `reading` because a language
+ * switch redraws `reading` but must not touch this. */
+let fwVersion = null;
 
 /* Five until a pack says otherwise: an 18 V pack is five cells in series, a
  * 14.4 V one is four, and they share a connector. */
@@ -302,6 +317,7 @@ async function connect(port) {
      * OBI firmware; silence means this is some other serial device, and saying
      * so beats letting every later command time out mysteriously. */
     const version = await battery.interfaceVersion({ attempts: 5 });
+    fwVersion = version;
 
     setConnected(true);
     /* A real port name is not a phrase in any language, so it carries no key. */
@@ -332,6 +348,7 @@ async function connectRemote(room, pin) {
   try {
     battery.reset();
     const version = await battery.interfaceVersion({ attempts: 5 });
+    fwVersion = version;
     setConnected(true);
     delete el('port-name').dataset.i18n;
     el('port-name').textContent = `${t('remote.label')} ${room} · FW ${version}`;
@@ -564,6 +581,34 @@ async function readAll() {
   clearValues();
   await readIdentity();
   await readCells();
+  submitReading();
+}
+
+/* Fire-and-forget upload of the reading just shown on screen, gated by the
+ * checkbox next to the read button (checked by default). A failed upload is
+ * not the technician's problem — the reading on screen is still correct — so
+ * it only gets a quiet line in the log, never the error banner readAll()
+ * would otherwise show. */
+function submitReading() {
+  const checkbox = el('opt-send-reading');
+  if (!checkbox || !checkbox.checked) return;
+  if (!reading.identity || !reading.cells) return;
+
+  const payload = {
+    ts: new Date().toISOString(),
+    appVersion: `${VERSION.date}-${VERSION.commit}`,
+    fwVersion,
+    lang: i18n.lang,
+    identity: reading.identity,
+    cells: reading.cells,
+    terminalVoltage: reading.terminal,
+  };
+
+  fetch(apiBase('/v1/obi/reading'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload),
+  }).catch((error) => log('err', `upload failed: ${error.message || error}`));
 }
 
 /* The browser's confirm() announces itself as the browser's, cannot be styled
@@ -731,6 +776,13 @@ async function init() {
     renderIdentity(); // and the reading is redrawn, not discarded
     renderCells();
     renderTerminal();
+  });
+
+  /* Default on: the stored value only ever overrides it to 'off', since a
+   * technician who never touched the checkbox has no stored preference at all. */
+  el('opt-send-reading').checked = localStorage.getItem(SEND_READING_KEY) !== '0';
+  el('opt-send-reading').addEventListener('change', (event) => {
+    localStorage.setItem(SEND_READING_KEY, event.target.checked ? '1' : '0');
   });
 
   el('btn-log').addEventListener('click', () => {

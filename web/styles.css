@@ -131,6 +131,14 @@
 .actions { margin-bottom: 0; }
 .hint.warn { margin: 0 0 14px; }
 
+.send-reading {
+  display: flex; align-items: center; gap: 7px;
+  font-size: .84rem; color: var(--pd-text-dim);
+  cursor: pointer; user-select: none;
+}
+.send-reading input { margin: 0; accent-color: var(--pd-accent, currentColor); }
+.send-reading-hint { flex-basis: 100%; margin: -4px 0 0; }
+
 /* The pack voltage now heads the card it summarises, so it loses the panel
    chrome it had as a standalone row. */
 .card-readout {
