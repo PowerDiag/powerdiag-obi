@@ -758,8 +758,12 @@ async function init() {
   document.documentElement.lang = i18n.lang;
 
   /* Which build the customer is actually running: the first thing to
-   * establish before believing any bug report. */
-  el('build').textContent = `${VERSION.date} · ${VERSION.commit}`;
+   * establish before believing any bug report. In two places on purpose — by
+   * the name, where someone being asked for it will look, and in the status
+   * bar, which outlives the landing screen. */
+  const build = `${VERSION.date} · ${VERSION.commit}`;
+  el('build').textContent = build;
+  el('landing-build').textContent = build;
 
   buildLayout();
   applyLanguage();

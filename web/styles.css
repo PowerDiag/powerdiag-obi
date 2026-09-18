@@ -57,6 +57,19 @@
 .landing-brand {
   display: flex; align-items: center;
   gap: clamp(10px, 1.6vw, 18px);
+  /* Narrow screens put the build on its own line rather than squeezing the
+     name; centred, because everything on this screen is. */
+  flex-wrap: wrap; justify-content: center;
+}
+
+/* The build, next to the name. The status bar carries it too, but that is far
+   down the page and gone as soon as a dashboard replaces this screen — here is
+   where someone asked "which version are you running?" will look. */
+.landing-build {
+  font-size: clamp(.72rem, 1.4vw, .82rem);
+  color: var(--pd-text-dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .landing-brand img {
