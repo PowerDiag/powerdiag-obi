@@ -33,6 +33,21 @@ const CMD = {
   F0513_CELLS:    [0x01, 0x00, 0x0a, 0x36],
 };
 
+/** Lowest interface-board firmware that answers 0x36 (F0513_CELLS). */
+const MIN_F0513_CELLS_FW = [0, 3, 1];
+
+/** version is the dotted string from interfaceVersion(), e.g. "0.2.1". Missing
+ * or unparsable is treated as too old rather than assumed supported. */
+function fwAtLeast(version, min) {
+  const parts = String(version ?? '').split('.').map(Number);
+  if (parts.some(Number.isNaN)) return false;
+  for (let i = 0; i < min.length; i += 1) {
+    const have = parts[i] ?? 0;
+    if (have !== min[i]) return have > min[i];
+  }
+  return true;
+}
+
 const hex = (bytes) =>
   Array.from(bytes, (b) => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
 
@@ -59,18 +74,22 @@ export class LxtBattery {
     this.dialect = null;      // null until a model read succeeds, then '' or 'F0513'
     this.voltageSupported = null; // null = not probed, false = board has no divider
     this.cellCount = 5;       // until the pack says otherwise
+    this.fwVersion = null;    // null until interfaceVersion() succeeds
   }
 
   reset() {
     this.dialect = null;
     this.voltageSupported = null;
     this.cellCount = 5;
+    this.fwVersion = null;
   }
 
-  /** Firmware version of the interface board itself, e.g. "0.3.0". */
+  /** Firmware version of the interface board itself, e.g. "0.3.0". Cached on
+   * the instance so readCellsF0513() can gate 0x36 without a second probe. */
   async interfaceVersion({ attempts = 5 } = {}) {
     const payload = await this.transport.request(CMD.INTERFACE_VERSION, { attempts });
-    return Array.from(payload).join('.');
+    this.fwVersion = Array.from(payload).join('.');
+    return this.fwVersion;
   }
 
   /**
@@ -181,6 +200,9 @@ export class LxtBattery {
      * on every cell. The firmware's 0x36 runs the whole sequence in one EN
      * session; the long timeout covers its internal retries. Temperature is a
      * plain register read and stays a separate command. */
+    if (!fwAtLeast(this.fwVersion, MIN_F0513_CELLS_FW)) {
+      throw new ObiError('err.fwTooOld', this.fwVersion ?? 'unknown');
+    }
     const payload = await this.transport.request(CMD.F0513_CELLS, { attempts: 1, timeoutMs: 12000 });
     const slots = [0, 1, 2, 3, 4].map((i) => u16le(payload, i * 2) / 1000);
 
