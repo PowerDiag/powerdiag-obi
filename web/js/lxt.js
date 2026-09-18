@@ -43,7 +43,7 @@ const CMD = {
  * stock path and behaves exactly as upstream does — no extra commands sent at
  * it, and nothing said about its firmware: a board doing what it was built to
  * do is not a fault. */
-const isPowerDiagFw = (version) => Number(String(version ?? '').split('.')[0]) >= 9;
+export const isPowerDiagFw = (version) => Number(String(version ?? '').split('.')[0]) >= 9;
 
 const hex = (bytes) =>
   Array.from(bytes, (b) => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');

@@ -1,6 +1,6 @@
 import { Transport, ObiError } from './transport.js';
 import { RelayTransport } from './relay-transport.js';
-import { LxtBattery } from './lxt.js';
+import { LxtBattery, isPowerDiagFw } from './lxt.js';
 import { i18n } from './i18n.js';
 import { VERSION } from './version.js';
 
@@ -184,6 +184,7 @@ function clearValues() {
   el('readout-terminal').textContent = '—';
   el('state-badge').className = 'badge hidden';
   el('note-limited').classList.add('hidden');
+  el('note-stock-f0513').classList.add('hidden');
 }
 
 function applyLanguage() {
@@ -563,6 +564,14 @@ function renderIdentity() {
   set('state', badge.textContent);
 
   el('note-limited').classList.toggle('hidden', !info.limited);
+
+  /* F0513 on stock firmware: the first cell register read after the bus
+   * switches to the CC path misses, and stock has no way to prime it, so cell 1
+   * comes back wrong while the rest look fine. Our firmware does prime — say so
+   * here, next to the reading that raises the question, and only in the case it
+   * applies to. */
+  el('note-stock-f0513').classList
+    .toggle('hidden', !info.limited || isPowerDiagFw(fwVersion));
 }
 
 /* What the voltages card shows. */

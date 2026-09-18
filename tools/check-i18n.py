@@ -17,7 +17,9 @@ SRC = os.path.join(ROOT, "web", "js", "i18n.js")
 src = io.open(SRC, encoding="utf-8").read()
 
 LANG_RE = re.compile(r"^  '?([a-zA-Z-]+)'?: \{$", re.M)
-KEY_RE = re.compile(r"'([a-zA-Z]+\.[A-Za-z]+)':")
+# Digits belong in the key half too: note.stockF0513 named a real string that
+# this script quietly skipped, which is the exact failure it exists to catch.
+KEY_RE = re.compile(r"'([a-zA-Z]+\.[A-Za-z0-9]+)':")
 END = chr(10) + "  },"
 
 
