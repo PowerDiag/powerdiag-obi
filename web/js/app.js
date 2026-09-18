@@ -183,7 +183,7 @@ function clearValues() {
   el('readout-voltage').textContent = '—';
   el('readout-terminal').textContent = '—';
   el('state-badge').className = 'badge hidden';
-  el('note-limited').classList.add('hidden');
+  el('notes').classList.add('hidden');
   el('note-stock-f0513').classList.add('hidden');
 }
 
@@ -578,7 +578,7 @@ function renderIdentity() {
   badge.className = `badge ${info.locked ? 'danger' : 'ok'}`;
   set('state', badge.textContent);
 
-  el('note-limited').classList.toggle('hidden', !info.limited);
+  el('notes').classList.toggle('hidden', !info.limited);
 
   /* F0513 on stock firmware: the first cell register read after the bus
    * switches to the CC path misses, and stock has no way to prime it, so cell 1

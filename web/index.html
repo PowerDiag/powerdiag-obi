@@ -68,42 +68,57 @@
 
   <main id="panels" class="app-content">
 
+    <!-- Two rows, split by what each side is about. Left: the board, and what
+         can be done to the pack through it. Right: the reading, and what
+         happens to it. Everything sits at a fixed place in that grid. -->
     <section class="actions toolbar">
-      <div id="adapter" class="action-group adapter hidden">
-        <span class="action-group-label" data-i18n="adapter.label">Adapter</span>
-        <span id="adapter-value" class="adapter-value">&mdash;</span>
-      </div>
-
-      <button id="btn-read" class="btn primary needs-connection" data-i18n="btn.read">Read everything</button>
-      <button id="btn-copy" class="btn needs-connection" data-i18n="btn.copy">Copy readings</button>
-
-      <label class="send-reading">
-        <input type="checkbox" id="opt-send-reading" checked>
-        <span data-i18n="opt.sendReading">Send this reading to PowerDiag</span>
-      </label>
-      <p class="hint send-reading-hint" data-i18n="opt.sendReadingHint"></p>
-
-      <div class="action-group">
-        <span class="action-group-label" data-i18n="group.test">Function test</span>
-        <div class="action-group-row">
-          <button id="btn-leds-on" class="needs-hardware btn ghost needs-connection" data-i18n="btn.ledsOn">LEDs on</button>
-          <button id="btn-leds-off" class="needs-hardware btn ghost needs-connection" data-i18n="btn.ledsOff">LEDs off</button>
+      <div class="toolbar-row">
+        <div id="adapter" class="action-group adapter hidden">
+          <span class="action-group-label" data-i18n="adapter.label">Adapter</span>
+          <span id="adapter-value" class="adapter-value">&mdash;</span>
+        </div>
+        <div class="toolbar-end">
+          <button id="btn-read" class="btn primary needs-connection" data-i18n="btn.read">Read everything</button>
+          <button id="btn-copy" class="btn needs-connection" data-i18n="btn.copy">Copy readings</button>
         </div>
       </div>
 
-      <div class="action-group danger">
-        <span class="action-group-label" data-i18n="group.write">Writes to the battery</span>
-        <div class="action-group-row">
-          <button id="btn-clear" class="needs-hardware btn danger needs-connection" data-i18n="btn.clearErrors">Clear errors</button>
+      <div class="toolbar-row">
+        <div class="toolbar-start">
+          <div class="action-group">
+            <span class="action-group-label" data-i18n="group.test">Function test</span>
+            <div class="action-group-row">
+              <button id="btn-leds-on" class="needs-hardware btn ghost needs-connection" data-i18n="btn.ledsOn">LEDs on</button>
+              <button id="btn-leds-off" class="needs-hardware btn ghost needs-connection" data-i18n="btn.ledsOff">LEDs off</button>
+            </div>
+          </div>
+
+          <div class="action-group danger">
+            <span class="action-group-label" data-i18n="group.write">Writes to the battery</span>
+            <div class="action-group-row">
+              <button id="btn-clear" class="needs-hardware btn danger needs-connection" data-i18n="btn.clearErrors">Clear errors</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-end send-reading-block">
+          <label class="send-reading">
+            <input type="checkbox" id="opt-send-reading" checked>
+            <span data-i18n="opt.sendReading">Send this reading to PowerDiag</span>
+          </label>
+          <p class="hint send-reading-hint" data-i18n="opt.sendReadingHint"></p>
         </div>
       </div>
     </section>
 
-    <p id="note-limited" class="hint warn hidden" data-i18n="note.limited"></p>
-    <p id="note-stock-f0513" class="hint danger hidden">
-      <span data-i18n="note.stockF0513"></span>
-      <a href="https://powerdiag.jp/flash/" data-i18n="note.stockF0513Flash"></a>
-    </p>
+    <!-- Only for F0513 packs. The second line only on stock firmware. -->
+    <div id="notes" class="notes hidden">
+      <p class="note-warn" data-i18n="note.limited"></p>
+      <p id="note-stock-f0513" class="note-danger hidden">
+        <span data-i18n="note.stockF0513"></span>
+        <a href="https://powerdiag.jp/flash/" data-i18n="note.stockF0513Flash"></a>
+      </p>
+    </div>
 
     <div class="grid">
 

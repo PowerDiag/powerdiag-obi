@@ -65,13 +65,6 @@
 /* The build, next to the name. The status bar carries it too, but that is far
    down the page and gone as soon as a dashboard replaces this screen — here is
    where someone asked "which version are you running?" will look. */
-/* The one note that earns red: the pack reads, but on stock firmware the first
-   cell register comes back wrong, and the numbers on screen look like a fault
-   in the battery. Red because it is about the reading being untrustworthy —
-   the sentence itself offers a way out rather than blaming the board. */
-.hint.danger { color: var(--pd-danger); }
-.hint.danger a { color: inherit; text-decoration: underline; }
-
 .landing-build {
   font-size: clamp(.72rem, 1.4vw, .82rem);
   color: var(--pd-text-dim);
@@ -150,27 +143,75 @@
 
 .actions { margin-bottom: 0; }
 
-/* The shared toolbar shrink-wraps and sits at the right, which worked while it
-   held nothing but buttons. The send-reading hint is a full-width line, so the
-   frame ended up spanning the column anyway and the buttons read as
-   left-aligned inside it. Now that the adapter occupies the left end, the width
-   is made explicit and the buttons are pushed back to the right where they
-   were: two ends with something at each. */
-.actions.toolbar { width: 100%; }
-.adapter { margin-right: auto; }
-.adapter-value { font-size: .84rem; font-weight: 600; }
-.hint.warn { margin: 0 0 14px; }
+/* Dashboard blocks are spaced by the column's gap on desktop (the shared
+   library sets it there); give narrow screens the same, so nothing touches. */
+#panels { display: flex; flex-direction: column; gap: 10px; }
 
+/* Two rows, split by subject. Left is the board — which one it is, and what
+   can be done to the pack through it. Right is the reading — take it, copy it,
+   and whether it is sent. Row one carries the primary action; row two the
+   secondary ones, under a hairline. The shared toolbar shrink-wraps to the
+   right, which suited a row of buttons; this spans the column instead. */
+.actions.toolbar {
+  width: 100%;
+  flex-direction: column; align-items: stretch; gap: 10px;
+}
+.toolbar-row {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 10px 14px;
+}
+.toolbar-row + .toolbar-row {
+  align-items: flex-start;
+  padding-top: 10px; border-top: 1px solid var(--pd-line-soft);
+}
+.toolbar-start { display: flex; flex-wrap: wrap; gap: 14px; }
+.toolbar-end { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+
+.adapter-value { font-size: .84rem; font-weight: 600; }
+
+.send-reading-block {
+  flex-direction: column; gap: 4px;
+  max-width: 26rem;         /* the hint wraps under its checkbox, not across */
+}
 .send-reading {
   display: flex; align-items: center; gap: 7px;
   font-size: .84rem; color: var(--pd-text-dim);
   cursor: pointer; user-select: none;
 }
 .send-reading input { margin: 0; accent-color: var(--pd-accent, currentColor); }
-/* Its own line, but the checkbox it explains now sits at the right end of the
-   row above, and an explanation that starts at the opposite edge reads as
-   belonging to nothing. */
-.send-reading-hint { flex-basis: 100%; margin: -4px 0 0; text-align: right; }
+.send-reading-hint { font-size: .78rem; padding-left: 20px; }  /* under the label, not the box */
+
+/* Once a row wraps, whatever dropped to the next line should start at the
+   left like everything else, not hang off the right edge on its own. */
+@media (max-width: 640px) {
+  .toolbar-end { margin-left: 0; }
+}
+
+/* Notices about the pack, in one contained block rather than loose coloured
+   lines. The shared palette's warn and danger are tuned for the dark theme:
+   #f0b429 on white is under 2:1 and was all but unreadable, so the light
+   theme gets darker text of the same hues. The colour marks the severity; it
+   does not have to carry the reading as well. */
+:root { --obi-warn-text: var(--pd-warn); --obi-danger-text: var(--pd-danger); }
+@media (prefers-color-scheme: light) {
+  :root { --obi-warn-text: #8a5d00; --obi-danger-text: #b3261e; }
+}
+.notes {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 10px 14px;
+  background: var(--pd-bg-raised);
+  border: 1px solid var(--pd-line);
+  border-left: 3px solid var(--pd-warn);
+  border-radius: var(--pd-radius);
+  font-size: .86rem;
+}
+.notes p { margin: 0; }
+.note-warn { color: var(--obi-warn-text); }
+.note-danger { color: var(--obi-danger-text); }
+.note-danger a {
+  color: inherit; font-weight: 600;
+  text-decoration: underline; white-space: nowrap; margin-left: .3em;
+}
 
 /* The pack voltage now heads the card it summarises, so it loses the panel
    chrome it had as a standalone row. */
