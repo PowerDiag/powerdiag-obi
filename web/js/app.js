@@ -284,6 +284,21 @@ function setConnected(connected) {
     /* Writes stay off in a read-only (remote) session even while connected. */
     node.disabled = !connected || (remoteReadOnly && node.classList.contains('needs-hardware'));
   });
+  renderAdapter();
+}
+
+/* Which board answered, named rather than left as a bare version number: the
+ * two firmwares read F0513 packs differently, so "which one is this?" is the
+ * first thing to settle when a reading looks off. The version is already in
+ * hand — connect() asks for it before the dashboard is ever shown — so this
+ * only has to say what it means. Nothing to show in a demo, which has no
+ * board behind it. */
+function renderAdapter() {
+  const known = !demo && fwVersion;
+  el('adapter').classList.toggle('hidden', !known);
+  if (!known) return;
+  const name = isPowerDiagFw(fwVersion) ? 'PowerDiag OBI' : t('adapter.original');
+  el('adapter-value').textContent = `${name} · ${fwVersion}`;
 }
 
 /* Web Serial deliberately withholds the OS port name, so the closest thing to
@@ -789,6 +804,7 @@ async function init() {
     renderIdentity(); // and the reading is redrawn, not discarded
     renderCells();
     renderTerminal();
+    renderAdapter();
   });
 
   /* Default on: the stored value only ever overrides it to 'off', since a

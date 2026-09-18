@@ -149,6 +149,16 @@
 }
 
 .actions { margin-bottom: 0; }
+
+/* The shared toolbar shrink-wraps and sits at the right, which worked while it
+   held nothing but buttons. The send-reading hint is a full-width line, so the
+   frame ended up spanning the column anyway and the buttons read as
+   left-aligned inside it. Now that the adapter occupies the left end, the width
+   is made explicit and the buttons are pushed back to the right where they
+   were: two ends with something at each. */
+.actions.toolbar { width: 100%; }
+.adapter { margin-right: auto; }
+.adapter-value { font-size: .84rem; font-weight: 600; }
 .hint.warn { margin: 0 0 14px; }
 
 .send-reading {
@@ -157,7 +167,10 @@
   cursor: pointer; user-select: none;
 }
 .send-reading input { margin: 0; accent-color: var(--pd-accent, currentColor); }
-.send-reading-hint { flex-basis: 100%; margin: -4px 0 0; }
+/* Its own line, but the checkbox it explains now sits at the right end of the
+   row above, and an explanation that starts at the opposite edge reads as
+   belonging to nothing. */
+.send-reading-hint { flex-basis: 100%; margin: -4px 0 0; text-align: right; }
 
 /* The pack voltage now heads the card it summarises, so it loses the panel
    chrome it had as a standalone row. */
