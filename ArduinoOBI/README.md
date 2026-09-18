@@ -32,6 +32,31 @@ builds that predate this scheme report as stock and should be reflashed.
 
 ---
 
+## Building and releasing
+
+Built on the PowerDiag server, where PlatformIO is installed (pipx; `pio` lives in
+`~/.local/bin`) and the AVR toolchain is already fetched. The walkthrough further down is
+upstream's VS Code route and still works, but the short version is:
+
+```sh
+cd ~/powerdiag-obi/ArduinoOBI
+pio run -e nano          # -> .pio/build/nano/firmware.hex
+```
+
+The build is released through the web flasher at `https://powerdiag.jp/flash/`, which serves
+this firmware and the stock one side by side. Copy the hex into `powerdiag-site` at
+`public/flash/firmware/powerdiag-obi.hex` and update `public/flash/firmware/index.json`:
+
+- `version` — must match `ARDUINO_OBI_VERSION_*` in `src/main.cpp`. The OBI app picks its read
+  path from this number, so getting it wrong makes the app treat the board as stock.
+- `bytes` — the **program** size, not the file size: the sum of the data lengths of the hex's
+  type `00` records, which is the figure `pio run` prints as `Flash: ... used N bytes`.
+
+Then deploy `powerdiag-site` as usual. `Flash-Nano.ps1` and the web flasher both query the
+version after writing, so a mismatch shows up immediately on the next flash.
+
+---
+
 ## Stand-alone operation
 
 The board can be used without the PC application. The battery-facing commands are exactly the
