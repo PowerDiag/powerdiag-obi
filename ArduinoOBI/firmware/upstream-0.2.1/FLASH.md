@@ -14,7 +14,7 @@ at commit `1a24a38`, PlatformIO `nano` env, unmodified sources.
 * SHA256 `a499e89e9b548c81de451573d9744090d39b7b43f7e2322d04b1695fdc1832fd`
 
 Reports **0.2.1** over the serial version command, which is how you tell it apart
-from this repo's firmware at a glance.
+from this repo's firmware (`9.x.x`) at a glance — and how the web app tells, too.
 
 ## Flashing
 
@@ -44,4 +44,8 @@ buttons, no pack voltage sensing. Flashing it onto an assembled board leaves the
 LED dark and the buttons dead; that is expected, not a fault.
 
 The battery-facing 1-Wire code in this repo is deliberately unchanged from
-upstream, so reads behave identically either way.
+upstream, so reads behave identically either way — with one addition, command
+`0x36`, which runs a priming-and-retry sequence F0513 packs need before they
+give up their cell registers. Upstream has no such command, so on this firmware
+the web app falls back to reading those registers one at a time, as upstream
+does. Every other read is the same on both.

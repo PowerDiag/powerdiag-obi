@@ -2,13 +2,19 @@
 #include <Adafruit_NeoPixel.h>
 #include "OneWire2.h"
 
+/* Version 9.x.x marks this as PowerDiag's firmware, not upstream ArduinoOBI.
+ * Upstream numbers itself 0.x.x (stock is 0.2.1), so starting at 9.0.0 leaves
+ * no room for a collision and makes the board self-identifying: the web app
+ * asks for the version on connect and uses the extra commands this firmware
+ * adds — 0x02 (pack voltage) and 0x36 (atomic F0513 cell read) — only when the
+ * major is 9 or above. On anything else it sticks to the stock command set.
+ * The 0.3.x builds that came before this scheme count as stock; reflash them. */
 /** Major version number (X.x.x) */
-#define ARDUINO_OBI_VERSION_MAJOR 0
+#define ARDUINO_OBI_VERSION_MAJOR 9
 /** Minor version number (x.X.x) */
-#define ARDUINO_OBI_VERSION_MINOR 3
+#define ARDUINO_OBI_VERSION_MINOR 0
 /** Patch version number (x.x.X) */
-/* 0.3.1: command 0x36 reads F0513 cell voltages atomically. */
-#define ARDUINO_OBI_VERSION_PATCH 1
+#define ARDUINO_OBI_VERSION_PATCH 0
 
 #define ONEWIRE_PIN 6
 #define ENABLE_PIN 8

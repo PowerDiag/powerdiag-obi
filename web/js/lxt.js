@@ -27,26 +27,23 @@ const CMD = {
   F0513_TESTMODE: [0x01, 0x01, 0x00, 0xcc, 0x99],
   F0513_TEMP:     [0x01, 0x01, 0x02, 0xcc, 0x52],
   F0513_VCELL:    [1, 2, 3, 4, 5].map((n) => [0x01, 0x01, 0x02, 0xcc, 0x30 + n]),
-  /* One command that reads all five cell registers atomically inside a single
-   * powered session — the only way F0513 cells come out. Needs OBI firmware
-   * >= 0.3.1; older firmware answers nothing to 0x36. Reply is five u16 LE. */
+  /* PowerDiag firmware only. Reads all five cell registers atomically inside a
+   * single powered session — the only way F0513 cells come out. Five u16 LE. */
   F0513_CELLS:    [0x01, 0x00, 0x0a, 0x36],
 };
 
-/** Lowest interface-board firmware that answers 0x36 (F0513_CELLS). */
-const MIN_F0513_CELLS_FW = [0, 3, 1];
-
-/** version is the dotted string from interfaceVersion(), e.g. "0.2.1". Missing
- * or unparsable is treated as too old rather than assumed supported. */
-function fwAtLeast(version, min) {
-  const parts = String(version ?? '').split('.').map(Number);
-  if (parts.some(Number.isNaN)) return false;
-  for (let i = 0; i < min.length; i += 1) {
-    const have = parts[i] ?? 0;
-    if (have !== min[i]) return have > min[i];
-  }
-  return true;
-}
+/* Two firmwares answer on this board and both are supported.
+ *
+ * Stock ArduinoOBI (upstream, 0.x.x — 0.2.1 is what ships) is a serial bridge:
+ * commands 0x31, 0x33 and 0xCC, nothing else. PowerDiag's firmware numbers
+ * itself 9.x.x precisely so it can be told apart, and adds 0x02 (pack voltage
+ * off the R10/R11 divider) and 0x36 (atomic F0513 cell read).
+ *
+ * Which one is in front of us decides which read path runs. Stock gets the
+ * stock path and behaves exactly as upstream does — no extra commands sent at
+ * it, and nothing said about its firmware: a board doing what it was built to
+ * do is not a fault. */
+const isPowerDiagFw = (version) => Number(String(version ?? '').split('.')[0]) >= 9;
 
 const hex = (bytes) =>
   Array.from(bytes, (b) => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
@@ -84,8 +81,9 @@ export class LxtBattery {
     this.fwVersion = null;
   }
 
-  /** Firmware version of the interface board itself, e.g. "0.3.0". Cached on
-   * the instance so readCellsF0513() can gate 0x36 without a second probe. */
+  /** Firmware version of the interface board itself, e.g. "9.0.0" for
+   * PowerDiag's firmware or "0.2.1" for stock. Cached on the instance, since
+   * it is what picks the read path for everything below. */
   async interfaceVersion({ attempts = 5 } = {}) {
     const payload = await this.transport.request(CMD.INTERFACE_VERSION, { attempts });
     this.fwVersion = Array.from(payload).join('.');
@@ -94,10 +92,13 @@ export class LxtBattery {
 
   /**
    * Pack voltage measured by the board on the battery terminals, in volts.
-   * Needs the R10/R11 divider and firmware 0.3.0 or newer; stock OBI hardware
-   * simply does not answer, and is then not asked again.
+   * PowerDiag firmware and the R10/R11 divider only; stock firmware has no such
+   * command, so it is not asked — a timeout per read would be the only result.
+   * A PowerDiag build on a board without the divider fails the probe once and
+   * is then not asked again either.
    */
   async terminalVoltage() {
+    if (!isPowerDiagFw(this.fwVersion)) return null;
     if (this.voltageSupported === false) return null;
     try {
       const payload = await this.transport.request(CMD.INTERFACE_VOLTAGE, { attempts: 1 });
@@ -191,38 +192,59 @@ export class LxtBattery {
     }
   }
 
+  /**
+   * F0513 has no pack-voltage register — the pack voltage is the sum of the
+   * five cell registers 0x31..0x35. Getting those to answer needs the bus
+   * primed and each register read more than once, all inside one powered
+   * session, which is what firmware command 0x36 does and what no sequence of
+   * stock commands can do: the board drops EN between USB commands, so a
+   * per-register read starts from cold every time.
+   *
+   * So the two firmwares get the two paths they can each actually run.
+   */
   async readCellsF0513() {
-    /* F0513 has no pack-voltage register — the pack voltage is the sum of the
-     * five cell registers 0x31..0x35, and those only answer after the bus is
-     * primed and each is read a few times, all within one powered session. A
-     * per-command transport cannot do that (it powers the pack down between
-     * commands), which is why reading the registers one at a time returned 0 V
-     * on every cell. The firmware's 0x36 runs the whole sequence in one EN
-     * session; the long timeout covers its internal retries. Temperature is a
-     * plain register read and stays a separate command. */
-    if (!fwAtLeast(this.fwVersion, MIN_F0513_CELLS_FW)) {
-      throw new ObiError('err.fwTooOld', this.fwVersion ?? 'unknown');
-    }
-    const payload = await this.transport.request(CMD.F0513_CELLS, { attempts: 1, timeoutMs: 12000 });
-    const slots = [0, 1, 2, 3, 4].map((i) => u16le(payload, i * 2) / 1000);
+    const cells = isPowerDiagFw(this.fwVersion)
+      ? await this.f0513CellsAtomic()
+      : await this.f0513CellsPerRegister();
 
     /* A slot the pack did not answer reads as an implausible voltage; show it as
      * 0 so a failed read is visible rather than a wild number, and keep only the
      * plausible ones for the pack sum. A four-cell F0513 (BL14xx) leaves the
-     * fifth slot empty, so a trailing empty slot is dropped from the display. */
-    const clean = slots.map((v) => (v > 0.1 && v <= CELL_CEILING ? v : 0));
+     * fifth slot empty, so a trailing empty slot is dropped from the display —
+     * but only when something else came back, or a read that returned nothing
+     * at all would present itself as a four-cell pack. */
+    const clean = cells.map((v) => (v > 0.1 && v <= CELL_CEILING ? v : 0));
     const valid = clean.filter((v) => v > 0);
-    const cells = clean[4] === 0 ? clean.slice(0, 4) : clean;
 
     const temp = await this.transport.request(CMD.F0513_TEMP);
 
     return {
       packVoltage: valid.reduce((sum, v) => sum + v, 0),
-      cells,
+      cells: clean[4] === 0 && valid.length ? clean.slice(0, 4) : clean,
       cellDiff: valid.length ? Math.max(...valid) - Math.min(...valid) : 0,
       tempCell: u16le(temp, 0) / 100,
       tempMosfet: null,
     };
+  }
+
+  /** PowerDiag firmware: one command, five u16 LE back. The long timeout covers
+   * the firmware's own priming and retries. */
+  async f0513CellsAtomic() {
+    const payload = await this.transport.request(CMD.F0513_CELLS, { attempts: 1, timeoutMs: 12000 });
+    return [0, 1, 2, 3, 4].map((i) => u16le(payload, i * 2) / 1000);
+  }
+
+  /** Stock firmware: one register per command, the way upstream reads them.
+   * Deliberately left as upstream has it — no priming, no repeats, no CLEAR
+   * (which on F0513 zeroes the registers outright). Cells a cold read does not
+   * reach come back implausible and are shown as 0 by the caller. */
+  async f0513CellsPerRegister() {
+    const cells = [];
+    for (const command of CMD.F0513_VCELL) {
+      const payload = await this.transport.request(command);
+      cells.push(u16le(payload, 0) / 1000);
+    }
+    return cells;
   }
 
   async ledsOn() {

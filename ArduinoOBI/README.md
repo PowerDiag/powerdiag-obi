@@ -11,6 +11,27 @@ measurement) see the [main README](../README.md#hardware-obi-interface-board).
 
 ---
 
+## Firmware versions
+
+Two firmwares run on this board, and the web app supports both. Which one is on it is visible from
+the version the board reports on connect (interface command `0x01`):
+
+| Version | Firmware | Commands | Board features |
+| ------- | -------- | -------- | -------------- |
+| `0.x.x` (stock is `0.2.1`) | upstream ArduinoOBI, unmodified | `0x01`, `0x31`, `0x33`, `0xCC` | serial bridge only — LED and buttons dark |
+| `9.x.x` | this repo (PowerDiag) | the above plus `0x02`, `0x36` | status LED, buttons, pack voltage |
+
+The `9` is deliberate: upstream numbers itself `0.x.x`, so nothing it releases can ever be mistaken
+for this firmware or the other way round. Set in `src/main.cpp`.
+
+The web app reads the version once on connect and picks its read path from it. On stock firmware it
+sends only stock commands and behaves exactly as upstream does — notably F0513 cell voltages, which
+it reads one register per command because the atomic read (`0x36`) is not there. It says nothing
+about the firmware being stock; a board doing what it was built to do is not a fault. The `0.3.x`
+builds that predate this scheme report as stock and should be reflashed.
+
+---
+
 ## Stand-alone operation
 
 The board can be used without the PC application. The battery-facing commands are exactly the
@@ -76,8 +97,9 @@ response: 02 02 <millivolts, little endian>
 ```
 
 The PC application requests it once per read and shows it as *Terminal Voltage (measured)*.
-Interfaces or older firmware that do not answer this command are handled gracefully — the field is
-simply left empty.
+Stock firmware has no such command and is never asked for it; a board on this firmware but without
+the divider fitted fails the request once and is not asked again. Either way the field is simply
+left empty.
 
 The reading is referenced to the ATmega328P's internal 1.1 V bandgap, whose absolute value is only
 specified as 1.0–1.2 V, so set `VBAT_CALIBRATION` in `src/main.cpp` once per board before relying on
