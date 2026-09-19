@@ -278,3 +278,18 @@
 .remote-form input:focus, .remote-form select:focus { outline: none; border-color: var(--pd-accent-dim); }
 #remote-pin { text-transform: uppercase; letter-spacing: .18em; }
 .remote-form .dialog-actions { margin-top: 4px; }
+
+/* ---------- terms ----------
+   The notice sits under everything on the connect screen, small but always
+   there; the footer carries the same link once the dashboard is up. */
+.landing-terms { margin: 22px 0 0; font-size: .76rem; color: var(--pd-text-dim); max-width: 40em; }
+.landing-terms a, .send-reading-hint a, .statusbar .terms-link, .confirm-ack a { color: var(--pd-accent); text-decoration: none; }
+.landing-terms a:hover, .send-reading-hint a:hover, .statusbar .terms-link:hover, .confirm-ack a:hover { text-decoration: underline; }
+.statusbar .terms-link { font-size: .78rem; }
+
+/* Tick-to-continue in the write dialog, lined up with .dialog-body's text. */
+.confirm-ack {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin: 0 20px 16px; font-size: .86rem; cursor: pointer;
+}
+.confirm-ack input { margin: 3px 0 0; accent-color: var(--pd-danger); }

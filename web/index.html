@@ -62,6 +62,10 @@
   <p id="install-unsupported" class="hint hidden" data-i18n="install.unsupported"></p>
   <p id="driver-hint" class="hint hidden" data-i18n="err.driver"></p>
   <div id="unsupported" class="banner hidden"></div>
+  <p class="landing-terms">
+    <span data-i18n="terms.notice">By using this tool you agree to the</span>
+    <a href="./terms.html" data-i18n="terms.link">terms of use, disclaimer and privacy policy</a>
+  </p>
 </section>
 
 <div id="dashboard" class="app-main hidden">
@@ -106,7 +110,8 @@
             <input type="checkbox" id="opt-send-reading" checked>
             <span data-i18n="opt.sendReading">Send this reading to PowerDiag</span>
           </label>
-          <p class="hint send-reading-hint" data-i18n="opt.sendReadingHint"></p>
+          <p class="hint send-reading-hint"><span data-i18n="opt.sendReadingHint"></span>
+            <a href="./terms.html#privacy" data-i18n="opt.sendReadingMore">Details</a></p>
         </div>
       </div>
     </section>
@@ -176,6 +181,7 @@
   <span class="status" data-i18n="status.idle">Not connected</span>
   <span class="statusbar-right">
     <span id="build" class="build"></span>
+    <a class="terms-link" href="./terms.html" data-i18n="terms.short">Terms</a>
     <span class="copyright">&copy; 2026 powerdiag.jp</span>
   </span>
 </footer>
@@ -217,9 +223,15 @@
 <dialog id="confirm" class="dialog">
   <p class="dialog-title danger" data-i18n="group.write">Writes to the battery</p>
   <p id="confirm-text" class="dialog-body"></p>
+  <!-- Continue stays off until this is ticked: the risk is read, not clicked past. -->
+  <label class="confirm-ack">
+    <input type="checkbox" id="confirm-ack">
+    <span><span data-i18n="confirm.ack">I understand the risks and do this at my own responsibility.</span>
+      <a href="./terms.html#writes" target="_blank" rel="noopener" data-i18n="confirm.ackMore">Terms</a></span>
+  </label>
   <form method="dialog" class="dialog-actions">
     <button value="cancel" class="btn ghost" data-i18n="btn.cancel">Cancel</button>
-    <button value="ok" class="btn danger" data-i18n="btn.proceed">Continue</button>
+    <button value="ok" id="confirm-ok" class="btn danger" data-i18n="btn.proceed" disabled>Continue</button>
   </form>
 </dialog>
 

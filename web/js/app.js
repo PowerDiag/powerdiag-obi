@@ -641,6 +641,8 @@ function submitReading() {
 function askConfirm(messageKey) {
   const dialog = el('confirm');
   el('confirm-text').textContent = t(messageKey);
+  el('confirm-ack').checked = false;
+  el('confirm-ok').disabled = true;
   dialog.returnValue = '';
   dialog.showModal();
   return new Promise((resolve) => {
@@ -834,6 +836,9 @@ async function init() {
   el('btn-cells').addEventListener('click', () => guard(readCells));
   el('btn-identity').addEventListener('click', () => guard(readIdentity));
   el('btn-clear').addEventListener('click', () => guard(clearErrors));
+  el('confirm-ack').addEventListener('change', (event) => {
+    el('confirm-ok').disabled = !event.target.checked;
+  });
   el('btn-leds-on').addEventListener('click', () => guard(() => battery.ledsOn()));
   el('btn-leds-off').addEventListener('click', () => guard(() => battery.ledsOff()));
   el('btn-disconnect').addEventListener('click', () => {

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>利用規約・免責事項・プライバシー — PowerDiag OBI</title>
+<meta name="theme-color" content="#0b0f14">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./vendor/powerdiag.css">
+<style>
+  /* A document, not the tool: one readable column, the language picked by the
+     app's own setting (or the browser) and switchable at the top. Without
+     script every language shows, Japanese (the governing text) first. */
+  .terms { max-width: 760px; margin: 0 auto; padding: 24px var(--pd-gutter, 16px) 64px; line-height: 1.75; }
+  .terms-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: .84rem; }
+  .terms-nav a { color: var(--pd-accent); text-decoration: none; }
+  .terms-nav a:hover { text-decoration: underline; }
+  .langs { display: flex; gap: 6px; }
+  .langs button { font: inherit; font-size: .8rem; padding: 3px 10px; cursor: pointer;
+    background: transparent; color: var(--pd-text-dim); border: 1px solid var(--pd-line); border-radius: var(--pd-radius-sm, 4px); }
+  .langs button[aria-pressed="true"] { color: var(--pd-text); border-color: var(--pd-accent); }
+  .terms h1 { font-size: 1.45rem; margin: 28px 0 4px; line-height: 1.4; }
+  .terms h2 { font-size: 1.02rem; margin: 30px 0 6px; padding-top: 14px; border-top: 1px solid var(--pd-line-soft, var(--pd-line)); }
+  .terms p, .terms li { font-size: .92rem; }
+  .terms ol, .terms ul { padding-left: 1.4em; margin: 6px 0; }
+  .terms li { margin: 4px 0; }
+  .meta { color: var(--pd-text-dim); font-size: .82rem; margin: 0; }
+  .warn { border-left: 3px solid var(--pd-danger); padding: 8px 14px; background: var(--pd-bg-raised); border-radius: var(--pd-radius-sm, 4px); }
+  .terms a { color: var(--pd-accent); }
+  section[lang] + section[lang] { margin-top: 56px; }
+  .js section[lang][hidden] { display: none; }
+</style>
+</head>
+<body>
+<main class="terms">
+
+<nav class="terms-nav">
+  <a href="./">← PowerDiag OBI</a>
+  <span class="langs" role="group" aria-label="Language">
+    <button type="button" data-lang="ja">日本語</button>
+    <button type="button" data-lang="en">English</button>
+    <button type="button" data-lang="zh">中文</button>
+  </span>
+</nav>
+
+<!-- ============================================================ 日本語（正本） -->
+<section lang="ja">
+<h1>PowerDiag OBI 利用規約・免責事項・プライバシー</h1>
+<p class="meta">最終更新日：2026年9月19日</p>
+
+<h2>1. 適用</h2>
+<p>本規約は、PowerDiag（powerdiag.jp）の運営者（以下「当方」）が提供するウェブアプリ「PowerDiag OBI」（以下「本ツール」）の利用に適用されます。本ツールを利用した時点で、利用者は本規約に同意したものとみなします。</p>
+
+<h2>2. 本ツールについて</h2>
+<ul>
+  <li>本ツールは、インターフェース基板を介してバッテリーパックの情報を読み取り、一部の操作（エラー解除など）を行うためのツールです。</li>
+  <li>本ツールは株式会社マキタその他のメーカーとは関係がなく、それらのメーカーが承認・提供するものではありません。記載の製品名・型番は各社の商標または登録商標です。</li>
+  <li>表示される数値や状態は、バッテリーの管理基板が報告する内容を表示した参考値です。バッテリーの安全性・性能・寿命を保証するものではありません。</li>
+</ul>
+
+<h2 id="writes">3. バッテリーへの書き込みと安全</h2>
+<ul>
+  <li>「エラー解除」などの書き込み操作は、バッテリー内の記録を書き換えます。バッテリーによっては充電回数などの記録が初期化されること、または正常に動作しなくなることがあります。書き込んだ内容を元に戻すことはできません。</li>
+  <li>メーカー保証やサポートの対象外となる場合があります。</li>
+</ul>
+<p class="warn">ロックやエラーは、メーカーが安全のために設けた保護機能である場合があります。セル電圧の異常、膨張・変形・液漏れ・異臭・発熱、落下や水濡れの履歴があるバッテリーについては、エラー解除や再使用・充電をしないでください。発火・破裂のおそれがあります。</p>
+<p>書き込み操作は、利用者ご自身の判断と責任において行ってください。</p>
+
+<h2>4. 禁止事項</h2>
+<ul>
+  <li>法令または公序良俗に反する利用</li>
+  <li>状態が異常または不明なバッテリーを、エラー解除などにより正常品と誤認させて販売・譲渡する目的での利用</li>
+  <li>本ツールまたは当方のサーバーへの不正アクセス、過度な負荷をかける行為</li>
+</ul>
+
+<h2>5. 免責</h2>
+<ol>
+  <li>本ツールは現状のまま提供され、当方は、その正確性、完全性、特定の目的への適合性、動作の継続を保証しません。</li>
+  <li>当方は、本ツールの利用または利用できなかったことにより生じた損害（バッテリー、充電器、電動工具その他の機器の故障・損傷、火災その他の事故による損害、データの消失を含みます）について、責任を負いません。ただし、当方の故意または重大な過失による場合はこの限りではありません。</li>
+  <li>当方の過失（重大な過失を除きます）により利用者に損害が生じた場合、当方が賠償する範囲は、現実に生じた通常の損害に限られ、その額は、当該損害に関して利用者が当方に支払った金額（本ツールを無償で利用している場合は1万円）を上限とします。</li>
+  <li>当方が販売したインターフェース基板などの製品の保証は、販売時の条件および法令に従います。</li>
+</ol>
+
+<h2 id="privacy">6. 読み取りデータの送信とプライバシー</h2>
+<ul>
+  <li>「この読み取り結果を PowerDiag に送信する」が有効な場合、読み取りのたびに次の情報を当方のサーバーへ送信します：型番、ROM ID、製造日、充電回数、ロック・状態の情報、容量、パック電圧・セル電圧・温度、バッテリーのメッセージデータ、インターフェース基板のファームウェアバージョン、本ツールのバージョン、表示言語、送信日時。あわせて、送信元の IP アドレスを記録します。</li>
+  <li>氏名やメールアドレスなど、利用者を直接特定する情報は送信しません。</li>
+  <li><strong>利用目的：</strong>バッテリーの状態傾向の把握、本ツールおよび基板の互換性・品質の改善、不具合や不正利用の調査。IP アドレスは、おおよその国・地域の把握と不正利用の調査に使います。</li>
+  <li><strong>第三者提供：</strong>法令に基づく場合を除き、個人を特定できる形で第三者に提供しません。個人を特定できない形に集計した統計情報を公開することがあります。</li>
+  <li><strong>保存：</strong>データは日本国内のサーバーに保存し、上記の目的に必要な期間保管します。</li>
+  <li><strong>送信の停止：</strong>チェックを外すと送信しません（設定はこのブラウザに保存されます）。デモ表示のデータは送信しません。</li>
+  <li><strong>削除の依頼：</strong>送信済みデータの削除を希望される場合は、ROM ID とおおよその送信日時を添えて下記までご連絡ください。</li>
+</ul>
+
+<h2>7. 規約の変更</h2>
+<p>当方は、必要に応じて本規約を変更できます。変更後の規約は、本ページに掲載した時点から効力を生じます。</p>
+
+<h2>8. 準拠法・管轄</h2>
+<p>本規約は日本法に準拠します。本ツールに関して紛争が生じた場合、当方の所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とします。</p>
+
+<h2>9. お問い合わせ</h2>
+<p><a href="mailto:support@powerdiag.jp">support@powerdiag.jp</a></p>
+</section>
+
+<!-- ============================================================ English -->
+<section lang="en">
+<h1>PowerDiag OBI — Terms of Use, Disclaimer and Privacy</h1>
+<p class="meta">Last updated: 19 September 2026. This is a translation for convenience; if it differs from the Japanese text, the Japanese text prevails.</p>
+
+<h2>1. Scope</h2>
+<p>These terms apply to your use of the web app “PowerDiag OBI” (the “Tool”) provided by the operator of PowerDiag (powerdiag.jp) (“we”, “us”). By using the Tool you agree to these terms.</p>
+
+<h2>2. About the Tool</h2>
+<ul>
+  <li>The Tool reads information from battery packs through an interface board and can perform some operations on them (such as clearing errors).</li>
+  <li>The Tool is not affiliated with, endorsed or provided by Makita Corporation or any other manufacturer. Product names and model numbers are trademarks of their respective owners.</li>
+  <li>The values and states shown are what the pack’s management board reports, for reference only. They are no guarantee of the battery’s safety, performance or remaining life.</li>
+</ul>
+
+<h2 id="writes-en">3. Writing to the battery, and safety</h2>
+<ul>
+  <li>Operations that write to the battery, such as “Clear errors”, change the records stored in it. On some batteries this resets counters such as the charge count, or can leave the battery unusable. A write cannot be undone.</li>
+  <li>Doing so may void the manufacturer’s warranty or support.</li>
+</ul>
+<p class="warn">A lock or error may be a protection the manufacturer put there for safety. Do not clear errors on, reuse or charge a battery that has abnormal cell voltages; is swollen, deformed, leaking, smells or runs hot; or has been dropped or got wet. It may catch fire or burst.</p>
+<p>You write to a battery at your own judgement and risk.</p>
+
+<h2>4. Prohibited use</h2>
+<ul>
+  <li>Use that breaks the law or public order</li>
+  <li>Using the Tool (for example by clearing errors) to sell or hand on a battery in an abnormal or unknown condition as if it were sound</li>
+  <li>Unauthorised access to, or excessive load on, the Tool or our servers</li>
+</ul>
+
+<h2>5. Disclaimer</h2>
+<ol>
+  <li>The Tool is provided as is. We give no warranty of its accuracy, completeness, fitness for a particular purpose or continued availability.</li>
+  <li>We are not liable for damage arising from using or being unable to use the Tool, including failure of or damage to batteries, chargers, power tools or other equipment, damage from fire or other accidents, and loss of data — except where caused by our wilful misconduct or gross negligence.</li>
+  <li>Where our negligence (other than gross negligence) causes you damage, our liability is limited to ordinary damage actually incurred, up to the amount you paid us in connection with it (JPY 10,000 if you use the Tool free of charge).</li>
+  <li>The warranty on products we sell, such as interface boards, follows the terms of sale and applicable law.</li>
+</ol>
+
+<h2 id="privacy-en">6. Sending readings, and privacy</h2>
+<ul>
+  <li>While “Send this reading to PowerDiag” is checked, each reading sends the following to our server: model, ROM ID, manufacturing date, charge count, lock and status information, capacity, pack and cell voltages, temperatures, the battery’s message data, the interface board’s firmware version, the Tool’s version, the display language and the time. We also record the IP address it was sent from.</li>
+  <li>Nothing that directly identifies you, such as your name or email address, is sent.</li>
+  <li><strong>Purpose:</strong> understanding battery health trends, improving the compatibility and quality of the Tool and boards, and investigating faults and abuse. The IP address is used to know the approximate country or region and to investigate abuse.</li>
+  <li><strong>Sharing:</strong> except where required by law, we do not share it with third parties in a form that identifies individuals. We may publish aggregated statistics that do not.</li>
+  <li><strong>Storage:</strong> data is stored on servers in Japan, for as long as the purposes above need it.</li>
+  <li><strong>Opting out:</strong> uncheck the box and nothing is sent (the choice is remembered in this browser). Demo data is never sent.</li>
+  <li><strong>Deletion:</strong> to have data you sent deleted, contact us below with the ROM ID and roughly when it was sent.</li>
+</ul>
+
+<h2>7. Changes</h2>
+<p>We may change these terms when needed. Changed terms take effect when published on this page.</p>
+
+<h2>8. Governing law and jurisdiction</h2>
+<p>These terms are governed by the laws of Japan. The district court with jurisdiction over our location has exclusive jurisdiction in the first instance over any dispute about the Tool, to the extent permitted by mandatory law where you live.</p>
+
+<h2>9. Contact</h2>
+<p><a href="mailto:support@powerdiag.jp">support@powerdiag.jp</a></p>
+</section>
+
+<!-- ============================================================ 中文 -->
+<section lang="zh">
+<h1>PowerDiag OBI 使用条款・免责声明・隐私</h1>
+<p class="meta">最后更新：2026年9月19日。本译文仅供参考，与日文版不一致时以日文版为准。</p>
+
+<h2>1. 适用范围</h2>
+<p>本条款适用于 PowerDiag（powerdiag.jp）运营方（以下称“我们”）提供的网页应用“PowerDiag OBI”（以下称“本工具”）。使用本工具即视为您同意本条款。</p>
+
+<h2>2. 关于本工具</h2>
+<ul>
+  <li>本工具通过接口板读取电池包信息，并可执行部分操作（如清除错误）。</li>
+  <li>本工具与株式会社牧田（Makita）及其他厂商无关，也未经其认可或提供。文中产品名称和型号为各自所有者的商标。</li>
+  <li>显示的数值和状态是电池管理板报告的内容，仅供参考，不保证电池的安全性、性能或剩余寿命。</li>
+</ul>
+
+<h2 id="writes-zh">3. 写入电池与安全</h2>
+<ul>
+  <li>“清除错误”等写入操作会改写电池内保存的记录。部分电池会因此清零充电次数等记录，或导致电池无法正常使用。写入后无法恢复。</li>
+  <li>这样做可能使厂商保修或售后服务失效。</li>
+</ul>
+<p class="warn">锁定或错误可能是厂商出于安全考虑设置的保护。对于电芯电压异常，出现鼓包、变形、漏液、异味、发热，或有跌落、进水经历的电池，请勿清除错误，也不要继续使用或充电。否则可能起火或爆裂。</p>
+<p>写入操作由您自行判断并承担风险。</p>
+
+<h2>4. 禁止事项</h2>
+<ul>
+  <li>违反法律法规或公序良俗的使用</li>
+  <li>通过清除错误等方式，将状态异常或不明的电池当作正常品出售或转让</li>
+  <li>非法访问本工具或我们的服务器，或对其造成过大负荷</li>
+</ul>
+
+<h2>5. 免责</h2>
+<ol>
+  <li>本工具按现状提供，我们不保证其准确性、完整性、对特定用途的适用性或持续可用。</li>
+  <li>对于因使用或无法使用本工具而造成的损害（包括电池、充电器、电动工具等设备的故障或损坏，火灾等事故造成的损害，以及数据丢失），我们不承担责任；但因我们的故意或重大过失造成的除外。</li>
+  <li>因我们的过失（重大过失除外）给您造成损害时，我们的赔偿范围限于实际发生的通常损害，金额以您为此向我们支付的金额为上限（免费使用本工具时为 1 万日元）。</li>
+  <li>我们销售的接口板等产品的保修，依照销售条件及相关法律执行。</li>
+</ol>
+
+<h2 id="privacy-zh">6. 读数上传与隐私</h2>
+<ul>
+  <li>勾选“将本次读数发送给 PowerDiag”时，每次读取都会将以下信息发送到我们的服务器：型号、ROM ID、生产日期、充电次数、锁定及状态信息、容量、电池包电压、电芯电压、温度、电池报文数据、接口板固件版本、本工具版本、界面语言和时间，并记录发送来源的 IP 地址。</li>
+  <li>不会发送姓名、电子邮件等能直接识别您身份的信息。</li>
+  <li><strong>用途：</strong>了解电池状态趋势，改进本工具及接口板的兼容性和质量，调查故障和滥用。IP 地址用于判断大致国家或地区，以及调查滥用。</li>
+  <li><strong>第三方提供：</strong>除法律要求外，不会以可识别个人的形式提供给第三方。我们可能公开无法识别个人的汇总统计。</li>
+  <li><strong>保存：</strong>数据保存在日本境内的服务器上，保存期限以上述用途所需为限。</li>
+  <li><strong>停止发送：</strong>取消勾选即不发送（该设置保存在当前浏览器中）。演示数据不会发送。</li>
+  <li><strong>删除：</strong>如需删除已发送的数据，请提供 ROM ID 和大致发送时间并与我们联系。</li>
+</ul>
+
+<h2>7. 条款变更</h2>
+<p>我们可在必要时修改本条款。修改后的条款自在本页面发布时生效。</p>
+
+<h2>8. 适用法律与管辖</h2>
+<p>本条款适用日本法律。因本工具产生的争议，在您所在地强制性法律允许的范围内，以我们所在地有管辖权的地方法院为第一审专属管辖法院。</p>
+
+<h2>9. 联系方式</h2>
+<p><a href="mailto:support@powerdiag.jp">support@powerdiag.jp</a></p>
+</section>
+
+</main>
+<script>
+  /* Same key the app stores its language under. zh-TW reads the Chinese text;
+     every other language the app offers falls back to English. */
+  (function () {
+    var sections = document.querySelectorAll('section[lang]');
+    var buttons = document.querySelectorAll('.langs button');
+    function show(lang) {
+      sections.forEach(function (s) { s.hidden = s.lang !== lang; });
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
+      document.documentElement.lang = lang;
+    }
+    var want = '';
+    try { want = new URLSearchParams(location.search).get('lang') || localStorage.getItem('powerdiag-obi-lang') || ''; } catch (e) {}
+    want = (want || navigator.language || 'en').toLowerCase();
+    var lang = want.indexOf('ja') === 0 ? 'ja' : want.indexOf('zh') === 0 ? 'zh' : 'en';
+    document.documentElement.classList.add('js');
+    buttons.forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.lang); }); });
+    show(lang);
+    if (location.hash) { var t = document.getElementById(location.hash.slice(1) + (lang === 'ja' ? '' : '-' + lang)); if (t) t.scrollIntoView(); }
+  })();
+</script>
+</body>
+</html>

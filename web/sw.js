@@ -9,6 +9,7 @@ const CACHE = "powerdiag-obi-dev";
 const ASSETS = [
   "./",
   "./index.html",
+  "./terms.html",
   "./vendor/powerdiag.css",
   "./styles.css",
   "./icon.svg",
