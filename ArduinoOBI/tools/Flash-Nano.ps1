@@ -24,7 +24,7 @@
 [CmdletBinding()]
 param(
   [string]   $Port,                                            # COM port; auto-detect FTDI if omitted
-  [string]   $Hex = "$PSScriptRoot\..\.pio\build\nano\firmware.hex",
+  [string]   $Hex,                                             # default: ..\.pio\build\nano\firmware.hex
   [int[]]    $BootBaud = @(115200, 57600),                     # bootloader sync bauds to try, in order
   [int]      $AppBaud = 9600,                                  # OBI firmware serial baud (post-flash check)
   [switch]   $Loop,                                            # keep flashing boards as they are plugged in
@@ -32,6 +32,8 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+# Not a param() default: $PSScriptRoot is still empty there under powershell.exe -File.
+if (-not $Hex) { $Hex = Join-Path $PSScriptRoot '..\.pio\build\nano\firmware.hex' }
 $PAGE = 128   # optiboot atmega328p flash page size (bytes)
 
 # ------------------------------------------------------------------ helpers
@@ -99,12 +101,14 @@ function Expect-Ok($sp, $what) {          # want 0x14 (INSYNC) ... 0x10 (OK)
   throw "$what : bad resp [$(($got | ForEach-Object { $_.ToString('X2') }) -join ' ')]"
 }
 
-function Drain-Quiet($sp, $quietMs = 150) {
+function Drain-Quiet($sp, $quietMs = 150, $maxMs = 400) {
   # Read and discard until the line has been silent for $quietMs — clears any
   # trailing/cascading bootloader replies so the next command starts byte-aligned.
-  $quiet = 0
-  while ($quiet -lt $quietMs) {
-    if ($sp.BytesToRead -gt 0) { $sp.ReadByte() | Out-Null; $quiet = 0 }
+  # Bounded by $maxMs: a factory-fresh clone runs a demo sketch that prints without
+  # pause, and waiting for that to go quiet hangs the script forever.
+  $quiet = 0; $sw = [Diagnostics.Stopwatch]::StartNew()
+  while ($quiet -lt $quietMs -and $sw.ElapsedMilliseconds -lt $maxMs) {
+    if ($sp.BytesToRead -gt 0) { $sp.DiscardInBuffer(); $quiet = 0 }
     else { Start-Sleep -Milliseconds 15; $quiet += 15 }
   }
 }
@@ -116,7 +120,9 @@ function Try-Sync($sp) {
     Send $sp @(0x30, 0x20)
     Start-Sleep -Milliseconds 80
     $got = @(); while ($sp.BytesToRead -gt 0) { $got += $sp.ReadByte() }
-    if ($got -contains 0x14 -and $got -contains 0x10) {
+    # INSYNC,OK as the last two bytes — not merely present somewhere, or the demo
+    # sketch's output read at the wrong baud can pass for a reply.
+    if ($got.Count -ge 2 -and $got[-2] -eq 0x14 -and $got[-1] -eq 0x10) {
       Drain-Quiet $sp 150                     # settle before the caller sends ENTER_PROGMODE
       return $true
     }
